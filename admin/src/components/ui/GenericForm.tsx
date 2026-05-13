@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { X, Loader2 } from 'lucide-react';
+import { X, Loader2, Upload, Image as ImageIcon } from 'lucide-react';
+import api from '../../utils/api';
 
 export interface Field {
   name: string;
   label: string;
-  type: 'text' | 'number' | 'email' | 'password' | 'textarea' | 'select' | 'checkbox' | 'url' | 'date';
+  type: 'text' | 'number' | 'email' | 'password' | 'textarea' | 'select' | 'checkbox' | 'url' | 'date' | 'file';
   options?: { label: string; value: string | number }[];
   placeholder?: string;
   required?: boolean;
@@ -37,8 +38,28 @@ const GenericForm = <T extends Record<string, unknown>>({
     }, {} as T);
   });
 
+  const [uploadingField, setUploadingField] = useState<string | null>(null);
+
   const handleChange = (name: string, value: unknown) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleFileUpload = async (name: string, file: File) => {
+    setUploadingField(name);
+    const uploadData = new FormData();
+    uploadData.append('file', file);
+
+    try {
+      const response = await api.post('/upload', uploadData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      handleChange(name, response.data.url);
+    } catch (error) {
+      console.error('Upload failed:', error);
+      alert('Upload failed. Please try again.');
+    } finally {
+      setUploadingField(null);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -59,7 +80,7 @@ const GenericForm = <T extends Record<string, unknown>>({
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {fields.map((field) => (
-              <div key={field.name} className={field.type === 'textarea' ? 'md:col-span-2' : ''}>
+              <div key={field.name} className={field.type === 'textarea' || field.type === 'file' ? 'md:col-span-2' : ''}>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   {field.label} {field.required && <span className="text-red-500">*</span>}
                 </label>
@@ -72,6 +93,53 @@ const GenericForm = <T extends Record<string, unknown>>({
                     placeholder={field.placeholder}
                     className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none h-32"
                   />
+                ) : field.type === 'file' ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-4">
+                      {formData[field.name as keyof T] ? (
+                        <div className="relative w-24 h-24 rounded-lg overflow-hidden border border-gray-200">
+                          <img 
+                            src={formData[field.name as keyof T] as string} 
+                            alt="Preview" 
+                            className="w-full h-full object-cover"
+                          />
+                          <button 
+                            type="button"
+                            onClick={() => handleChange(field.name, '')}
+                            className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors"
+                          >
+                            <X size={12} />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="w-24 h-24 rounded-lg bg-gray-50 flex items-center justify-center border-2 border-dashed border-gray-200 text-gray-400">
+                          <ImageIcon size={32} />
+                        </div>
+                      )}
+                      
+                      <label className="flex-1">
+                        <div className="flex items-center justify-center gap-2 px-4 py-6 border-2 border-dashed border-gray-300 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer relative">
+                          {uploadingField === field.name ? (
+                            <Loader2 size={24} className="animate-spin text-blue-600" />
+                          ) : (
+                            <>
+                              <Upload size={20} className="text-gray-400" />
+                              <span className="text-sm font-medium text-gray-600">Click to upload image</span>
+                            </>
+                          )}
+                          <input 
+                            type="file" 
+                            className="hidden" 
+                            accept="image/*"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) handleFileUpload(field.name, file);
+                            }}
+                          />
+                        </div>
+                      </label>
+                    </div>
+                  </div>
                 ) : field.type === 'select' ? (
                   <select
                     value={(formData[field.name as keyof T] as string | number) || ''}
@@ -118,7 +186,7 @@ const GenericForm = <T extends Record<string, unknown>>({
             </button>
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || uploadingField !== null}
               className="flex items-center gap-2 px-8 py-2.5 rounded-lg bg-blue-600 text-white font-bold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20 disabled:opacity-50"
             >
               {isLoading && <Loader2 size={18} className="animate-spin" />}

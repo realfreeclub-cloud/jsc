@@ -1,102 +1,217 @@
-import { useQuery } from '@tanstack/react-query';
-import api from '../utils/api';
-import { BookOpen, Users, FileText, Calendar, Bell, Plus, Upload } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { 
+  Users, 
+  BookOpen, 
+  Activity, 
+  TrendingUp, 
+  ArrowUpRight, 
+  ArrowDownRight,
+  Plus,
+  Send,
+  Calendar,
+  Zap
+} from 'lucide-react';
+import { 
+  AreaChart, 
+  Area, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer
+} from 'recharts';
 
-const AdminDashboard = () => {
-  // Fetch Counts
-  const { data: courses } = useQuery({ queryKey: ['courses'], queryFn: () => api.get('/courses?limit=1').then(res => res.data) });
-  const { data: blogs } = useQuery({ queryKey: ['blogs'], queryFn: () => api.get('/blogs?limit=1').then(res => res.data) });
-  const { data: events } = useQuery({ queryKey: ['events'], queryFn: () => api.get('/events?limit=1').then(res => res.data) });
-  const { data: notifications } = useQuery({ queryKey: ['notifications'], queryFn: () => api.get('/notifications?limit=1').then(res => res.data) });
-  // Since we don't have a users endpoint yet mapped directly to standard factory in admin panel logic, let's mock students for now or use the generic count if available.
+const stats = [
+  { 
+    name: 'Total Students', 
+    value: '2,845', 
+    change: '+12.5%', 
+    trend: 'up', 
+    icon: Users,
+    color: 'blue'
+  },
+  { 
+    name: 'Active Courses', 
+    value: '48', 
+    change: '+4', 
+    trend: 'up', 
+    icon: BookOpen,
+    color: 'indigo'
+  },
+  { 
+    name: 'Avg. Attendance', 
+    value: '92%', 
+    change: '-2.1%', 
+    trend: 'down', 
+    icon: Activity,
+    color: 'emerald'
+  },
+  { 
+    name: 'Total Revenue', 
+    value: '₹12.4L', 
+    change: '+18.2%', 
+    trend: 'up', 
+    icon: TrendingUp,
+    color: 'violet'
+  }
+];
 
-  const stats = [
-    { label: 'Total Courses', value: courses?.totalCount || 0, icon: BookOpen, color: 'text-blue-600', bg: 'bg-blue-50' },
-    { label: 'Total Students', value: 124, icon: Users, color: 'text-indigo-600', bg: 'bg-indigo-50' },
-    { label: 'Total Blogs', value: blogs?.totalCount || 0, icon: FileText, color: 'text-purple-600', bg: 'bg-purple-50' },
-    { label: 'Total Events', value: events?.totalCount || 0, icon: Calendar, color: 'text-pink-600', bg: 'bg-pink-50' },
-    { label: 'Notifications', value: notifications?.totalCount || 0, icon: Bell, color: 'text-amber-600', bg: 'bg-amber-50' },
-  ];
+const chartData = [
+  { name: 'Jan', students: 400, revenue: 2400 },
+  { name: 'Feb', students: 600, revenue: 1398 },
+  { name: 'Mar', students: 500, revenue: 9800 },
+  { name: 'Apr', students: 900, revenue: 3908 },
+  { name: 'May', students: 1100, revenue: 4800 },
+  { name: 'Jun', students: 1500, revenue: 3800 },
+];
 
+const Dashboard = () => {
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
-      <div className="flex justify-between items-center">
+    <div className="space-y-8">
+      {/* Welcome Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-500 mt-1">Platform overview and summary</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Good Morning, Admin 👋</h1>
+          <p className="text-gray-500 mt-1">Here's what's happening with Judicial Study Centre today.</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <button className="px-4 py-2 bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-xl text-sm font-semibold hover:shadow-sm transition-all">
+            Export Data
+          </button>
+          <button className="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-600/20 hover:scale-105 active:scale-95 transition-all">
+            + New Course
+          </button>
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-        {stats.map((stat, i) => (
-          <div key={i} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center gap-4 hover:-translate-y-1 transition-transform duration-300">
-            <div className={`w-14 h-14 rounded-xl flex items-center justify-center shrink-0 ${stat.bg} ${stat.color}`}>
-              <stat.icon size={24} />
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {stats.map((stat, index) => (
+          <motion.div
+            key={stat.name}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+            className="p-6 bg-white dark:bg-slate-950 rounded-3xl border border-gray-50 dark:border-slate-900 shadow-premium hover:shadow-premium-hover transition-all group"
+          >
+            <div className="flex items-start justify-between">
+              <div className={`p-3 rounded-2xl bg-${stat.color}-50 dark:bg-${stat.color}-500/10 text-${stat.color}-600 dark:text-${stat.color}-500 transition-colors`}>
+                <stat.icon size={24} />
+              </div>
+              <div className={`flex items-center gap-1 text-xs font-bold ${stat.trend === 'up' ? 'text-emerald-500' : 'text-rose-500'}`}>
+                {stat.trend === 'up' ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
+                {stat.change}
+              </div>
             </div>
-            <div>
-              <div className="text-2xl font-bold text-gray-900">{stat.value}</div>
-              <div className="text-sm font-medium text-gray-500">{stat.label}</div>
+            <div className="mt-4">
+              <p className="text-sm font-medium text-gray-400 uppercase tracking-wider">{stat.name}</p>
+              <h3 className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{stat.value}</h3>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-8">
-        {/* Recent Activity */}
-        <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-900">Recent Activity</h2>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Growth Chart */}
+        <div className="lg:col-span-2 p-8 bg-white dark:bg-slate-950 rounded-3xl border border-gray-50 dark:border-slate-900 shadow-premium">
+          <div className="flex items-center justify-between mb-8">
+            <h3 className="text-lg font-bold dark:text-white">Student Enrollment Growth</h3>
+            <select className="bg-gray-50 dark:bg-slate-900 border-none text-xs font-bold rounded-lg px-3 py-1.5 outline-none">
+              <option>Last 6 Months</option>
+              <option>Yearly</option>
+            </select>
           </div>
-          
-          <div className="space-y-6">
-            <div className="flex gap-4">
-              <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
-                <BookOpen size={20} />
-              </div>
-              <div>
-                <p className="text-sm text-gray-900"><span className="font-bold">New Course Added:</span> UP PCS (J) Target Batch was published.</p>
-                <p className="text-xs text-gray-500 mt-1">2 hours ago</p>
-              </div>
-            </div>
-            <div className="flex gap-4">
-              <div className="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 shrink-0">
-                <Users size={20} />
-              </div>
-              <div>
-                <p className="text-sm text-gray-900"><span className="font-bold">New Student:</span> Rahul Sharma registered an account.</p>
-                <p className="text-xs text-gray-500 mt-1">5 hours ago</p>
-              </div>
-            </div>
-            <div className="flex gap-4">
-              <div className="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center text-purple-600 shrink-0">
-                <FileText size={20} />
-              </div>
-              <div>
-                <p className="text-sm text-gray-900"><span className="font-bold">Blog Published:</span> "How to crack Delhi Judiciary 2026"</p>
-                <p className="text-xs text-gray-500 mt-1">1 day ago</p>
-              </div>
-            </div>
+          <div className="h-[350px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={chartData}>
+                <defs>
+                  <linearGradient id="colorStudents" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.1}/>
+                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <XAxis 
+                  dataKey="name" 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fontSize: 12, fill: '#94a3b8' }}
+                  dy={10}
+                />
+                <YAxis 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fontSize: 12, fill: '#94a3b8' }}
+                />
+                <Tooltip 
+                  contentStyle={{ 
+                    borderRadius: '16px', 
+                    border: 'none', 
+                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+                    fontSize: '12px'
+                  }} 
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="students" 
+                  stroke="#3b82f6" 
+                  strokeWidth={3}
+                  fillOpacity={1} 
+                  fill="url(#colorStudents)" 
+                />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">Quick Actions</h2>
-          <div className="space-y-3">
-            <Link to="/courses" className="flex items-center gap-3 w-full p-4 rounded-xl border border-gray-100 hover:border-blue-200 hover:bg-blue-50 text-gray-700 hover:text-blue-700 transition-colors font-medium">
-              <Plus size={20} /> Add New Course
-            </Link>
-            <Link to="/blogs" className="flex items-center gap-3 w-full p-4 rounded-xl border border-gray-100 hover:border-purple-200 hover:bg-purple-50 text-gray-700 hover:text-purple-700 transition-colors font-medium">
-              <Plus size={20} /> Publish Blog
-            </Link>
-            <Link to="/notifications" className="flex items-center gap-3 w-full p-4 rounded-xl border border-gray-100 hover:border-amber-200 hover:bg-amber-50 text-gray-700 hover:text-amber-700 transition-colors font-medium">
-              <Bell size={20} /> Send Notification
-            </Link>
-            <Link to="/study-material" className="flex items-center gap-3 w-full p-4 rounded-xl border border-gray-100 hover:border-emerald-200 hover:bg-emerald-50 text-gray-700 hover:text-emerald-700 transition-colors font-medium">
-              <Upload size={20} /> Upload Study Material
-            </Link>
+        <div className="space-y-6">
+          <h3 className="text-lg font-bold dark:text-white">Quick Actions</h3>
+          <div className="grid grid-cols-1 gap-4">
+            <button className="flex items-center gap-4 p-4 bg-white dark:bg-slate-950 rounded-2xl border border-gray-50 dark:border-slate-900 shadow-premium hover:shadow-premium-hover hover:-translate-y-1 transition-all text-left">
+              <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-600/10 text-blue-600">
+                <Plus size={20} />
+              </div>
+              <div>
+                <p className="text-sm font-bold dark:text-white">New Course</p>
+                <p className="text-xs text-gray-400">Launch a new study program</p>
+              </div>
+            </button>
+            <button className="flex items-center gap-4 p-4 bg-white dark:bg-slate-950 rounded-2xl border border-gray-50 dark:border-slate-900 shadow-premium hover:shadow-premium-hover hover:-translate-y-1 transition-all text-left">
+              <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-600/10 text-emerald-600">
+                <Send size={20} />
+              </div>
+              <div>
+                <p className="text-sm font-bold dark:text-white">Push Notification</p>
+                <p className="text-xs text-gray-400">Alert students about updates</p>
+              </div>
+            </button>
+            <button className="flex items-center gap-4 p-4 bg-white dark:bg-slate-950 rounded-2xl border border-gray-50 dark:border-slate-900 shadow-premium hover:shadow-premium-hover hover:-translate-y-1 transition-all text-left">
+              <div className="p-3 rounded-xl bg-violet-50 dark:bg-violet-600/10 text-violet-600">
+                <Calendar size={20} />
+              </div>
+              <div>
+                <p className="text-sm font-bold dark:text-white">Schedule Event</p>
+                <p className="text-xs text-gray-400">Create a seminar or test</p>
+              </div>
+            </button>
+            <button className="flex items-center gap-4 p-4 bg-white dark:bg-slate-950 rounded-2xl border border-gray-50 dark:border-slate-900 shadow-premium hover:shadow-premium-hover hover:-translate-y-1 transition-all text-left">
+              <div className="p-3 rounded-xl bg-orange-50 dark:bg-orange-600/10 text-orange-600">
+                <Zap size={20} />
+              </div>
+              <div>
+                <p className="text-sm font-bold dark:text-white">Instant Alert</p>
+                <p className="text-xs text-gray-400">Post to Marquee/Ticker</p>
+              </div>
+            </button>
+          </div>
+
+          <div className="p-6 bg-linear-to-tr from-blue-600 to-indigo-700 rounded-3xl text-white shadow-xl shadow-blue-500/30">
+            <h4 className="font-bold text-lg">System Update</h4>
+            <p className="text-blue-100 text-sm mt-2">The new Student Portal API is now live. Check the logs for performance metrics.</p>
+            <button className="mt-4 px-4 py-2 bg-white/20 backdrop-blur-md rounded-xl text-xs font-bold hover:bg-white/30 transition-all">
+              View Logs
+            </button>
           </div>
         </div>
       </div>
@@ -104,4 +219,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default Dashboard;

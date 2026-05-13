@@ -24,11 +24,19 @@ import facultysRoutes from './routes/facultysRoutes';
 import heroslidersRoutes from './routes/heroslidersRoutes';
 import homeRoutes from './routes/homeRoutes';
 
+import path from 'path';
+import uploadRoutes from './routes/uploadRoutes';
+
 const app = express();
 
 // Security Middleware
-app.use(helmet());
+app.use(helmet({
+  crossOriginResourcePolicy: false, // Allow images to be loaded cross-origin
+}));
 app.use(cors());
+
+// Serve static files from uploads folder
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Rate Limiting
 const limiter = rateLimit({
@@ -38,13 +46,13 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter);
 
-app.use(express.json({ limit: '10kb' })); // Limit body payload
-// xss-clean removed due to incompatibility with Express 5
+app.use(express.json({ limit: '10mb' })); // Limit body payload
 
 app.use(morgan('dev'));
 
 // Routes
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/upload', uploadRoutes);
 app.use('/api/v1/courses', coursesRoutes);
 app.use('/api/v1/blogs', blogsRoutes);
 app.use('/api/v1/events', eventsRoutes);

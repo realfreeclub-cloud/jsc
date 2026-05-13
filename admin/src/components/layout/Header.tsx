@@ -1,31 +1,52 @@
-import { Bell, Search, User } from 'lucide-react';
+import { Bell, Search, User, Sun, Moon } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 
 const Header = () => {
-  const adminUser = JSON.parse(localStorage.getItem('adminUser') || '{}');
+  const location = useLocation();
+  const path = location.pathname === '/' ? 'Dashboard' : location.pathname.split('/')[1].split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 
   return (
-    <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 shadow-sm sticky top-0 z-10 ml-64">
-      <div className="flex items-center bg-gray-100 rounded-lg px-4 py-2 w-96 focus-within:ring-2 focus-within:ring-blue-500 transition-all">
-        <Search size={18} className="text-gray-400" />
-        <input 
-          type="text" 
-          placeholder="Search everywhere..." 
-          className="bg-transparent border-none outline-none ml-2 text-sm w-full text-gray-700"
-        />
+    <header className="sticky top-0 z-40 w-full h-20 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-gray-100 dark:border-slate-900 px-8 flex items-center justify-between">
+      <div>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white capitalize">
+          {path}
+        </h2>
+        <div className="flex items-center gap-2 text-xs text-gray-400 font-medium">
+          <span>Admin</span>
+          <span>/</span>
+          <span className="text-blue-500">{path}</span>
+        </div>
       </div>
-      
+
       <div className="flex items-center gap-6">
-        <button className="relative text-gray-500 hover:text-gray-700 transition-colors">
-          <Bell size={20} />
-          <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+        {/* Global Search Button */}
+        <button className="hidden md:flex items-center gap-2 px-4 py-2 bg-gray-50 dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-xl text-sm text-gray-400 hover:border-blue-500/50 transition-all">
+          <Search size={16} />
+          <span>Search command...</span>
+          <kbd className="ml-4 px-1.5 py-0.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded text-[10px] font-bold">⌘K</kbd>
         </button>
-        <div className="flex items-center gap-3 border-l border-gray-200 pl-6">
-          <div className="text-right hidden md:block">
-            <p className="text-sm font-semibold text-gray-800 leading-tight">{adminUser.name || 'Admin User'}</p>
-            <p className="text-xs text-gray-500">{adminUser.email || 'admin@jsc.com'}</p>
+
+        <div className="flex items-center gap-3">
+          <button className="p-2.5 rounded-xl text-gray-500 hover:bg-gray-100 dark:hover:bg-slate-900 transition-colors relative">
+            <Bell size={20} />
+            <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 border-2 border-white dark:border-slate-950 rounded-full"></span>
+          </button>
+          
+          <button className="p-2.5 rounded-xl text-gray-500 hover:bg-gray-100 dark:hover:bg-slate-900 transition-colors">
+            <Sun size={20} className="dark:hidden" />
+            <Moon size={20} className="hidden dark:block" />
+          </button>
+        </div>
+
+        <div className="h-8 w-px bg-gray-100 dark:bg-slate-900 mx-2" />
+
+        <div className="flex items-center gap-4 pl-2 cursor-pointer group">
+          <div className="text-right hidden sm:block">
+            <p className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-blue-600 transition-colors">System Admin</p>
+            <p className="text-[11px] font-medium text-gray-400 uppercase tracking-tighter">Super Admin</p>
           </div>
-          <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold border border-blue-200 uppercase">
-            {adminUser.name ? adminUser.name[0] : <User size={20} />}
+          <div className="w-10 h-10 rounded-xl bg-linear-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
+            <User size={20} />
           </div>
         </div>
       </div>
