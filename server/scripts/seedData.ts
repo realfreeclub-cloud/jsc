@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import path from 'path';
+import bcrypt from 'bcryptjs';
 
 // Load env vars
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
@@ -43,12 +44,20 @@ const seedDatabase = async () => {
     // 2. Create an Admin User (for Blog author)
     let adminUser = await User.findOne({ role: 'admin' });
     if (!adminUser) {
+      const hashedPassword = await bcrypt.hash('password123', 12);
       adminUser = await User.create({
         name: 'System Admin',
         email: 'admin@judicialstudycentre.com',
-        password: 'password123',
+        password: hashedPassword,
         role: 'admin'
       });
+      console.log('Admin user created!');
+    } else {
+      // Update password just in case it was plain text
+      const hashedPassword = await bcrypt.hash('password123', 12);
+      adminUser.password = hashedPassword;
+      await adminUser.save();
+      console.log('Admin user password updated to hashed version.');
     }
 
     // 3. Create Courses
