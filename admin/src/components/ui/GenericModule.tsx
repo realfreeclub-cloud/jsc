@@ -5,16 +5,16 @@ import api from '../../utils/api';
 import GenericForm, { type Field } from './GenericForm';
 import { cn } from '../../utils/cn';
 
-interface GenericModuleProps<T = Record<string, unknown>> {
+interface GenericModuleProps {
   title: string;
   endpoint: string;
   fields: Field[];
 }
 
-const GenericModule = <T extends Record<string, unknown>>({ title, endpoint, fields }: GenericModuleProps<T>) => {
+const GenericModule = ({ title, endpoint, fields }: GenericModuleProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editData, setEditData] = useState<T | undefined>(undefined);
+  const [editData, setEditData] = useState<Record<string, unknown> | undefined>(undefined);
   const queryClient = useQueryClient();
 
   const { data, isLoading, error } = useQuery({
@@ -22,10 +22,10 @@ const GenericModule = <T extends Record<string, unknown>>({ title, endpoint, fie
     queryFn: () => api.get(`/${endpoint}?search=${searchTerm}`).then(res => res.data)
   });
 
-  const results = data?.data || [];
+  const results = (data?.data || []) as Record<string, unknown>[];
 
   const createMutation = useMutation({
-    mutationFn: (newData: T) => api.post(`/${endpoint}`, newData),
+    mutationFn: (newData: Record<string, unknown>) => api.post(`/${endpoint}`, newData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [endpoint] });
       setIsModalOpen(false);
@@ -34,7 +34,7 @@ const GenericModule = <T extends Record<string, unknown>>({ title, endpoint, fie
   });
 
   const updateMutation = useMutation({
-    mutationFn: (updateData: T) => api.patch(`/${endpoint}/${updateData._id}`, updateData),
+    mutationFn: (updateData: Record<string, unknown>) => api.patch(`/${endpoint}/${updateData._id}`, updateData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [endpoint] });
       setIsModalOpen(false);
@@ -49,7 +49,7 @@ const GenericModule = <T extends Record<string, unknown>>({ title, endpoint, fie
     }
   });
 
-  const handleSave = async (formData: T) => {
+  const handleSave = async (formData: Record<string, unknown>) => {
     try {
       if (editData) {
         await updateMutation.mutateAsync({ ...formData, _id: editData._id });
@@ -61,12 +61,12 @@ const GenericModule = <T extends Record<string, unknown>>({ title, endpoint, fie
     }
   };
 
-  const handleEdit = (row: T) => {
+  const handleEdit = (row: Record<string, unknown>) => {
     setEditData(row);
     setIsModalOpen(true);
   };
 
-  const handleDelete = (row: T) => {
+  const handleDelete = (row: Record<string, unknown>) => {
     if (window.confirm(`Are you sure you want to delete this ${title.toLowerCase()}?`)) {
       deleteMutation.mutate(row._id as string);
     }
@@ -145,12 +145,12 @@ const GenericModule = <T extends Record<string, unknown>>({ title, endpoint, fie
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50 dark:divide-slate-900">
-                {results.map((row: any) => (
-                  <tr key={row._id} className="group hover:bg-gray-50/50 dark:hover:bg-slate-900/30 transition-colors">
+                {results.map((row: Record<string, unknown>) => (
+                  <tr key={row._id as string} className="group hover:bg-gray-50/50 dark:hover:bg-slate-900/30 transition-colors">
                     <td className="px-6 py-5">
                       <div className="flex items-center gap-4">
                         {row.imageUrl ? (
-                          <img src={row.imageUrl} className="w-12 h-12 rounded-xl object-cover shadow-sm" alt="Thumbnail" />
+                          <img src={row.imageUrl as string} className="w-12 h-12 rounded-xl object-cover shadow-sm" alt="Thumbnail" />
                         ) : (
                           <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-slate-800 flex items-center justify-center text-gray-400">
                             <MoreHorizontal size={20} />
@@ -158,9 +158,9 @@ const GenericModule = <T extends Record<string, unknown>>({ title, endpoint, fie
                         )}
                         <div>
                           <p className="font-bold text-gray-900 dark:text-white truncate max-w-[200px]">
-                            {row.title || row.name || 'Untitled Entry'}
+                            {(row.title as string) || (row.name as string) || 'Untitled Entry'}
                           </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 italic">ID: ...{row._id?.slice(-6)}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 italic">ID: ...{(row._id as string)?.slice(-6)}</p>
                         </div>
                       </div>
                     </td>
@@ -176,7 +176,7 @@ const GenericModule = <T extends Record<string, unknown>>({ title, endpoint, fie
                     </td>
                     <td className="px-6 py-5">
                       <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">
-                        {new Date(row.createdAt).toLocaleDateString()}
+                        {new Date(row.createdAt as string).toLocaleDateString()}
                       </p>
                     </td>
                     <td className="px-6 py-5 text-right">
