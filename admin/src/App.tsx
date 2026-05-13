@@ -12,7 +12,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/admin/login" element={<Login />} />
+        <Route path="/login" element={<Login />} />
         
         {/* Protected Admin Routes */}
         <Route element={<ProtectedRoute />}>
