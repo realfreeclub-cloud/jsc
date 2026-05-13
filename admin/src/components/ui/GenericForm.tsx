@@ -68,20 +68,20 @@ const GenericForm = <T extends Record<string, unknown>>({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div className="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
-          <h2 className="text-xl font-bold text-gray-900">{initialData ? 'Edit' : 'Add New'} {title}</h2>
-          <button onClick={onCancel} className="text-gray-400 hover:bg-gray-100 p-2 rounded-lg transition-colors">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+      <div className="bg-white dark:bg-slate-950 rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-gray-100 dark:border-slate-900">
+        <div className="p-6 border-b border-gray-50 dark:border-slate-900 flex justify-between items-center sticky top-0 bg-white dark:bg-slate-950 z-10">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">{initialData ? 'Edit' : 'Add New'} {title}</h2>
+          <button onClick={onCancel} className="text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-900 p-2 rounded-xl transition-colors">
             <X size={20} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <form onSubmit={handleSubmit} className="p-8 space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {fields.map((field) => (
               <div key={field.name} className={field.type === 'textarea' || field.type === 'file' ? 'md:col-span-2' : ''}>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
                   {field.label} {field.required && <span className="text-red-500">*</span>}
                 </label>
                 
@@ -91,13 +91,13 @@ const GenericForm = <T extends Record<string, unknown>>({
                     onChange={(e) => handleChange(field.name, e.target.value)}
                     required={field.required}
                     placeholder={field.placeholder}
-                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none h-32"
+                    className="w-full px-5 py-4 rounded-2xl bg-gray-50 dark:bg-slate-900 border-none focus:ring-2 focus:ring-blue-500 outline-none h-32 dark:text-white"
                   />
                 ) : field.type === 'file' ? (
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-4">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-6">
                       {formData[field.name as keyof T] ? (
-                        <div className="relative w-24 h-24 rounded-lg overflow-hidden border border-gray-200">
+                        <div className="relative w-28 h-28 rounded-2xl overflow-hidden border border-gray-200 dark:border-slate-800 shadow-sm">
                           <img 
                             src={formData[field.name as keyof T] as string} 
                             alt="Preview" 
@@ -106,25 +106,25 @@ const GenericForm = <T extends Record<string, unknown>>({
                           <button 
                             type="button"
                             onClick={() => handleChange(field.name, '')}
-                            className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors"
+                            className="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-full hover:bg-red-600 transition-colors shadow-lg"
                           >
-                            <X size={12} />
+                            <X size={14} />
                           </button>
                         </div>
                       ) : (
-                        <div className="w-24 h-24 rounded-lg bg-gray-50 flex items-center justify-center border-2 border-dashed border-gray-200 text-gray-400">
+                        <div className="w-28 h-28 rounded-2xl bg-gray-50 dark:bg-slate-900 flex items-center justify-center border-2 border-dashed border-gray-100 dark:border-slate-800 text-gray-400">
                           <ImageIcon size={32} />
                         </div>
                       )}
                       
                       <label className="flex-1">
-                        <div className="flex items-center justify-center gap-2 px-4 py-6 border-2 border-dashed border-gray-300 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer relative">
+                        <div className="flex flex-col items-center justify-center gap-2 px-6 py-8 border-2 border-dashed border-gray-200 dark:border-slate-800 rounded-2xl hover:bg-gray-50 dark:hover:bg-slate-900/50 transition-colors cursor-pointer relative group">
                           {uploadingField === field.name ? (
                             <Loader2 size={24} className="animate-spin text-blue-600" />
                           ) : (
                             <>
-                              <Upload size={20} className="text-gray-400" />
-                              <span className="text-sm font-medium text-gray-600">Click to upload image</span>
+                              <Upload size={24} className="text-gray-300 group-hover:text-blue-500 transition-colors" />
+                              <span className="text-sm font-bold text-gray-500 dark:text-gray-400">Click to upload image</span>
                             </>
                           )}
                           <input 
@@ -145,7 +145,7 @@ const GenericForm = <T extends Record<string, unknown>>({
                     value={(formData[field.name as keyof T] as string | number) || ''}
                     onChange={(e) => handleChange(field.name, e.target.value)}
                     required={field.required}
-                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+                    className="w-full px-5 py-4 rounded-2xl bg-gray-50 dark:bg-slate-900 border-none focus:ring-2 focus:ring-blue-500 outline-none dark:text-white appearance-none"
                   >
                     <option value="">Select {field.label}</option>
                     {field.options?.map((opt) => (
@@ -153,14 +153,14 @@ const GenericForm = <T extends Record<string, unknown>>({
                     ))}
                   </select>
                 ) : field.type === 'checkbox' ? (
-                  <div className="flex items-center gap-3 py-2">
+                  <div className="flex items-center gap-4 py-2">
                     <input
                       type="checkbox"
                       checked={!!formData[field.name]}
                       onChange={(e) => handleChange(field.name, e.target.checked)}
-                      className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      className="w-6 h-6 rounded-lg border-gray-300 dark:border-slate-800 text-blue-600 focus:ring-blue-500 bg-gray-50 dark:bg-slate-900"
                     />
-                    <span className="text-sm text-gray-600">Active / Visible</span>
+                    <span className="text-sm font-bold text-gray-600 dark:text-gray-400">Active / Visible</span>
                   </div>
                 ) : (
                   <input
@@ -169,25 +169,25 @@ const GenericForm = <T extends Record<string, unknown>>({
                     onChange={(e) => handleChange(field.name, e.target.value)}
                     required={field.required}
                     placeholder={field.placeholder}
-                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none"
+                    className="w-full px-5 py-4 rounded-2xl bg-gray-50 dark:bg-slate-900 border-none focus:ring-2 focus:ring-blue-500 outline-none dark:text-white"
                   />
                 )}
               </div>
             ))}
           </div>
 
-          <div className="flex justify-end gap-3 pt-6 border-t border-gray-100">
+          <div className="flex justify-end gap-3 pt-8 border-t border-gray-50 dark:border-slate-900">
             <button
               type="button"
               onClick={onCancel}
-              className="px-6 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+              className="px-6 py-3 rounded-xl border border-gray-200 dark:border-slate-800 text-gray-600 dark:text-gray-400 font-bold hover:bg-gray-50 dark:hover:bg-slate-900 transition-all"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isLoading || uploadingField !== null}
-              className="flex items-center gap-2 px-8 py-2.5 rounded-lg bg-blue-600 text-white font-bold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20 disabled:opacity-50"
+              className="flex items-center gap-2 px-8 py-3 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700 transition-all shadow-xl shadow-blue-600/20 disabled:opacity-50"
             >
               {isLoading && <Loader2 size={18} className="animate-spin" />}
               {initialData ? 'Update' : 'Save'} {title}

@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
@@ -10,10 +11,19 @@ const AdminLayout = () => {
   const { isCollapsed } = useSidebar();
   const { isDarkMode } = useTheme();
 
+  // Sync theme with document root
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [isDarkMode]);
+
   return (
     <div className={cn(
       "min-h-screen transition-colors duration-300",
-      isDarkMode ? "dark bg-slate-950" : "bg-gray-50"
+      isDarkMode ? "bg-slate-950" : "bg-gray-50"
     )}>
       <Sidebar />
       
