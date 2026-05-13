@@ -18,7 +18,13 @@ import {
   createColumnHelper,
   getSortedRowModel,
   getPaginationRowModel,
-  type SortingState
+  type SortingState,
+  type HeaderGroup,
+  type Header,
+  type Row,
+  type Cell,
+  type CellContext,
+  type Column
 } from '@tanstack/react-table';
 import { cn } from '../utils/cn';
 
@@ -48,12 +54,12 @@ const Students = () => {
 
   const columns = useMemo(() => [
     columnHelper.accessor('name', {
-      header: ({ column }) => (
+      header: ({ column }: { column: Column<Student, unknown> }) => (
         <button className="flex items-center gap-2 hover:text-blue-600 transition-colors" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
           Name <ArrowUpDown size={14} />
         </button>
       ),
-      cell: info => (
+      cell: (info: CellContext<Student, string>) => (
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-600/20 text-blue-600 flex items-center justify-center font-bold text-sm">
             {info.getValue().charAt(0)}
@@ -67,11 +73,11 @@ const Students = () => {
     }),
     columnHelper.accessor('course', {
       header: 'Course',
-      cell: info => <span className="font-medium text-gray-600 dark:text-gray-400">{info.getValue()}</span>,
+      cell: (info: CellContext<Student, string>) => <span className="font-medium text-gray-600 dark:text-gray-400">{info.getValue()}</span>,
     }),
     columnHelper.accessor('status', {
       header: 'Status',
-      cell: info => {
+      cell: (info: CellContext<Student, 'Active' | 'Inactive' | 'Pending'>) => {
         const status = info.getValue();
         return (
           <span className={cn(
@@ -87,7 +93,7 @@ const Students = () => {
     }),
     columnHelper.accessor('registrationDate', {
       header: 'Enrolled On',
-      cell: info => <span className="text-gray-500 tabular-nums">{info.getValue()}</span>,
+      cell: (info: CellContext<Student, string>) => <span className="text-gray-500 tabular-nums">{info.getValue()}</span>,
     }),
     columnHelper.display({
       id: 'actions',
@@ -163,9 +169,9 @@ const Students = () => {
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              {table.getHeaderGroups().map(headerGroup => (
+              {table.getHeaderGroups().map((headerGroup: HeaderGroup<Student>) => (
                 <tr key={headerGroup.id} className="bg-gray-50/50 dark:bg-slate-900/50">
-                  {headerGroup.headers.map(header => (
+                  {headerGroup.headers.map((header: Header<Student, unknown>) => (
                     <th key={header.id} className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">
                       {flexRender(header.column.columnDef.header, header.getContext())}
                     </th>
@@ -174,9 +180,9 @@ const Students = () => {
               ))}
             </thead>
             <tbody className="divide-y divide-gray-50 dark:divide-slate-900">
-              {table.getRowModel().rows.map(row => (
+              {table.getRowModel().rows.map((row: Row<Student>) => (
                 <tr key={row.id} className="hover:bg-gray-50/50 dark:hover:bg-slate-900/30 transition-colors">
-                  {row.getVisibleCells().map(cell => (
+                  {row.getVisibleCells().map((cell: Cell<Student, unknown>) => (
                     <td key={cell.id} className="px-6 py-5 align-middle">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>

@@ -11,8 +11,8 @@ export const useSidebar = create<SidebarState>()(
   persist(
     (set) => ({
       isCollapsed: false,
-      toggle: () => set((state) => ({ isCollapsed: !state.isCollapsed })),
-      setCollapsed: (collapsed) => set({ isCollapsed: collapsed }),
+      toggle: () => set((state: SidebarState) => ({ isCollapsed: !state.isCollapsed })),
+      setCollapsed: (collapsed: boolean) => set({ isCollapsed: collapsed }),
     }),
     {
       name: 'sidebar-storage',
