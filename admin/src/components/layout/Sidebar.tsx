@@ -148,7 +148,7 @@ const Sidebar = () => {
                 className={({ isActive }) => cn(
                   "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group relative",
                   isActive 
-                    ? "bg-blue-50 text-blue-600 dark:bg-blue-600/10 dark:text-blue-500" 
+                    ? "bg-blue-50 text-blue-600 dark:bg-blue-600/10 dark:text-blue-500 dark:shadow-[0_0_20px_rgba(59,130,246,0.1)]" 
                     : "text-gray-500 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-slate-900 dark:hover:text-white"
                 )}
               >

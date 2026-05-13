@@ -56,6 +56,8 @@ const stats = [
   }
 ];
 
+import { useTheme } from '../store/useTheme';
+
 const chartData = [
   { name: 'Jan', students: 400, revenue: 2400 },
   { name: 'Feb', students: 600, revenue: 1398 },
@@ -66,6 +68,8 @@ const chartData = [
 ];
 
 const Dashboard = () => {
+  const { isDarkMode } = useTheme();
+
   return (
     <div className="space-y-8">
       {/* Welcome Header */}
@@ -130,26 +134,29 @@ const Dashboard = () => {
                     <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDarkMode ? '#1e293b' : '#f1f5f9'} />
                 <XAxis 
                   dataKey="name" 
                   axisLine={false} 
                   tickLine={false} 
-                  tick={{ fontSize: 12, fill: '#94a3b8' }}
+                  tick={{ fontSize: 12, fill: isDarkMode ? '#64748b' : '#94a3b8' }}
                   dy={10}
                 />
                 <YAxis 
                   axisLine={false} 
                   tickLine={false} 
-                  tick={{ fontSize: 12, fill: '#94a3b8' }}
+                  tick={{ fontSize: 12, fill: isDarkMode ? '#64748b' : '#94a3b8' }}
                 />
                 <Tooltip 
                   contentStyle={{ 
+                    backgroundColor: isDarkMode ? '#020617' : '#ffffff',
                     borderRadius: '16px', 
-                    border: 'none', 
+                    border: isDarkMode ? '1px solid #1e293b' : 'none', 
                     boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-                    fontSize: '12px'
+                    fontSize: '12px',
+                    color: isDarkMode ? '#ffffff' : '#000000'
                   }} 
+                  itemStyle={{ color: isDarkMode ? '#3b82f6' : '#2563eb' }}
                 />
                 <Area 
                   type="monotone" 

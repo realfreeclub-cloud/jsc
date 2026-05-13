@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, X, Loader2, AlertCircle } from 'lucide-react';
+import { Plus, X, Loader2, AlertCircle, Search } from 'lucide-react';
 import { Table, type Column } from '../components/ui/Table';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../utils/api';
@@ -112,80 +112,87 @@ const Courses = () => {
   ];
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-8">
+    <div className="space-y-8 animate-in fade-in duration-500">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Course Management</h1>
-          <p className="text-gray-500 text-sm mt-1">Manage categories, syllabus, and course offerings.</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Course Management</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">Manage categories, syllabus, and course offerings.</p>
         </div>
         <button 
           onClick={handleAddNew}
-          className="flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20"
+          className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl text-sm font-bold shadow-lg shadow-blue-600/20 hover:scale-105 active:scale-95 transition-all"
         >
           <Plus size={18} /> Add New Course
         </button>
       </div>
 
-      <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 mb-6 flex items-center gap-3">
+      <div className="bg-white dark:bg-slate-950 p-6 rounded-3xl border border-gray-100 dark:border-slate-900 shadow-premium flex items-center gap-4 group">
+        <div className="relative flex-1">
+          <Search size={20} className="absolute left-0 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+          <input 
+            type="text" 
+            placeholder="Search courses by name or category..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-8 pr-4 py-2 bg-transparent outline-none text-gray-700 dark:text-white"
+          />
+        </div>
         <Loader2 size={20} className={`text-blue-600 animate-spin ${isLoading ? 'opacity-100' : 'opacity-0'}`} />
-        <input 
-          type="text" 
-          placeholder="Search courses by name or category..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full outline-none text-gray-700"
-        />
       </div>
 
       {isLoading ? (
-        <div className="flex items-center justify-center h-64 bg-white rounded-2xl shadow-sm border border-gray-100">
-          <Loader2 className="animate-spin text-blue-600" size={32} />
+        <div className="p-12 space-y-4 bg-white dark:bg-slate-950 rounded-3xl border border-gray-100 dark:border-slate-900">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="h-16 bg-gray-50 dark:bg-slate-900 rounded-2xl animate-pulse" />
+          ))}
         </div>
       ) : error ? (
-        <div className="bg-red-50 text-red-600 p-6 rounded-2xl border border-red-100 text-center">
+        <div className="bg-red-50 dark:bg-red-500/10 text-red-600 p-8 rounded-3xl border border-red-100 dark:border-red-900/20 text-center">
           <AlertCircle className="mx-auto mb-2" size={32} />
-          <p className="font-semibold">Failed to load courses.</p>
+          <p className="font-bold">Failed to load courses</p>
         </div>
       ) : (
-        <Table 
-          columns={columns} 
-          data={results} 
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
+        <div className="bg-white dark:bg-slate-950 rounded-3xl border border-gray-100 dark:border-slate-900 shadow-premium overflow-hidden">
+          <Table 
+            columns={columns} 
+            data={results} 
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+        </div>
       )}
 
       {/* Add/Edit Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto hidden-scrollbar">
-            <div className="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
-              <h2 className="text-xl font-bold text-gray-900">{editData ? 'Edit Course' : 'Add New Course'}</h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:bg-gray-100 p-2 rounded-lg transition-colors">
+          <div className="bg-white dark:bg-slate-950 rounded-3xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto hidden-scrollbar border border-gray-100 dark:border-slate-900">
+            <div className="p-6 border-b border-gray-50 dark:border-slate-900 flex justify-between items-center sticky top-0 bg-white dark:bg-slate-950 z-10">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">{editData ? 'Edit Course' : 'Add New Course'}</h2>
+              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-900 p-2 rounded-xl transition-colors">
                 <X size={20} />
               </button>
             </div>
             
-            <form onSubmit={handleSubmit} className="p-6 space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <form onSubmit={handleSubmit} className="p-8 space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Course Title *</label>
+                  <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Course Title *</label>
                   <input 
                     type="text" 
                     required
                     value={formData.title || ''}
                     onChange={(e) => setFormData({...formData, title: e.target.value})}
-                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none" 
+                    className="w-full px-5 py-3 rounded-xl bg-gray-50 dark:bg-slate-900 border-none focus:ring-2 focus:ring-blue-500 outline-none dark:text-white" 
                     placeholder="e.g. UP PCS (J) Target Batch" 
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Language *</label>
+                  <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Language *</label>
                   <select 
                     value={formData.language || 'English'}
                     onChange={(e) => setFormData({...formData, language: e.target.value})}
-                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none"
+                    className="w-full px-5 py-3 rounded-xl bg-gray-50 dark:bg-slate-900 border-none focus:ring-2 focus:ring-blue-500 outline-none dark:text-white"
                   >
                     <option>English</option>
                     <option>Hindi</option>
@@ -194,11 +201,11 @@ const Courses = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Mode of Study *</label>
+                  <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Mode of Study *</label>
                   <select 
                     value={formData.mode || 'Online'}
                     onChange={(e) => setFormData({...formData, mode: e.target.value})}
-                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none"
+                    className="w-full px-5 py-3 rounded-xl bg-gray-50 dark:bg-slate-900 border-none focus:ring-2 focus:ring-blue-500 outline-none dark:text-white"
                   >
                     <option>Online</option>
                     <option>Offline</option>
@@ -207,59 +214,59 @@ const Courses = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Duration *</label>
+                  <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Duration *</label>
                   <input 
                     type="text" 
                     required
                     value={formData.duration || ''}
                     onChange={(e) => setFormData({...formData, duration: e.target.value})}
-                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none" 
+                    className="w-full px-5 py-3 rounded-xl bg-gray-50 dark:bg-slate-900 border-none focus:ring-2 focus:ring-blue-500 outline-none dark:text-white" 
                     placeholder="e.g. 12 Months" 
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Price (₹) *</label>
+                  <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Price (₹) *</label>
                   <input 
                     type="number" 
                     required
                     value={formData.price || 0}
                     onChange={(e) => setFormData({...formData, price: Number(e.target.value)})}
-                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none" 
+                    className="w-full px-5 py-3 rounded-xl bg-gray-50 dark:bg-slate-900 border-none focus:ring-2 focus:ring-blue-500 outline-none dark:text-white" 
                   />
                 </div>
                 
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Thumbnail Image URL</label>
+                  <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Thumbnail Image URL</label>
                   <input 
                     type="url" 
                     value={formData.imageUrl || ''}
                     onChange={(e) => setFormData({...formData, imageUrl: e.target.value})}
-                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none" 
+                    className="w-full px-5 py-3 rounded-xl bg-gray-50 dark:bg-slate-900 border-none focus:ring-2 focus:ring-blue-500 outline-none dark:text-white" 
                     placeholder="https://example.com/image.jpg" 
                   />
                 </div>
 
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Demo YouTube Video URL</label>
+                  <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Demo YouTube Video URL</label>
                   <input 
                     type="url" 
                     value={formData.demoVideoUrl || ''}
                     onChange={(e) => setFormData({...formData, demoVideoUrl: e.target.value})}
-                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none" 
+                    className="w-full px-5 py-3 rounded-xl bg-gray-50 dark:bg-slate-900 border-none focus:ring-2 focus:ring-blue-500 outline-none dark:text-white" 
                     placeholder="https://youtube.com/watch?v=..." 
                   />
                 </div>
               </div>
 
-              <div className="p-6 border-t border-gray-100 flex justify-end gap-3 sticky bottom-0 bg-white -mx-6 -mb-6">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="px-6 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition-colors">
+              <div className="p-8 border-t border-gray-50 dark:border-slate-900 flex justify-end gap-3 sticky bottom-0 bg-white dark:bg-slate-950 -mx-8 -mb-8">
+                <button type="button" onClick={() => setIsModalOpen(false)} className="px-6 py-3 rounded-xl border border-gray-200 dark:border-slate-800 text-gray-700 dark:text-gray-400 font-bold hover:bg-gray-50 dark:hover:bg-slate-900 transition-all">
                   Cancel
                 </button>
                 <button 
                   type="submit"
                   disabled={createMutation.isPending || updateMutation.isPending}
-                  className="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20 disabled:opacity-50"
+                  className="flex items-center gap-2 px-8 py-3 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20 disabled:opacity-50"
                 >
                   {(createMutation.isPending || updateMutation.isPending) && <Loader2 size={18} className="animate-spin" />}
                   {editData ? 'Update Course' : 'Save Course'}

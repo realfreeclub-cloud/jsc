@@ -3,13 +3,18 @@ import Sidebar from './Sidebar';
 import Header from './Header';
 import { motion } from 'framer-motion';
 import { useSidebar } from '../../store/useSidebar';
+import { useTheme } from '../../store/useTheme';
 import { cn } from '../../utils/cn';
 
 const AdminLayout = () => {
   const { isCollapsed } = useSidebar();
+  const { isDarkMode } = useTheme();
 
   return (
-    <div className="min-h-screen bg-gray-50/50 dark:bg-slate-950 transition-colors duration-300">
+    <div className={cn(
+      "min-h-screen transition-colors duration-300",
+      isDarkMode ? "dark bg-slate-950" : "bg-gray-50"
+    )}>
       <Sidebar />
       
       <motion.div

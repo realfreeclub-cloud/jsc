@@ -1,8 +1,10 @@
 import { Bell, Search, User, Sun, Moon } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
+import { useTheme } from '../../store/useTheme';
 
 const Header = () => {
   const location = useLocation();
+  const { isDarkMode, toggleTheme } = useTheme();
   const path = location.pathname === '/' ? 'Dashboard' : location.pathname.split('/')[1].split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 
   return (
@@ -32,9 +34,11 @@ const Header = () => {
             <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 border-2 border-white dark:border-slate-950 rounded-full"></span>
           </button>
           
-          <button className="p-2.5 rounded-xl text-gray-500 hover:bg-gray-100 dark:hover:bg-slate-900 transition-colors">
-            <Sun size={20} className="dark:hidden" />
-            <Moon size={20} className="hidden dark:block" />
+          <button 
+            onClick={toggleTheme}
+            className="p-2.5 rounded-xl text-gray-500 hover:bg-gray-100 dark:hover:bg-slate-900 transition-colors"
+          >
+            {isDarkMode ? <Sun size={20} className="text-amber-500" /> : <Moon size={20} />}
           </button>
         </div>
 
