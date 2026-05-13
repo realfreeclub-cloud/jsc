@@ -15,7 +15,7 @@ interface GenericModuleProps<T = Record<string, unknown>> {
 const GenericModule = <T extends Record<string, unknown>>({ title, endpoint, columns, fields }: GenericModuleProps<T>) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editData, setEditData] = useState<T | null>(null);
+  const [editData, setEditData] = useState<T | undefined>(undefined);
   const queryClient = useQueryClient();
 
   const { data, isLoading, error } = useQuery({
@@ -30,7 +30,7 @@ const GenericModule = <T extends Record<string, unknown>>({ title, endpoint, col
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [endpoint] });
       setIsModalOpen(false);
-      setEditData(null);
+      setEditData(undefined);
     }
   });
 
@@ -39,7 +39,7 @@ const GenericModule = <T extends Record<string, unknown>>({ title, endpoint, col
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [endpoint] });
       setIsModalOpen(false);
-      setEditData(null);
+      setEditData(undefined);
     }
   });
 
@@ -77,7 +77,7 @@ const GenericModule = <T extends Record<string, unknown>>({ title, endpoint, col
           <p className="text-gray-500 text-sm mt-1">Manage all your {title.toLowerCase()} from here.</p>
         </div>
         <button 
-          onClick={() => { setEditData(null); setIsModalOpen(true); }}
+          onClick={() => { setEditData(undefined); setIsModalOpen(true); }}
           className="flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20"
         >
           <Plus size={18} /> Add New {title}

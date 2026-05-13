@@ -31,7 +31,8 @@ const GenericForm = <T extends Record<string, unknown>>({
     if (initialData) return { ...initialData };
     
     return fields.reduce((acc, field) => {
-      acc[field.name as keyof T] = (field.type === 'checkbox' ? false : '') as any;
+      const defaultValue = (field.type === 'checkbox' ? false : '') as unknown;
+      acc[field.name as keyof T] = defaultValue as T[keyof T];
       return acc;
     }, {} as T);
   });
@@ -65,7 +66,7 @@ const GenericForm = <T extends Record<string, unknown>>({
                 
                 {field.type === 'textarea' ? (
                   <textarea
-                    value={formData[field.name] || ''}
+                    value={(formData[field.name as keyof T] as string | number) || ''}
                     onChange={(e) => handleChange(field.name, e.target.value)}
                     required={field.required}
                     placeholder={field.placeholder}
@@ -73,7 +74,7 @@ const GenericForm = <T extends Record<string, unknown>>({
                   />
                 ) : field.type === 'select' ? (
                   <select
-                    value={formData[field.name] || ''}
+                    value={(formData[field.name as keyof T] as string | number) || ''}
                     onChange={(e) => handleChange(field.name, e.target.value)}
                     required={field.required}
                     className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none bg-white"
@@ -96,7 +97,7 @@ const GenericForm = <T extends Record<string, unknown>>({
                 ) : (
                   <input
                     type={field.type}
-                    value={formData[field.name] || ''}
+                    value={(formData[field.name as keyof T] as string | number) || ''}
                     onChange={(e) => handleChange(field.name, e.target.value)}
                     required={field.required}
                     placeholder={field.placeholder}
