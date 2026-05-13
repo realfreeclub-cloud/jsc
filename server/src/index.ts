@@ -22,6 +22,7 @@ import studymaterialsRoutes from './routes/studymaterialsRoutes';
 import testimonialsRoutes from './routes/testimonialsRoutes';
 import facultysRoutes from './routes/facultysRoutes';
 import heroslidersRoutes from './routes/heroslidersRoutes';
+import homeRoutes from './routes/homeRoutes';
 
 const app = express();
 
@@ -54,6 +55,7 @@ app.use('/api/v1/studymaterials', studymaterialsRoutes);
 app.use('/api/v1/testimonials', testimonialsRoutes);
 app.use('/api/v1/facultys', facultysRoutes);
 app.use('/api/v1/herosliders', heroslidersRoutes);
+app.use('/api/v1/home', homeRoutes);
 
 // Handle undefined routes
 app.use((req, res, next) => {

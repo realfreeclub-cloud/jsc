@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, BookOpen, Users, Trophy, PlayCircle, Calendar, Download, MessageCircle, Star, Shield, BookMarked, Video } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import api from '../utils/api';
 
 const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) => (
   <motion.div
@@ -14,12 +16,51 @@ const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode, delay?: nu
 );
 
 const Home = () => {
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchHomeData = async () => {
+      try {
+        const response = await api.get('/home');
+        setData(response.data.data);
+      } catch (error) {
+        console.error('Error fetching home data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHomeData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-primary">
+        <div className="w-12 h-12 border-4 border-gold border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  const sliders = data?.sliders || [];
+  const notifications = data?.notifications || [];
+  const courses = data?.courses || [];
+  const events = data?.events || [];
+  const faculties = data?.faculties || [];
+
+  // Default hero if no sliders exist
+  const mainHero = sliders[0] || {
+    title: "Master the Law. Secure Your Legacy.",
+    subtitle: "India's premier institution for Judicial Services preparation. Join our expert-led programs and turn your judiciary dreams into reality.",
+    imageUrl: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80",
+    buttonText: "Explore Courses",
+    buttonLink: "/courses"
+  };
   return (
     <div className="bg-slate-50">
-      {/* 1. Hero Section (Simulated Slider) */}
       <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden bg-primary min-h-[90vh] flex items-center">
         <div className="absolute inset-0 z-0">
-          <img src="https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80" alt="Law Library" className="w-full h-full object-cover opacity-20" />
+          <img src={mainHero.imageUrl} alt="Hero Banner" className="w-full h-full object-cover opacity-20" />
           <div className="absolute inset-0 bg-linear-to-r from-primary via-primary/90 to-transparent"></div>
         </div>
         
@@ -35,15 +76,15 @@ const Home = () => {
                 <span className="text-sm font-semibold uppercase tracking-wider">Admissions Open 2026-27</span>
               </div>
               <h1 className="text-5xl md:text-7xl font-serif font-bold text-white mb-6 leading-[1.1]">
-                Master the Law. <br />
-                <span className="text-transparent bg-clip-text bg-linear-to-r from-gold to-yellow-300">Secure Your Legacy.</span>
+                {mainHero.title.split('.')[0]}. <br />
+                <span className="text-transparent bg-clip-text bg-linear-to-r from-gold to-yellow-300">{mainHero.title.split('.')[1] || ''}</span>
               </h1>
               <p className="text-lg md:text-xl text-slate-300 mb-10 leading-relaxed max-w-2xl">
-                India's premier institution for Judicial Services preparation. Join our expert-led programs and turn your judiciary dreams into reality.
+                {mainHero.subtitle}
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link to="/courses" className="px-8 py-4 rounded-full bg-linear-to-r from-gold to-yellow-600 text-primary font-bold text-lg text-center hover:shadow-[0_0_30px_rgba(212,175,55,0.4)] transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2">
-                  Explore Courses <ArrowRight size={20} />
+                <Link to={mainHero.buttonLink || "/courses"} className="px-8 py-4 rounded-full bg-linear-to-r from-gold to-yellow-600 text-primary font-bold text-lg text-center hover:shadow-[0_0_30px_rgba(212,175,55,0.4)] transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2">
+                  {mainHero.buttonText || "Explore Courses"} <ArrowRight size={20} />
                 </Link>
                 <Link to="/demo" className="px-8 py-4 rounded-full bg-white/10 text-white font-bold text-lg text-center backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all flex items-center justify-center gap-2">
                   Watch Demo <PlayCircle size={20} />
@@ -85,23 +126,19 @@ const Home = () => {
         </FadeIn>
 
         <div className="grid md:grid-cols-3 gap-8">
-          {[
-            { title: "Foundation Course", subtitle: "1 Year Program", desc: "Perfect for law students starting their preparation journey. Covers comprehensive syllabus from scratch.", tag: "Most Popular" },
-            { title: "Target Batch", subtitle: "6 Months Program", desc: "Intensive preparation focused on specific state judiciary exams. Includes test series and doubt clearing.", tag: "Intensive" },
-            { title: "Mains Answer Writing", subtitle: "3 Months Program", desc: "Master the art of answer writing. Daily practice, evaluation by experts, and model answers.", tag: "Specialized" }
-          ].map((course, i) => (
+          {courses.map((course: any, i: number) => (
             <FadeIn delay={i * 0.1} key={i}>
               <div className="group bg-white rounded-2xl p-8 shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100 hover:shadow-2xl transition-all relative overflow-hidden h-full flex flex-col">
                 <div className="absolute top-0 right-0 bg-gold text-primary text-xs font-bold px-4 py-1.5 rounded-bl-xl uppercase tracking-wider">
-                  {course.tag}
+                  {course.mode}
                 </div>
                 <div className="w-14 h-14 bg-primary rounded-xl flex items-center justify-center mb-6 text-gold group-hover:scale-110 transition-transform">
                   <BookOpen size={28} />
                 </div>
-                <h3 className="text-2xl font-bold text-primary mb-2">{course.title}</h3>
-                <h4 className="text-gold font-semibold mb-4">{course.subtitle}</h4>
-                <p className="text-slate-600 mb-8 grow">{course.desc}</p>
-                <Link to="/courses" className="inline-flex items-center text-primary font-bold group-hover:text-gold transition-colors">
+                <h3 className="text-2xl font-bold text-primary mb-2 line-clamp-1">{course.title}</h3>
+                <h4 className="text-gold font-semibold mb-4">{course.duration}</h4>
+                <p className="text-slate-600 mb-8 grow line-clamp-3">{course.about}</p>
+                <Link to={`/courses/${course.slug}`} className="inline-flex items-center text-primary font-bold group-hover:text-gold transition-colors">
                   View Details <ArrowRight size={18} className="ml-2 group-hover:translate-x-2 transition-transform" />
                 </Link>
               </div>
@@ -127,16 +164,16 @@ const Home = () => {
           </FadeIn>
 
           <div className="grid md:grid-cols-4 gap-8">
-            {[1, 2, 3, 4].map((i) => (
+            {faculties.map((faculty: any, i: number) => (
               <FadeIn delay={i * 0.1} key={i}>
                 <div className="group relative rounded-2xl overflow-hidden aspect-3/4">
-                  <img src={`https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=400&h=533`} alt="Faculty" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                  <img src={faculty.imageUrl} alt={faculty.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                   <div className="absolute inset-0 bg-linear-to-t from-primary via-primary/50 to-transparent opacity-80"></div>
                   <div className="absolute bottom-0 left-0 w-full p-6 translate-y-4 group-hover:translate-y-0 transition-transform">
-                    <h3 className="text-xl font-bold text-white mb-1">Justice {["R. Sharma", "A. Desai", "M. Singh", "K. Iyer"][i-1]}</h3>
-                    <p className="text-gold text-sm font-medium mb-3">Constitutional Law Expert</p>
+                    <h3 className="text-xl font-bold text-white mb-1">{faculty.name}</h3>
+                    <p className="text-gold text-sm font-medium mb-3">{faculty.designation}</p>
                     <div className="h-0 opacity-0 group-hover:h-auto group-hover:opacity-100 transition-all duration-300">
-                      <p className="text-slate-300 text-sm">15+ years of teaching experience. Former High Court Advocate.</p>
+                      <p className="text-slate-300 text-sm line-clamp-2">{faculty.bio}</p>
                     </div>
                   </div>
                 </div>
@@ -162,18 +199,18 @@ const Home = () => {
                 <h3 className="text-2xl font-bold text-primary">Important Notifications</h3>
               </div>
               <div className="space-y-6">
-                {[
-                  "UP PCS (J) 2026 Notification Expected in July",
-                  "Delhi Judiciary Mains Result Declared",
-                  "Rajasthan APO Admit Cards Released"
-                ].map((note, i) => (
-                  <div key={i} className="flex gap-4 p-4 rounded-xl hover:bg-white transition-colors cursor-pointer border border-transparent hover:border-gray-100 shadow-sm">
-                    <div className="text-gold font-bold text-sm shrink-0 mt-1">NEW</div>
-                    <p className="text-slate-700 font-medium">{note}</p>
-                  </div>
-                ))}
+                {notifications.length > 0 ? (
+                  notifications.map((note: any, i: number) => (
+                    <div key={i} className="flex gap-4 p-4 rounded-xl hover:bg-white transition-colors cursor-pointer border border-transparent hover:border-gray-100 shadow-sm">
+                      <div className="text-gold font-bold text-sm shrink-0 mt-1">NEW</div>
+                      <p className="text-slate-700 font-medium">{note.title}</p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-slate-500 italic">No new notifications.</p>
+                )}
               </div>
-              <button className="w-full mt-6 py-3 text-primary font-bold hover:text-gold transition-colors text-center">View All Notifications →</button>
+              <Link to="/notifications" className="block w-full mt-6 py-3 text-primary font-bold hover:text-gold transition-colors text-center">View All Notifications →</Link>
             </div>
           </FadeIn>
 
@@ -187,22 +224,28 @@ const Home = () => {
                 <h3 className="text-2xl font-bold">Upcoming Events</h3>
               </div>
               <div className="space-y-6">
-                {[
-                  { date: "15 May", title: "Free Scholarship Test", time: "10:00 AM" },
-                  { date: "22 May", title: "Webinar: Strategy for Delhi Judiciary", time: "05:00 PM" },
-                  { date: "01 Jun", title: "New Target Batch Commences", time: "08:00 AM" }
-                ].map((event, i) => (
-                  <div key={i} className="flex gap-6 items-center border-b border-white/10 pb-6 last:border-0 last:pb-0">
-                    <div className="text-center shrink-0">
-                      <div className="text-gold font-bold text-xl">{event.date.split(' ')[0]}</div>
-                      <div className="text-sm text-slate-400 uppercase">{event.date.split(' ')[1]}</div>
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-lg mb-1">{event.title}</h4>
-                      <p className="text-sm text-slate-400">{event.time}</p>
-                    </div>
-                  </div>
-                ))}
+                {events.length > 0 ? (
+                  events.map((event: any, i: number) => {
+                    const eventDate = new Date(event.date);
+                    const day = eventDate.getDate();
+                    const month = eventDate.toLocaleString('default', { month: 'short' });
+                    
+                    return (
+                      <div key={i} className="flex gap-6 items-center border-b border-white/10 pb-6 last:border-0 last:pb-0">
+                        <div className="text-center shrink-0">
+                          <div className="text-gold font-bold text-xl">{day}</div>
+                          <div className="text-sm text-slate-400 uppercase">{month}</div>
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-lg mb-1">{event.title}</h4>
+                          <p className="text-sm text-slate-400">{event.location}</p>
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <p className="text-slate-400 italic">No upcoming events.</p>
+                )}
               </div>
             </div>
           </FadeIn>

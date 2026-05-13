@@ -1,17 +1,22 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { Plus, Search, AlertCircle } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Plus, Search, AlertCircle, Loader2 } from 'lucide-react';
 import api from '../../utils/api';
 import { Table, type Column } from './Table';
+import GenericForm, { type Field } from './GenericForm';
 
-interface GenericModuleProps {
+interface GenericModuleProps<T = Record<string, unknown>> {
   title: string;
   endpoint: string;
-  columns?: Column<Record<string, unknown>>[];
+  columns?: Column<T>[];
+  fields: Field[];
 }
 
-const GenericModule = ({ title, endpoint, columns }: GenericModuleProps) => {
+const GenericModule = <T extends Record<string, unknown>>({ title, endpoint, columns, fields }: GenericModuleProps<T>) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editData, setEditData] = useState<T | null>(null);
+  const queryClient = useQueryClient();
 
   const { data, isLoading, error } = useQuery({
     queryKey: [endpoint, searchTerm],
@@ -20,6 +25,50 @@ const GenericModule = ({ title, endpoint, columns }: GenericModuleProps) => {
 
   const results = data?.data || [];
 
+  const createMutation = useMutation({
+    mutationFn: (newData: T) => api.post(`/${endpoint}`, newData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [endpoint] });
+      setIsModalOpen(false);
+      setEditData(null);
+    }
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: (updateData: T) => api.patch(`/${endpoint}/${updateData._id}`, updateData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [endpoint] });
+      setIsModalOpen(false);
+      setEditData(null);
+    }
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => api.delete(`/${endpoint}/${id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [endpoint] });
+    }
+  });
+
+  const handleSave = async (formData: T) => {
+    if (editData) {
+      await updateMutation.mutateAsync({ ...formData, _id: editData._id });
+    } else {
+      await createMutation.mutateAsync(formData);
+    }
+  };
+
+  const handleEdit = (row: T) => {
+    setEditData(row);
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = (row: T) => {
+    if (window.confirm(`Are you sure you want to delete this ${title.toLowerCase()}?`)) {
+      deleteMutation.mutate(row._id as string);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -27,7 +76,10 @@ const GenericModule = ({ title, endpoint, columns }: GenericModuleProps) => {
           <h1 className="text-2xl font-bold text-gray-900">{title} Management</h1>
           <p className="text-gray-500 text-sm mt-1">Manage all your {title.toLowerCase()} from here.</p>
         </div>
-        <button className="flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20">
+        <button 
+          onClick={() => { setEditData(null); setIsModalOpen(true); }}
+          className="flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20"
+        >
           <Plus size={18} /> Add New {title}
         </button>
       </div>
@@ -41,6 +93,9 @@ const GenericModule = ({ title, endpoint, columns }: GenericModuleProps) => {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full outline-none text-gray-700"
         />
+        {(isLoading || createMutation.isPending || updateMutation.isPending || deleteMutation.isPending) && (
+          <Loader2 size={20} className="text-blue-600 animate-spin" />
+        )}
       </div>
 
       {isLoading ? (
@@ -63,10 +118,21 @@ const GenericModule = ({ title, endpoint, columns }: GenericModuleProps) => {
         </div>
       ) : (
         <Table 
-          columns={columns || [{ key: 'title', header: 'Title' }, { key: 'createdAt', header: 'Date Created', render: (row: Record<string, unknown>) => new Date(row.createdAt as string).toLocaleDateString() }]} 
+          columns={columns || [{ key: 'title', header: 'Title' }, { key: 'createdAt', header: 'Date Created', render: (row: T) => new Date(row.createdAt as string).toLocaleDateString() }]} 
           data={results} 
-          onEdit={(row) => console.log('Edit', row)}
-          onDelete={(row) => console.log('Delete', row)}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
+      )}
+
+      {isModalOpen && (
+        <GenericForm 
+          title={title}
+          fields={fields}
+          initialData={editData}
+          onSave={handleSave}
+          onCancel={() => setIsModalOpen(false)}
+          isLoading={createMutation.isPending || updateMutation.isPending}
         />
       )}
     </div>

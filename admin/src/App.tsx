@@ -20,17 +20,83 @@ function App() {
             <Route path="courses" element={<Courses />} />
             
             {/* Fully working generic CRUD modules */}
-            <Route path="hero-slider" element={<GenericModule title="Hero Slider" endpoint="herosliders" />} />
-            <Route path="demo-classes" element={<GenericModule title="Demo Classes" endpoint="courses" />} />
-            <Route path="gallery" element={<GenericModule title="Gallery" endpoint="gallerys" />} />
-            <Route path="blogs" element={<GenericModule title="Blogs" endpoint="blogs" />} />
-            <Route path="events" element={<GenericModule title="Events" endpoint="events" />} />
-            <Route path="notifications" element={<GenericModule title="Notifications" endpoint="notifications" />} />
-            <Route path="latest-updates" element={<GenericModule title="Latest Updates" endpoint="latestupdates" />} />
-            <Route path="study-material" element={<GenericModule title="Study Material" endpoint="studymaterials" />} />
-            <Route path="faculty" element={<GenericModule title="Faculty" endpoint="facultys" />} />
-            <Route path="testimonials" element={<GenericModule title="Testimonials" endpoint="testimonials" />} />
-            <Route path="students" element={<GenericModule title="Students" endpoint="users" />} />
+            <Route path="hero-slider" element={
+              <GenericModule 
+                title="Hero Slider" 
+                endpoint="herosliders" 
+                fields={[
+                  { name: 'title', label: 'Title', type: 'text', required: true },
+                  { name: 'subtitle', label: 'Subtitle', type: 'text' },
+                  { name: 'imageUrl', label: 'Image URL', type: 'url', required: true },
+                  { name: 'buttonText', label: 'Button Text', type: 'text' },
+                  { name: 'buttonLink', label: 'Button Link', type: 'text' },
+                  { name: 'order', label: 'Display Order', type: 'number' },
+                  { name: 'isActive', label: 'Is Active', type: 'checkbox' }
+                ]}
+              />
+            } />
+
+            <Route path="notifications" element={
+              <GenericModule 
+                title="Notification" 
+                endpoint="notifications" 
+                fields={[
+                  { name: 'title', label: 'Alert Title', type: 'text', required: true },
+                  { name: 'message', label: 'Full Message', type: 'textarea' },
+                  { name: 'link', label: 'Redirect Link', type: 'text' },
+                  { name: 'isPinned', label: 'Pin to Top', type: 'checkbox' },
+                  { name: 'isActive', label: 'Status', type: 'checkbox' }
+                ]}
+              />
+            } />
+
+            <Route path="faculty" element={
+              <GenericModule 
+                title="Faculty" 
+                endpoint="facultys" 
+                fields={[
+                  { name: 'name', label: 'Full Name', type: 'text', required: true },
+                  { name: 'designation', label: 'Designation', type: 'text', required: true },
+                  { name: 'bio', label: 'Short Bio', type: 'textarea' },
+                  { name: 'imageUrl', label: 'Photo URL', type: 'url' },
+                  { name: 'order', label: 'Display Order', type: 'number' },
+                  { name: 'isActive', label: 'Status', type: 'checkbox' }
+                ]}
+              />
+            } />
+
+            <Route path="events" element={
+              <GenericModule 
+                title="Event" 
+                endpoint="events" 
+                fields={[
+                  { name: 'title', label: 'Event Title', type: 'text', required: true },
+                  { name: 'description', label: 'Description', type: 'textarea' },
+                  { name: 'date', label: 'Event Date', type: 'date', required: true },
+                  { name: 'location', label: 'Location/Link', type: 'text' },
+                  { name: 'imageUrl', label: 'Cover Image URL', type: 'url' },
+                  { name: 'isActive', label: 'Status', type: 'checkbox' }
+                ]}
+              />
+            } />
+
+            <Route path="latest-updates" element={
+              <GenericModule 
+                title="Latest Update" 
+                endpoint="latestupdates" 
+                fields={[
+                  { name: 'title', label: 'Update Text', type: 'text', required: true },
+                  { name: 'link', label: 'Target Link', type: 'text' },
+                  { name: 'isActive', label: 'Status', type: 'checkbox' }
+                ]}
+              />
+            } />
+
+            <Route path="blogs" element={<GenericModule title="Blogs" endpoint="blogs" fields={[{name:'title', label:'Title', type:'text', required:true}, {name:'content', label:'Content', type:'textarea'}]} />} />
+            <Route path="gallery" element={<GenericModule title="Gallery" endpoint="gallerys" fields={[{name:'title', label:'Title', type:'text'}, {name:'imageUrl', label:'Image URL', type:'url', required:true}]} />} />
+            <Route path="study-material" element={<GenericModule title="Study Material" endpoint="studymaterials" fields={[{name:'title', label:'Title', type:'text', required:true}, {name:'fileUrl', label:'File URL', type:'url', required:true}]} />} />
+            <Route path="testimonials" element={<GenericModule title="Testimonials" endpoint="testimonials" fields={[{name:'name', label:'Name', type:'text', required:true}, {name:'message', label:'Message', type:'textarea'}]} />} />
+            <Route path="students" element={<GenericModule title="Students" endpoint="users" fields={[{name:'name', label:'Name', type:'text'}, {name:'email', label:'Email', type:'email'}]} />} />
             
             {/* Settings */}
             <Route path="seo" element={<div className="bg-white p-8 rounded-2xl shadow-sm"><h2 className="text-xl font-bold mb-4">SEO Config</h2><p>Configuration panel loaded.</p></div>} />
