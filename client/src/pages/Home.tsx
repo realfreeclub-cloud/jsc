@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, BookOpen, Users, Trophy, PlayCircle, Calendar, Download, MessageCircle, Star, Shield, BookMarked, Video } from 'lucide-react';
+import { ArrowRight, Users, Trophy, PlayCircle, Calendar, Download, MessageCircle, Star, Shield, BookMarked, Video } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import api from '../utils/api';
 
@@ -15,8 +15,16 @@ const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode, delay?: nu
   </motion.div>
 );
 
+interface HomeData {
+  sliders: Record<string, unknown>[];
+  notifications: Record<string, unknown>[];
+  courses: Record<string, unknown>[];
+  events: Record<string, unknown>[];
+  faculties: Record<string, unknown>[];
+}
+
 const Home = () => {
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<HomeData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -48,19 +56,19 @@ const Home = () => {
   const events = data?.events || [];
   const faculties = data?.faculties || [];
 
-  // Default hero if no sliders exist
-  const mainHero = sliders[0] || {
+  const mainHero = (sliders[0] as Record<string, unknown>) || {
     title: "Master the Law. Secure Your Legacy.",
     subtitle: "India's premier institution for Judicial Services preparation. Join our expert-led programs and turn your judiciary dreams into reality.",
     imageUrl: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80",
     buttonText: "Explore Courses",
     buttonLink: "/courses"
   };
+
   return (
     <div className="bg-slate-50">
       <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden bg-primary min-h-[90vh] flex items-center">
         <div className="absolute inset-0 z-0">
-          <img src={mainHero.imageUrl} alt="Hero Banner" className="w-full h-full object-cover opacity-20" />
+          <img src={mainHero.imageUrl as string} alt="Hero Banner" className="w-full h-full object-cover opacity-20" />
           <div className="absolute inset-0 bg-linear-to-r from-primary via-primary/90 to-transparent"></div>
         </div>
         
@@ -76,15 +84,15 @@ const Home = () => {
                 <span className="text-sm font-semibold uppercase tracking-wider">Admissions Open 2026-27</span>
               </div>
               <h1 className="text-5xl md:text-7xl font-serif font-bold text-white mb-6 leading-[1.1]">
-                {mainHero.title.split('.')[0]}. <br />
-                <span className="text-transparent bg-clip-text bg-linear-to-r from-gold to-yellow-300">{mainHero.title.split('.')[1] || ''}</span>
+                {(mainHero.title as string)?.split('.')[0]}. <br />
+                <span className="text-transparent bg-clip-text bg-linear-to-r from-gold to-yellow-300">{(mainHero.title as string)?.split('.')[1] || ''}</span>
               </h1>
               <p className="text-lg md:text-xl text-slate-300 mb-10 leading-relaxed max-w-2xl">
-                {mainHero.subtitle}
+                {mainHero.subtitle as string}
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link to={mainHero.buttonLink || "/courses"} className="px-8 py-4 rounded-full bg-linear-to-r from-gold to-yellow-600 text-primary font-bold text-lg text-center hover:shadow-[0_0_30px_rgba(212,175,55,0.4)] transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2">
-                  {mainHero.buttonText || "Explore Courses"} <ArrowRight size={20} />
+                <Link to={(mainHero.buttonLink as string) || "/courses"} className="px-8 py-4 rounded-full bg-linear-to-r from-gold to-yellow-600 text-primary font-bold text-lg text-center hover:shadow-[0_0_30px_rgba(212,175,55,0.4)] transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2">
+                  {(mainHero.buttonText as string) || "Explore Courses"} <ArrowRight size={20} />
                 </Link>
                 <Link to="/demo" className="px-8 py-4 rounded-full bg-white/10 text-white font-bold text-lg text-center backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all flex items-center justify-center gap-2">
                   Watch Demo <PlayCircle size={20} />
@@ -95,7 +103,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Stats Section / Institute Intro */}
+      {/* Stats Section */}
       <section className="py-16 bg-white relative z-20 -mt-10 mx-6 md:mx-auto max-w-7xl rounded-2xl shadow-xl border border-gray-100">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 px-8">
           {[
@@ -115,7 +123,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 2. Course Categories */}
+      {/* Course Categories */}
       <section className="py-24 max-w-7xl mx-auto px-6">
         <FadeIn>
           <div className="text-center mb-16">
@@ -126,28 +134,38 @@ const Home = () => {
         </FadeIn>
 
         <div className="grid md:grid-cols-3 gap-8">
-          {courses.map((course: any, i: number) => (
+          {courses.map((course: Record<string, unknown>, i: number) => (
             <FadeIn delay={i * 0.1} key={i}>
-              <div className="group bg-white rounded-2xl p-8 shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100 hover:shadow-2xl transition-all relative overflow-hidden h-full flex flex-col">
-                <div className="absolute top-0 right-0 bg-gold text-primary text-xs font-bold px-4 py-1.5 rounded-bl-xl uppercase tracking-wider">
-                  {course.mode}
+              <div className="group bg-white rounded-3xl p-0 shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100 hover:shadow-2xl transition-all relative overflow-hidden h-full flex flex-col">
+                <div className="relative h-48 overflow-hidden">
+                  <img 
+                    src={(course.imageUrl as string) || 'https://images.unsplash.com/photo-1505664194779-8beaceb93744?auto=format&fit=crop&q=80'} 
+                    alt={course.title as string} 
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  />
+                  <div className="absolute top-4 right-4 bg-gold text-primary text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">
+                    {course.mode as string}
+                  </div>
                 </div>
-                <div className="w-14 h-14 bg-primary rounded-xl flex items-center justify-center mb-6 text-gold group-hover:scale-110 transition-transform">
-                  <BookOpen size={28} />
+
+                <div className="p-8 flex flex-col flex-1">
+                  <h3 className="text-xl font-bold text-primary mb-2 line-clamp-1">{course.title as string}</h3>
+                  <div className="flex items-center gap-2 text-gold text-sm font-bold mb-4">
+                    <Calendar size={14} />
+                    <span>{course.duration as string}</span>
+                  </div>
+                  <p className="text-slate-600 mb-8 grow line-clamp-3 text-sm leading-relaxed">{course.about as string}</p>
+                  <Link to={`/courses/${course.slug as string}`} className="inline-flex items-center text-primary font-bold group-hover:text-gold transition-colors text-sm">
+                    Enroll Now <ArrowRight size={16} className="ml-2 group-hover:translate-x-2 transition-transform" />
+                  </Link>
                 </div>
-                <h3 className="text-2xl font-bold text-primary mb-2 line-clamp-1">{course.title}</h3>
-                <h4 className="text-gold font-semibold mb-4">{course.duration}</h4>
-                <p className="text-slate-600 mb-8 grow line-clamp-3">{course.about}</p>
-                <Link to={`/courses/${course.slug}`} className="inline-flex items-center text-primary font-bold group-hover:text-gold transition-colors">
-                  View Details <ArrowRight size={18} className="ml-2 group-hover:translate-x-2 transition-transform" />
-                </Link>
               </div>
             </FadeIn>
           ))}
         </div>
       </section>
 
-      {/* 3. Top Faculty */}
+      {/* Top Faculty */}
       <section className="py-24 bg-primary text-white">
         <div className="max-w-7xl mx-auto px-6">
           <FadeIn>
@@ -164,16 +182,16 @@ const Home = () => {
           </FadeIn>
 
           <div className="grid md:grid-cols-4 gap-8">
-            {faculties.map((faculty: any, i: number) => (
+            {faculties.map((faculty: Record<string, unknown>, i: number) => (
               <FadeIn delay={i * 0.1} key={i}>
                 <div className="group relative rounded-2xl overflow-hidden aspect-3/4">
-                  <img src={faculty.imageUrl} alt={faculty.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                  <img src={faculty.imageUrl as string} alt={faculty.name as string} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                   <div className="absolute inset-0 bg-linear-to-t from-primary via-primary/50 to-transparent opacity-80"></div>
                   <div className="absolute bottom-0 left-0 w-full p-6 translate-y-4 group-hover:translate-y-0 transition-transform">
-                    <h3 className="text-xl font-bold text-white mb-1">{faculty.name}</h3>
-                    <p className="text-gold text-sm font-medium mb-3">{faculty.designation}</p>
+                    <h3 className="text-xl font-bold text-white mb-1">{faculty.name as string}</h3>
+                    <p className="text-gold text-sm font-medium mb-3">{faculty.designation as string}</p>
                     <div className="h-0 opacity-0 group-hover:h-auto group-hover:opacity-100 transition-all duration-300">
-                      <p className="text-slate-300 text-sm line-clamp-2">{faculty.bio}</p>
+                      <p className="text-slate-300 text-sm line-clamp-2">{faculty.bio as string}</p>
                     </div>
                   </div>
                 </div>
@@ -183,12 +201,11 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 4. Glassmorphism Notification & Updates */}
+      {/* Notifications & Updates */}
       <section className="py-24 max-w-7xl mx-auto px-6 relative">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl h-[400px] bg-gold/5 blur-[120px] rounded-full pointer-events-none"></div>
         
         <div className="grid md:grid-cols-2 gap-12 relative z-10">
-          {/* Notifications */}
           <FadeIn>
             <div className="bg-white/70 backdrop-blur-xl border border-white p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] h-full">
               <div className="flex items-center gap-4 mb-8">
@@ -200,10 +217,10 @@ const Home = () => {
               </div>
               <div className="space-y-6">
                 {notifications.length > 0 ? (
-                  notifications.map((note: any, i: number) => (
+                  notifications.map((note: Record<string, unknown>, i: number) => (
                     <div key={i} className="flex gap-4 p-4 rounded-xl hover:bg-white transition-colors cursor-pointer border border-transparent hover:border-gray-100 shadow-sm">
                       <div className="text-gold font-bold text-sm shrink-0 mt-1">NEW</div>
-                      <p className="text-slate-700 font-medium">{note.title}</p>
+                      <p className="text-slate-700 font-medium">{note.title as string}</p>
                     </div>
                   ))
                 ) : (
@@ -214,7 +231,6 @@ const Home = () => {
             </div>
           </FadeIn>
 
-          {/* Latest Events / Updates */}
           <FadeIn delay={0.2}>
             <div className="bg-primary p-8 rounded-3xl shadow-xl text-white h-full">
               <div className="flex items-center gap-4 mb-8">
@@ -225,8 +241,8 @@ const Home = () => {
               </div>
               <div className="space-y-6">
                 {events.length > 0 ? (
-                  events.map((event: any, i: number) => {
-                    const eventDate = new Date(event.date);
+                  events.map((event: Record<string, unknown>, i: number) => {
+                    const eventDate = new Date(event.date as string);
                     const day = eventDate.getDate();
                     const month = eventDate.toLocaleString('default', { month: 'short' });
                     
@@ -237,8 +253,8 @@ const Home = () => {
                           <div className="text-sm text-slate-400 uppercase">{month}</div>
                         </div>
                         <div>
-                          <h4 className="font-bold text-lg mb-1">{event.title}</h4>
-                          <p className="text-sm text-slate-400">{event.location}</p>
+                          <h4 className="font-bold text-lg mb-1">{event.title as string}</h4>
+                          <p className="text-sm text-slate-400">{event.location as string}</p>
                         </div>
                       </div>
                     );
@@ -252,7 +268,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 5. Demo Classes & Study Material */}
+      {/* Demo Classes & Study Material */}
       <section className="py-24 bg-gray-100">
         <div className="max-w-7xl mx-auto px-6">
           <FadeIn>
@@ -302,7 +318,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 6. CTAs */}
+      {/* CTAs */}
       <section className="py-24 bg-white border-t border-gray-200">
         <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-8">
           <FadeIn>
@@ -337,7 +353,6 @@ const Home = () => {
           </FadeIn>
         </div>
       </section>
-
     </div>
   );
 };

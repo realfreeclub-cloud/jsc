@@ -4,7 +4,7 @@ const facultySchema = new mongoose.Schema({
   name: { type: String, required: true },
   designation: { type: String, required: true },
   bio: { type: String },
-  avatar: { type: String },
+  imageUrl: { type: String },
   experience: { type: String },
   socialLinks: {
     linkedin: String,
