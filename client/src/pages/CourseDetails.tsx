@@ -1,206 +1,307 @@
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { PlayCircle, Clock, Globe, Users, MessageCircle, Smartphone, CheckCircle, ChevronDown, Download } from 'lucide-react';
+import { 
+  PlayCircle, Clock, Globe, Users, MessageCircle, Smartphone, 
+  CheckCircle, ChevronRight, MapPin, Award, BookOpen, CreditCard, Info
+} from 'lucide-react';
 import { openCourseInApp, openWhatsApp } from '../utils/appRedirect';
-import { courses } from './Courses.tsx'; // Get mock data
+import { courses, type Course } from './Courses.tsx';
+
+const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5, delay }}
+  >
+    {children}
+  </motion.div>
+);
 
 const CourseDetails = () => {
   const { slug } = useParams();
-  const course = courses.find(c => c.slug === slug) || courses[0];
+  const course = courses.find(c => c.slug === slug) as Course;
+
+  if (!course) {
+    return (
+      <div className="pt-40 pb-20 text-center">
+        <h2 className="text-3xl font-bold text-primary">Course Not Found</h2>
+        <Link to="/courses" className="mt-4 text-gold hover:underline inline-block">Back to Courses</Link>
+      </div>
+    );
+  }
 
   return (
-    <div className="pt-20 pb-20 bg-slate-50 min-h-screen">
+    <div className="bg-slate-50 min-h-screen">
       {/* Hero Header */}
-      <div className="bg-primary text-white py-16">
-        <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
-          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
-            <div className="flex gap-3 mb-6">
-              <span className="px-3 py-1 bg-gold/20 text-gold text-xs font-bold rounded-full uppercase tracking-wider border border-gold/30">
-                {course.category}
-              </span>
-              <span className="px-3 py-1 bg-white/10 text-white text-xs font-bold rounded-full uppercase tracking-wider border border-white/20">
-                {course.mode}
-              </span>
-            </div>
-            <h1 className="text-4xl md:text-5xl font-serif font-bold mb-6 leading-tight">
-              {course.title}
-            </h1>
-            <p className="text-lg text-slate-300 mb-8 max-w-xl">
-              Comprehensive preparation strategy engineered by top legal luminaries. Start your journey towards becoming a judge today.
-            </p>
-            
-            <div className="flex flex-wrap gap-6 text-sm mb-10">
-              <div className="flex items-center gap-2">
-                <Clock className="text-gold" size={20} />
-                <span className="font-medium">{course.duration}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Globe className="text-gold" size={20} />
-                <span className="font-medium">{course.language}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Users className="text-gold" size={20} />
-                <span className="font-medium">{course.studentsEnrolled} Students Enrolled</span>
-              </div>
-            </div>
+      <div className="bg-primary text-white pt-32 pb-20 md:pt-40 md:pb-28 relative overflow-hidden">
+        {/* Background Accents */}
+        <div className="absolute top-0 right-0 w-1/3 h-full bg-linear-to-l from-gold/5 to-transparent"></div>
+        <div className="absolute bottom-0 left-0 w-full h-px bg-linear-to-r from-transparent via-gold/30 to-transparent"></div>
 
-            <div className="flex flex-col sm:flex-row gap-4">
-              <button 
-                onClick={() => openCourseInApp(course.slug)}
-                className="flex items-center justify-center gap-3 px-8 py-4 rounded-xl bg-linear-to-r from-gold to-yellow-500 text-primary font-bold hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] transition-all transform hover:-translate-y-1 text-lg"
-              >
-                <Smartphone size={24} /> Start Learning on App
-              </button>
-              
-              <button 
-                onClick={() => openWhatsApp(course.title)}
-                className="flex items-center justify-center gap-3 px-8 py-4 rounded-xl bg-white/10 text-white border border-white/20 font-bold hover:bg-white/20 transition-all text-lg"
-              >
-                <MessageCircle size={24} /> Ask on WhatsApp
-              </button>
-            </div>
-          </motion.div>
-
-          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }}>
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-white/10 group cursor-pointer aspect-video bg-primary-dark">
-              <img src={course.thumbnail} alt={course.title} className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-20 h-20 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white group-hover:bg-gold group-hover:text-primary transition-all">
-                  <PlayCircle size={40} className="ml-1" />
-                </div>
-              </div>
-              <div className="absolute bottom-4 left-4 right-4 text-center">
-                <span className="bg-primary/80 backdrop-blur-md px-4 py-2 rounded-full text-sm font-semibold text-white border border-white/10">
-                  Watch Demo Class
+        <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-12 gap-12 items-center relative z-10">
+          <div className="lg:col-span-7">
+            <FadeIn>
+              <div className="flex gap-3 mb-6">
+                <span className="px-3 py-1 bg-gold text-primary text-[10px] font-bold rounded-full uppercase tracking-wider">
+                  {course.category}
+                </span>
+                <span className="px-3 py-1 bg-white/10 text-white text-[10px] font-bold rounded-full uppercase tracking-wider border border-white/20">
+                  {course.mode}
                 </span>
               </div>
-            </div>
-          </motion.div>
+              <h1 className="text-4xl md:text-6xl font-serif font-bold mb-6 leading-tight">
+                {course.title}
+              </h1>
+              {course.subtitle && (
+                <p className="text-xl text-gold/90 font-medium mb-6 italic">
+                  “{course.subtitle}”
+                </p>
+              )}
+              <p className="text-lg text-slate-300 mb-10 max-w-2xl leading-relaxed">
+                {course.about}
+              </p>
+              
+              <div className="flex flex-wrap gap-8 text-sm mb-12">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gold">
+                    <Clock size={20} />
+                  </div>
+                  <div>
+                    <p className="text-slate-400 text-xs">Duration</p>
+                    <p className="font-bold">{course.duration}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gold">
+                    <Globe size={20} />
+                  </div>
+                  <div>
+                    <p className="text-slate-400 text-xs">Language</p>
+                    <p className="font-bold">{course.language}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gold">
+                    <Users size={20} />
+                  </div>
+                  <div>
+                    <p className="text-slate-400 text-xs">Enrolled</p>
+                    <p className="font-bold">{course.studentsEnrolled}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-4">
+                <button 
+                  onClick={() => openCourseInApp(course.slug)}
+                  className="flex items-center justify-center gap-3 px-10 py-5 rounded-2xl bg-linear-to-r from-gold to-yellow-500 text-primary font-bold hover:shadow-[0_0_30px_rgba(212,175,55,0.4)] transition-all transform hover:-translate-y-1 text-lg shadow-xl"
+                >
+                  <Smartphone size={24} /> Enroll via App
+                </button>
+                
+                <button 
+                  onClick={() => openWhatsApp(course.title)}
+                  className="flex items-center justify-center gap-3 px-10 py-5 rounded-2xl bg-white/10 text-white border border-white/20 font-bold hover:bg-white/20 transition-all text-lg backdrop-blur-sm"
+                >
+                  <MessageCircle size={24} /> Inquiry on WhatsApp
+                </button>
+              </div>
+            </FadeIn>
+          </div>
+
+          <div className="lg:col-span-5">
+            <FadeIn delay={0.2}>
+              <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-white/10 group aspect-video bg-primary-dark">
+                <img src={course.thumbnail} alt={course.title} className="w-full h-full object-cover opacity-80" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <button className="w-24 h-24 bg-white/10 backdrop-blur-xl rounded-full flex items-center justify-center text-white hover:bg-gold hover:text-primary transition-all hover:scale-110">
+                    <PlayCircle size={48} className="ml-1" />
+                  </button>
+                </div>
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2">
+                  <span className="bg-primary/80 backdrop-blur-md px-6 py-2 rounded-full text-sm font-bold text-white border border-white/10 tracking-widest uppercase">
+                    Watch Demo
+                  </span>
+                </div>
+              </div>
+            </FadeIn>
+          </div>
         </div>
       </div>
 
-      {/* Main Content Layout */}
-      <div className="max-w-7xl mx-auto px-6 py-16 grid lg:grid-cols-3 gap-12">
+      {/* Content Section */}
+      <div className="max-w-7xl mx-auto px-6 py-20 grid lg:grid-cols-12 gap-12">
         
-        {/* Left Column (Content) */}
-        <div className="lg:col-span-2 space-y-12">
+        {/* Main Details */}
+        <div className="lg:col-span-8 space-y-12">
           
-          {/* About Course */}
-          <section className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
-            <h2 className="text-3xl font-serif font-bold text-primary mb-6">About the Course</h2>
-            <div className="prose prose-lg text-slate-600 max-w-none">
-              <p>
-                The <strong>{course.title}</strong> is designed specifically for aspirants aiming to clear the judicial service examination on their first attempt. It provides a highly structured curriculum that covers both preliminary and mains syllabi in complete detail.
-              </p>
-              <p className="mt-4">
-                What you will get:
-              </p>
-              <ul className="space-y-3 mt-4">
-                {[
-                  "Complete coverage of Substantive and Procedural Laws",
-                  "Daily answer writing practice with expert evaluation",
-                  "Monthly current affairs and legal updates magazines",
-                  "Mock interviews with retired judges",
-                  "24/7 doubt solving support on the mobile app"
-                ].map((item, i) => (
-                  <li key={i} className="flex items-start gap-3">
-                    <CheckCircle className="text-green-500 shrink-0 mt-1" size={20} />
+          {/* Highlights */}
+          {course.highlights && (
+            <section className="bg-white rounded-[2.5rem] p-10 shadow-sm border border-slate-100">
+              <div className="flex items-center gap-4 mb-8">
+                <div className="w-12 h-12 rounded-2xl bg-gold/10 flex items-center justify-center text-gold">
+                  <Award size={28} />
+                </div>
+                <h2 className="text-3xl font-serif font-bold text-primary">Course Highlights</h2>
+              </div>
+              <div className="grid md:grid-cols-2 gap-6">
+                {course.highlights.map((item, i) => (
+                  <div key={i} className="flex items-start gap-4 p-4 rounded-2xl hover:bg-slate-50 transition-colors">
+                    <div className="mt-1">
+                      <CheckCircle className="text-emerald-500" size={20} />
+                    </div>
+                    <p className="text-slate-700 font-medium leading-relaxed">{item}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Features (for Recorded) */}
+          {course.features && (
+            <section className="bg-white rounded-[2.5rem] p-10 shadow-sm border border-slate-100">
+              <div className="flex items-center gap-4 mb-8">
+                <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600">
+                  <BookOpen size={28} />
+                </div>
+                <h2 className="text-3xl font-serif font-bold text-primary">Program Features</h2>
+              </div>
+              <div className="grid md:grid-cols-2 gap-6">
+                {course.features.map((item, i) => (
+                  <div key={i} className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                    <ChevronRight className="text-gold" size={20} />
+                    <p className="text-slate-700 font-bold leading-relaxed">{item}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Fee Structure */}
+          <section className="bg-white rounded-[2.5rem] p-10 shadow-sm border border-slate-100 overflow-hidden">
+            <div className="flex items-center gap-4 mb-8">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+                <CreditCard size={28} />
+              </div>
+              <h2 className="text-3xl font-serif font-bold text-primary">Fee Structure</h2>
+            </div>
+            
+            <div className="grid sm:grid-cols-3 gap-6">
+              {course.fees.online && (
+                <div className="p-6 rounded-3xl border-2 border-slate-50 bg-slate-50 text-center group hover:border-gold transition-all">
+                  <p className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-2">Online</p>
+                  <p className="text-3xl font-black text-primary">₹{course.fees.online}</p>
+                </div>
+              )}
+              {course.fees.offline && (
+                <div className="p-6 rounded-3xl border-2 border-slate-50 bg-slate-50 text-center group hover:border-gold transition-all">
+                  <p className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-2">Offline</p>
+                  <p className="text-3xl font-black text-primary">₹{course.fees.offline}</p>
+                </div>
+              )}
+              {course.fees.hybrid && (
+                <div className="p-6 rounded-3xl border-2 border-gold/20 bg-gold/5 text-center relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 px-3 py-1 bg-gold text-primary text-[10px] font-bold rounded-bl-xl uppercase">Best Value</div>
+                  <p className="text-sm font-bold text-gold uppercase tracking-widest mb-2">Hybrid</p>
+                  <p className="text-3xl font-black text-primary">₹{course.fees.hybrid}</p>
+                </div>
+              )}
+            </div>
+
+            {course.note && (
+              <div className="mt-8 flex items-start gap-3 p-4 bg-blue-50 rounded-2xl text-blue-700 text-sm font-medium border border-blue-100">
+                <Info size={20} className="shrink-0" />
+                <p>{course.note}</p>
+              </div>
+            )}
+          </section>
+
+        </div>
+
+        {/* Sidebar */}
+        <div className="lg:col-span-4 space-y-8">
+          
+          {/* Enrollment Card */}
+          <div className="bg-primary rounded-[2.5rem] p-8 shadow-2xl text-white sticky top-28">
+            <h3 className="text-2xl font-serif font-bold mb-6">Start Enrollment</h3>
+            <div className="space-y-4 mb-8">
+              <div className="flex items-center gap-3 text-slate-300">
+                <CheckCircle size={18} className="text-gold" />
+                <span>Instant Course Access</span>
+              </div>
+              <div className="flex items-center gap-3 text-slate-300">
+                <CheckCircle size={18} className="text-gold" />
+                <span>Downloadable PDF Notes</span>
+              </div>
+              <div className="flex items-center gap-3 text-slate-300">
+                <CheckCircle size={18} className="text-gold" />
+                <span>Live Doubt Support</span>
+              </div>
+            </div>
+
+            <button 
+              onClick={() => openCourseInApp(course.slug)}
+              className="w-full py-5 rounded-2xl bg-white text-primary font-bold hover:bg-gold transition-all shadow-lg flex items-center justify-center gap-3 mb-4 group"
+            >
+              <Smartphone size={22} className="group-hover:scale-110 transition-transform" /> 
+              Open in Mobile App
+            </button>
+            <p className="text-[11px] text-center text-slate-400 px-4">
+              Our mobile app provides the most secure and features-rich learning experience.
+            </p>
+          </div>
+
+          {/* States Covered */}
+          {course.states && (
+            <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100">
+              <h3 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
+                <MapPin size={20} className="text-gold" /> States Covered
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {course.states.map((state, i) => (
+                  <span key={i} className="px-4 py-2 bg-slate-50 rounded-full text-sm font-bold text-slate-600 border border-slate-100">
+                    {state}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Suitable For */}
+          {course.suitable_for && (
+            <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100">
+              <h3 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
+                <Users size={20} className="text-gold" /> Suitable For
+              </h3>
+              <ul className="space-y-3">
+                {course.suitable_for.map((item, i) => (
+                  <li key={i} className="flex items-start gap-3 text-sm text-slate-600 font-medium">
+                    <ChevronRight size={16} className="text-gold mt-0.5" />
                     <span>{item}</span>
                   </li>
                 ))}
               </ul>
             </div>
-          </section>
-
-          {/* Syllabus */}
-          <section className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-3xl font-serif font-bold text-primary">Course Syllabus</h2>
-              <button className="text-primary font-bold hover:text-gold transition-colors flex items-center gap-2">
-                <Download size={18} /> Download PDF
-              </button>
+          )}
+          {/* Fallback for suitableFor naming convention */}
+          {course.suitableFor && (
+            <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100">
+              <h3 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
+                <Users size={20} className="text-gold" /> Suitable For
+              </h3>
+              <ul className="space-y-3">
+                {course.suitableFor.map((item, i) => (
+                  <li key={i} className="flex items-start gap-3 text-sm text-slate-600 font-medium">
+                    <ChevronRight size={16} className="text-gold mt-0.5" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
-            
-            <div className="space-y-4">
-              {[
-                { title: "Module 1: Constitutional Law & Polity", lessons: 24 },
-                { title: "Module 2: Indian Penal Code (IPC)", lessons: 32 },
-                { title: "Module 3: Code of Criminal Procedure (CrPC)", lessons: 28 },
-                { title: "Module 4: Code of Civil Procedure (CPC)", lessons: 35 },
-                { title: "Module 5: Evidence Act & Minor Acts", lessons: 20 },
-              ].map((module, i) => (
-                <div key={i} className="border border-gray-100 rounded-xl p-5 hover:bg-slate-50 transition-colors cursor-pointer flex justify-between items-center group">
-                  <div>
-                    <h3 className="font-bold text-primary text-lg">{module.title}</h3>
-                    <p className="text-sm text-slate-500 mt-1">{module.lessons} Lectures</p>
-                  </div>
-                  <ChevronDown className="text-gray-400 group-hover:text-gold transition-colors" />
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* FAQs */}
-          <section className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
-            <h2 className="text-3xl font-serif font-bold text-primary mb-6">Frequently Asked Questions</h2>
-            <div className="space-y-4">
-              {[
-                { q: "Is the study material provided in physical form?", a: "Yes, we dispatch comprehensive physical study material to your registered address upon enrollment." },
-                { q: "Can I watch classes multiple times?", a: "Yes, you can watch the recorded lectures unlimited times during your subscription validity on the mobile app." },
-                { q: "Do you provide interview guidance?", a: "Yes, interview guidance program is included free of cost for students who clear the Mains examination." },
-                { q: "How are doubts resolved?", a: "We have a dedicated 24/7 doubt resolution forum within the mobile app, monitored directly by our expert faculty." },
-              ].map((faq, i) => (
-                <div key={i} className="border-b border-gray-100 last:border-0 pb-4 last:pb-0">
-                  <h3 className="font-bold text-slate-800 text-lg mb-2">{faq.q}</h3>
-                  <p className="text-slate-600 leading-relaxed">{faq.a}</p>
-                </div>
-              ))}
-            </div>
-          </section>
+          )}
 
         </div>
 
-        {/* Right Column (Sidebar) */}
-        <div className="space-y-8">
-          
-          {/* Action Card */}
-          <div className="bg-white rounded-3xl p-6 shadow-xl border border-gray-100 sticky top-28">
-            <h3 className="text-xl font-bold text-primary mb-6 text-center">Ready to begin?</h3>
-            <button 
-              onClick={() => openCourseInApp(course.slug)}
-              className="w-full flex justify-center items-center gap-2 py-4 rounded-xl bg-primary text-white font-bold hover:bg-primary-light transition-colors mb-4 shadow-lg shadow-primary/20 text-lg"
-            >
-              <Smartphone size={20} /> Open in Mobile App
-            </button>
-            <p className="text-sm text-center text-slate-500 mb-6">
-              For the best learning experience, all courses are securely delivered via our mobile application.
-            </p>
-            <div className="h-px bg-gray-100 w-full mb-6"></div>
-            <h4 className="font-bold text-primary mb-4">Need Help?</h4>
-            <button 
-              onClick={() => openWhatsApp(course.title)}
-              className="w-full flex justify-center items-center gap-2 py-3 rounded-xl bg-green-50 text-green-600 font-bold hover:bg-green-100 transition-colors border border-green-200"
-            >
-              <MessageCircle size={20} /> Chat on WhatsApp
-            </button>
-          </div>
-
-          {/* Faculty Profile */}
-          <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
-            <h3 className="text-xl font-bold text-primary mb-6">Lead Faculty</h3>
-            <div className="flex items-center gap-4 mb-4">
-              <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=150" alt="Faculty" className="w-16 h-16 rounded-full object-cover border-2 border-gold" />
-              <div>
-                <h4 className="font-bold text-primary text-lg">{course.faculty}</h4>
-                <p className="text-sm text-gold font-medium">Former High Court Advocate</p>
-              </div>
-            </div>
-            <p className="text-sm text-slate-600 leading-relaxed">
-              With over 15 years of teaching experience, our lead faculty has guided more than 500+ students to successful selections in various state judiciaries.
-            </p>
-          </div>
-
-        </div>
       </div>
     </div>
   );

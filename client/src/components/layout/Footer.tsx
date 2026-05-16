@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Scale, Mail, Phone, MapPin } from 'lucide-react';
+import { Scale, Mail, Phone, MapPin, MessageCircle, Camera, Video, Send } from 'lucide-react';
 
 const Footer = () => {
   return (
@@ -16,13 +16,21 @@ const Footer = () => {
             </div>
           </Link>
           <p className="text-sm leading-relaxed mb-6">
-            Premier coaching institute dedicated to shaping the future of the judiciary. Comprehensive preparation with expert faculty and proven results.
+            Premier coaching institute dedicated to shaping the future of the judiciary. Comprehensive preparation with expert faculty and 900+ success stories.
           </p>
-          <div className="flex gap-4">
-            <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-gold hover:text-primary transition-all text-xs font-bold">FB</a>
-            <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-gold hover:text-primary transition-all text-xs font-bold">TW</a>
-            <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-gold hover:text-primary transition-all text-xs font-bold">IG</a>
-            <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-gold hover:text-primary transition-all text-xs font-bold">YT</a>
+          <div className="flex gap-3">
+            <a href="https://www.facebook.com/p/Judicial-Study-Centre-Allahabad100063525922398/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-gold hover:text-primary transition-all shadow-lg border border-white/10" title="Facebook">
+              <MessageCircle size={18} />
+            </a>
+            <a href="https://www.instagram.com/judicial_study_centre" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-gold hover:text-primary transition-all shadow-lg border border-white/10" title="Instagram">
+              <Camera size={18} />
+            </a>
+            <a href="https://www.youtube.com/c/JudicialStudyCentre" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-gold hover:text-primary transition-all shadow-lg border border-white/10" title="YouTube">
+              <Video size={18} />
+            </a>
+            <a href="https://t.me/judicialstudycentre" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-gold hover:text-primary transition-all shadow-lg border border-white/10" title="Telegram">
+              <Send size={18} />
+            </a>
           </div>
         </div>
 
@@ -34,38 +42,41 @@ const Footer = () => {
             <li><Link to="/courses" className="hover:text-gold transition-colors">Our Courses</Link></li>
             <li><Link to="/faculty" className="hover:text-gold transition-colors">Expert Faculty</Link></li>
             <li><Link to="/study-material" className="hover:text-gold transition-colors">Study Material</Link></li>
-            <li><Link to="/testimonials" className="hover:text-gold transition-colors">Success Stories</Link></li>
-            <li><Link to="/gallery" className="hover:text-gold transition-colors">Photo Gallery</Link></li>
+            <li><Link to="/notifications" className="hover:text-gold transition-colors">Exam Notifications</Link></li>
+            <li><Link to="/contact" className="hover:text-gold transition-colors">Contact Us</Link></li>
           </ul>
         </div>
 
-        {/* Popular Courses */}
+        {/* Programs */}
         <div>
-          <h3 className="text-white font-serif font-bold text-lg mb-6">Popular Courses</h3>
+          <h3 className="text-white font-serif font-bold text-lg mb-6">Our Programs</h3>
           <ul className="space-y-3 text-sm">
-            <li><Link to="/courses" className="hover:text-gold transition-colors">UP PCS (J) Foundation</Link></li>
-            <li><Link to="/courses" className="hover:text-gold transition-colors">Delhi Judiciary Target Batch</Link></li>
-            <li><Link to="/courses" className="hover:text-gold transition-colors">MP Civil Judge Mains</Link></li>
-            <li><Link to="/courses" className="hover:text-gold transition-colors">Rajasthan APO Special</Link></li>
-            <li><Link to="/courses" className="hover:text-gold transition-colors">Interview Guidance Program</Link></li>
+            <li><Link to="/courses" className="hover:text-gold transition-colors">PCS-J Foundation</Link></li>
+            <li><Link to="/courses" className="hover:text-gold transition-colors">APO Special Batch</Link></li>
+            <li><Link to="/courses" className="hover:text-gold transition-colors">HJS Preparation</Link></li>
+            <li><Link to="/courses" className="hover:text-gold transition-colors">General Studies for Law</Link></li>
+            <li><Link to="/courses" className="hover:text-gold transition-colors">Answer Writing Skills</Link></li>
           </ul>
         </div>
 
         {/* Contact Info */}
         <div>
-          <h3 className="text-white font-serif font-bold text-lg mb-6">Contact Us</h3>
+          <h3 className="text-white font-serif font-bold text-lg mb-6">Get in Touch</h3>
           <ul className="space-y-4 text-sm">
             <li className="flex items-start gap-3">
               <MapPin className="text-gold shrink-0 mt-1" size={18} />
-              <span>123 Legal Avenue, Education Hub, New Delhi - 110001</span>
+              <span>84/140, ALLENGANJ, (Infront of Indian Bank), Prayagraj (211002), Uttar Pradesh</span>
             </li>
             <li className="flex items-center gap-3">
               <Phone className="text-gold shrink-0" size={18} />
-              <span>+91 98765 43210</span>
+              <div className="flex flex-col">
+                <a href="tel:+919450614241" className="hover:text-gold transition-colors">+91 9450614241</a>
+                <a href="tel:+917619038175" className="hover:text-gold transition-colors">+91 7619038175</a>
+              </div>
             </li>
             <li className="flex items-center gap-3">
               <Mail className="text-gold shrink-0" size={18} />
-              <span>info@judicialstudy.com</span>
+              <a href="mailto:contact.judicialstudycentre@gmail.com" className="hover:text-gold transition-colors break-all">contact.judicialstudycentre@gmail.com</a>
             </li>
           </ul>
         </div>

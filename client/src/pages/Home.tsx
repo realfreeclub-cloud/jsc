@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Users, Trophy, PlayCircle, Calendar, Download, MessageCircle, Star, Shield, BookMarked, Video } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import api from '../utils/api';
+import { courses as mockCourses } from './Courses.tsx';
 
 const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) => (
   <motion.div
@@ -15,10 +16,20 @@ const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode, delay?: nu
   </motion.div>
 );
 
+interface UnifiedCourse {
+  slug: string;
+  title: string;
+  mode: string;
+  duration: string;
+  about: string;
+  imageUrl?: string;
+  thumbnail?: string;
+}
+
 interface HomeData {
   sliders: Record<string, unknown>[];
   notifications: Record<string, unknown>[];
-  courses: Record<string, unknown>[];
+  courses: UnifiedCourse[];
   events: Record<string, unknown>[];
   faculties: Record<string, unknown>[];
 }
@@ -52,7 +63,8 @@ const Home = () => {
 
   const sliders = data?.sliders || [];
   const notifications = data?.notifications || [];
-  const courses = data?.courses || [];
+  const coursesFromApi = data?.courses || [];
+  const courses: UnifiedCourse[] = coursesFromApi.length > 0 ? coursesFromApi : (mockCourses.slice(0, 3) as unknown as UnifiedCourse[]);
   const events = data?.events || [];
   const faculties = data?.faculties || [];
 
@@ -123,6 +135,51 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Director's Welcome Section */}
+      <section className="py-24 max-w-7xl mx-auto px-6 overflow-hidden">
+        <div className="grid md:grid-cols-2 gap-16 items-center">
+          <FadeIn>
+            <div className="relative group">
+              <div className="absolute -inset-4 bg-gold/20 rounded-4xl blur-2xl group-hover:bg-gold/30 transition-all duration-500"></div>
+              <div className="relative aspect-square md:aspect-4/5 rounded-3xl overflow-hidden shadow-2xl border-2 border-gold/20">
+                <img 
+                  src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80" 
+                  alt="Director Ravindra Nath Rai" 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                />
+              </div>
+              <div className="absolute bottom-6 left-6 right-6 p-6 bg-white/90 backdrop-blur-md rounded-2xl border border-white/50 shadow-lg">
+                <h4 className="text-xl font-bold text-primary">Ravindra Nath Rai</h4>
+                <p className="text-gold font-medium text-sm">Founder & Director</p>
+              </div>
+            </div>
+          </FadeIn>
+
+          <FadeIn delay={0.2}>
+            <div>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold/10 border border-gold/30 text-gold mb-6">
+                <span className="w-2 h-2 rounded-full bg-gold"></span>
+                <span className="text-sm font-semibold uppercase tracking-wider">Welcome to JSC</span>
+              </div>
+              <h2 className="text-4xl md:text-5xl font-serif font-bold text-primary mb-6 leading-tight">
+                Shaping the <span className="text-gold italic">Future Guardians</span> of Justice
+              </h2>
+              <p className="text-lg text-slate-600 mb-8 leading-relaxed">
+                “The journey to the judiciary is not only a path toward a prestigious career, but a commitment to justice, integrity, and service to society.”
+              </p>
+              <div className="space-y-4 mb-10">
+                <p className="text-slate-600">
+                  Established in 2001, Judicial Study Centre has been a beacon of excellence for judiciary aspirants. We don't merely teach subjects; we guide ambitions and shape careers.
+                </p>
+              </div>
+              <Link to="/about" className="inline-flex items-center gap-2 text-primary font-bold text-lg hover:text-gold transition-colors group">
+                Read Director's Full Message <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
+              </Link>
+            </div>
+          </FadeIn>
+        </div>
+      </section>
+
       {/* Course Categories */}
       <section className="py-24 max-w-7xl mx-auto px-6">
         <FadeIn>
@@ -134,28 +191,28 @@ const Home = () => {
         </FadeIn>
 
         <div className="grid md:grid-cols-3 gap-8">
-          {courses.map((course: Record<string, unknown>, i: number) => (
+          {courses.map((course: UnifiedCourse, i: number) => (
             <FadeIn delay={i * 0.1} key={i}>
               <div className="group bg-white rounded-3xl p-0 shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100 hover:shadow-2xl transition-all relative overflow-hidden h-full flex flex-col">
                 <div className="relative h-48 overflow-hidden">
                   <img 
-                    src={(course.imageUrl as string) || 'https://images.unsplash.com/photo-1505664194779-8beaceb93744?auto=format&fit=crop&q=80'} 
-                    alt={course.title as string} 
+                    src={course.imageUrl || course.thumbnail || 'https://images.unsplash.com/photo-1505664194779-8beaceb93744?auto=format&fit=crop&q=80'} 
+                    alt={course.title} 
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                   />
                   <div className="absolute top-4 right-4 bg-gold text-primary text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">
-                    {course.mode as string}
+                    {course.mode}
                   </div>
                 </div>
 
                 <div className="p-8 flex flex-col flex-1">
-                  <h3 className="text-xl font-bold text-primary mb-2 line-clamp-1">{course.title as string}</h3>
+                  <h3 className="text-xl font-bold text-primary mb-2 line-clamp-1">{course.title}</h3>
                   <div className="flex items-center gap-2 text-gold text-sm font-bold mb-4">
                     <Calendar size={14} />
-                    <span>{course.duration as string}</span>
+                    <span>{course.duration}</span>
                   </div>
-                  <p className="text-slate-600 mb-8 grow line-clamp-3 text-sm leading-relaxed">{course.about as string}</p>
-                  <Link to={`/courses/${course.slug as string}`} className="inline-flex items-center text-primary font-bold group-hover:text-gold transition-colors text-sm">
+                  <p className="text-slate-600 mb-8 grow line-clamp-3 text-sm leading-relaxed">{course.about}</p>
+                  <Link to={`/courses/${course.slug}`} className="inline-flex items-center text-primary font-bold group-hover:text-gold transition-colors text-sm">
                     Enroll Now <ArrowRight size={16} className="ml-2 group-hover:translate-x-2 transition-transform" />
                   </Link>
                 </div>

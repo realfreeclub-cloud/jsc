@@ -8,25 +8,23 @@ import PageLoader from './components/ui/PageLoader';
 
 // Lazy Loaded Pages (Code Splitting)
 const Home = lazy(() => import('./pages/Home'));
+const About = lazy(() => import('./pages/About'));
 const Courses = lazy(() => import('./pages/Courses.tsx'));
 const CourseDetails = lazy(() => import('./pages/CourseDetails.tsx'));
 const Login = lazy(() => import('./pages/Login'));
 const Blog = lazy(() => import('./pages/Blog'));
 const BlogDetails = lazy(() => import('./pages/BlogDetails'));
 const StudentDashboard = lazy(() => import('./pages/student/Dashboard'));
-
-// Placeholder Pages
-const About = () => <div className="pt-24 min-h-screen text-center text-2xl font-serif">About Page</div>;
 const DemoClasses = () => <div className="pt-24 min-h-screen text-center text-2xl font-serif">Demo Classes Page</div>;
 const StudyMaterial = () => <div className="pt-24 min-h-screen text-center text-2xl font-serif">Study Material Page</div>;
 const Gallery = () => <div className="pt-24 min-h-screen text-center text-2xl font-serif">Gallery Page</div>;
+const Contact = lazy(() => import('./pages/Contact'));
 const Events = () => <div className="pt-24 min-h-screen text-center text-2xl font-serif">Events Page</div>;
 const Notifications = () => <div className="pt-24 min-h-screen text-center text-2xl font-serif">Notifications Page</div>;
 const LatestUpdates = () => <div className="pt-24 min-h-screen text-center text-2xl font-serif">Latest Updates Page</div>;
 const Faculty = () => <div className="pt-24 min-h-screen text-center text-2xl font-serif">Faculty Page</div>;
 const Testimonials = () => <div className="pt-24 min-h-screen text-center text-2xl font-serif">Testimonials Page</div>;
 const Register = () => <div className="pt-24 min-h-screen text-center text-2xl font-serif">Register Page</div>;
-const Contact = () => <div className="pt-24 min-h-screen text-center text-2xl font-serif">Contact Page</div>;
 
 const PublicLayout = () => {
   return (
