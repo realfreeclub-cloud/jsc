@@ -1,6 +1,5 @@
 import express from 'express';
 import { upload } from '../utils/upload';
-import ProtectedRoute from '../middleware/authMiddleware';
 
 const router = express.Router();
 
