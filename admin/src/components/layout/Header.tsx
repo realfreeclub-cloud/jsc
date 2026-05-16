@@ -21,11 +21,15 @@ const Header = () => {
       </div>
 
       <div className="flex items-center gap-6">
-        {/* Global Search Button */}
         <button className="hidden md:flex items-center gap-2 px-4 py-2 bg-gray-50 dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-xl text-sm text-gray-400 hover:border-blue-500/50 transition-all">
           <Search size={16} />
           <span>Search command...</span>
           <kbd className="ml-4 px-1.5 py-0.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded text-[10px] font-bold">⌘K</kbd>
+        </button>
+
+        <button className="hidden sm:flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold shadow-lg shadow-blue-500/20 transition-all">
+          <span className="text-lg leading-none">+</span>
+          Create New
         </button>
 
         <div className="flex items-center gap-3">

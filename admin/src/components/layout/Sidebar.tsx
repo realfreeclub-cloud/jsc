@@ -31,6 +31,8 @@ const navigation = [
     group: 'Dashboard',
     items: [
       { name: 'Overview', path: '/', icon: LayoutDashboard },
+      { name: 'Analytics', path: '/analytics', icon: Zap },
+      { name: 'Reports', path: '/reports', icon: FileText },
     ]
   },
   {
@@ -40,32 +42,60 @@ const navigation = [
       { name: 'Blogs', path: '/blogs', icon: FileText },
       { name: 'Gallery', path: '/gallery', icon: Camera },
       { name: 'Events', path: '/events', icon: Calendar },
-      { name: 'Latest Updates', path: '/latest-updates', icon: Zap },
+      { name: 'Announcements', path: '/notifications', icon: Bell },
     ]
   },
   {
-    group: 'Academic',
+    group: 'Academics',
     items: [
       { name: 'Courses', path: '/courses', icon: BookOpen },
+      { name: 'Batch Management', path: '/batches', icon: Users },
       { name: 'Demo Classes', path: '/demo-classes', icon: MonitorPlay },
       { name: 'Study Material', path: '/study-material', icon: Download },
-      { name: 'Faculty', path: '/faculty', icon: Users },
-      { name: 'Students', path: '/students', icon: GraduationCap },
+      { name: 'Test Series', path: '/test-series', icon: FileText },
+      { name: 'Question Bank', path: '/questions', icon: BookOpen },
+      { name: 'Assignments', path: '/assignments', icon: FileText },
+      { name: 'Attendance', path: '/academic-attendance', icon: Calendar },
     ]
   },
   {
-    group: 'Marketing',
+    group: 'Student Management',
+    items: [
+      { name: 'Students', path: '/students', icon: GraduationCap },
+      { name: 'Admissions', path: '/admissions', icon: Users },
+      { name: 'Fee Management', path: '/fees', icon: Zap },
+      { name: 'ID Cards', path: '/id-cards', icon: Image },
+      { name: 'Certificates', path: '/certificates', icon: FileText },
+      { name: 'Performance Tracking', path: '/performance', icon: Zap },
+    ]
+  },
+  {
+    group: 'Faculty Management',
+    items: [
+      { name: 'Faculty', path: '/faculty', icon: Users },
+      { name: 'Salary', path: '/salary', icon: Zap },
+      { name: 'Attendance', path: '/faculty-attendance', icon: Calendar },
+      { name: 'Lecture Scheduling', path: '/scheduling', icon: Calendar },
+    ]
+  },
+  {
+    group: 'Marketing & SEO',
     items: [
       { name: 'SEO Settings', path: '/seo', icon: Globe },
-      { name: 'Notifications', path: '/notifications', icon: Bell },
-      { name: 'WhatsApp', path: '/whatsapp-settings', icon: MessageSquare },
+      { name: 'Meta Tags', path: '/meta-tags', icon: Globe },
+      { name: 'Social Media', path: '/social-media', icon: Globe },
+      { name: 'WhatsApp Leads', path: '/whatsapp-settings', icon: MessageSquare },
+      { name: 'Email Campaigns', path: '/email-campaigns', icon: MessageSquare },
     ]
   },
   {
     group: 'System',
     items: [
-      { name: 'Settings', path: '/app-settings', icon: Settings },
+      { name: 'Roles & Permissions', path: '/roles', icon: ShieldCheck },
       { name: 'Admin Users', path: '/admins', icon: ShieldCheck },
+      { name: 'Settings', path: '/app-settings', icon: Settings },
+      { name: 'API Config', path: '/api-config', icon: Settings },
+      { name: 'Backup & Security', path: '/security', icon: ShieldCheck },
     ]
   }
 ];

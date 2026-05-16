@@ -1,18 +1,28 @@
+import React, { Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import AdminLayout from './components/layout/AdminLayout';
-import Dashboard from './pages/Dashboard';
-import Courses from './pages/Courses';
-import Students from './pages/Students';
-import WhatsAppSettings from './pages/WhatsAppSettings';
-import GenericModule from './components/ui/GenericModule';
-import Login from './pages/Login';
 import ProtectedRoute from './components/ProtectedRoute';
+import { Loader2 } from 'lucide-react';
+
+const Dashboard = React.lazy(() => import('./pages/Dashboard'));
+const Courses = React.lazy(() => import('./pages/Courses'));
+const Students = React.lazy(() => import('./pages/Students'));
+const WhatsAppSettings = React.lazy(() => import('./pages/WhatsAppSettings'));
+const GenericModule = React.lazy(() => import('./components/ui/GenericModule'));
+const Login = React.lazy(() => import('./pages/Login'));
+
+const PageLoader = () => (
+  <div className="flex items-center justify-center min-h-[60vh]">
+    <Loader2 size={40} className="animate-spin text-blue-600" />
+  </div>
+);
 
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<Login />} />
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          <Route path="/login" element={<Login />} />
         
         {/* Protected Admin Routes */}
         <Route element={<ProtectedRoute />}>
@@ -101,7 +111,35 @@ function App() {
             <Route path="study-material" element={<GenericModule title="Study Material" endpoint="studymaterials" fields={[{name:'title', label:'Title', type:'text', required:true}, {name:'fileUrl', label:'File URL', type:'url', required:true}]} />} />
             <Route path="testimonials" element={<GenericModule title="Testimonials" endpoint="testimonials" fields={[{name:'name', label:'Name', type:'text', required:true}, {name:'message', label:'Message', type:'textarea'}]} />} />
             
-            {/* Settings */}
+            {/* Settings & New Architecture Placeholders */}
+            <Route path="analytics" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Analytics</h2><p className="text-gray-500">Analytics module coming soon.</p></div>} />
+            <Route path="reports" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Reports</h2><p className="text-gray-500">Reporting module coming soon.</p></div>} />
+            
+            <Route path="batches" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Batch Management</h2></div>} />
+            <Route path="demo-classes" element={<GenericModule title="Demo Classes" endpoint="democlasses" fields={[{name:'title', label:'Title', type:'text'}, {name:'videoUrl', label:'Video URL', type:'text'}]} />} />
+            <Route path="test-series" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Test Series</h2></div>} />
+            <Route path="questions" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Question Bank</h2></div>} />
+            <Route path="assignments" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Assignments</h2></div>} />
+            <Route path="academic-attendance" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Student Attendance</h2></div>} />
+            
+            <Route path="admissions" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Admissions Workflow</h2></div>} />
+            <Route path="fees" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Fee Management</h2></div>} />
+            <Route path="id-cards" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">ID Card Generator</h2></div>} />
+            <Route path="certificates" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Certificates</h2></div>} />
+            <Route path="performance" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Performance Tracking</h2></div>} />
+
+            <Route path="salary" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Faculty Salary</h2></div>} />
+            <Route path="faculty-attendance" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Faculty Attendance</h2></div>} />
+            <Route path="scheduling" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Lecture Scheduling</h2></div>} />
+
+            <Route path="meta-tags" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Meta Tags Config</h2></div>} />
+            <Route path="social-media" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Social Media Connect</h2></div>} />
+            <Route path="email-campaigns" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Email Campaigns</h2></div>} />
+
+            <Route path="roles" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Roles & Permissions</h2></div>} />
+            <Route path="api-config" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">API Config</h2></div>} />
+            <Route path="security" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Backup & Security</h2></div>} />
+
             <Route path="seo" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">SEO Config</h2><p className="text-gray-500">Configuration panel loaded.</p></div>} />
             <Route path="whatsapp-settings" element={<WhatsAppSettings />} />
             <Route path="app-settings" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">App Config</h2><p className="text-gray-500">Configuration panel loaded.</p></div>} />
@@ -112,6 +150,7 @@ function App() {
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+    </Suspense>
     </BrowserRouter>
   );
 }

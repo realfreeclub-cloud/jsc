@@ -9,17 +9,22 @@ import {
   Plus,
   Send,
   Calendar,
-  Zap
+  Clock,
+  CheckCircle2,
+  AlertCircle
 } from 'lucide-react';
 import { 
   AreaChart, 
   Area, 
+  BarChart,
+  Bar,
   XAxis, 
   YAxis, 
   CartesianGrid, 
   Tooltip, 
   ResponsiveContainer
 } from 'recharts';
+import { useTheme } from '../store/useTheme';
 
 const stats = [
   { 
@@ -56,15 +61,29 @@ const stats = [
   }
 ];
 
-import { useTheme } from '../store/useTheme';
+const enrollmentData = [
+  { name: 'Jan', students: 400 },
+  { name: 'Feb', students: 600 },
+  { name: 'Mar', students: 500 },
+  { name: 'Apr', students: 900 },
+  { name: 'May', students: 1100 },
+  { name: 'Jun', students: 1500 },
+];
 
-const chartData = [
-  { name: 'Jan', students: 400, revenue: 2400 },
-  { name: 'Feb', students: 600, revenue: 1398 },
-  { name: 'Mar', students: 500, revenue: 9800 },
-  { name: 'Apr', students: 900, revenue: 3908 },
-  { name: 'May', students: 1100, revenue: 4800 },
-  { name: 'Jun', students: 1500, revenue: 3800 },
+const revenueData = [
+  { name: 'Jan', revenue: 240000 },
+  { name: 'Feb', revenue: 300000 },
+  { name: 'Mar', revenue: 280000 },
+  { name: 'Apr', revenue: 450000 },
+  { name: 'May', revenue: 600000 },
+  { name: 'Jun', revenue: 800000 },
+];
+
+const recentActivity = [
+  { id: 1, action: "New Admission", user: "Rahul Sharma", time: "10 mins ago", status: "success" },
+  { id: 2, action: "Material Uploaded", user: "Dr. H D Tripathi", time: "1 hour ago", status: "info" },
+  { id: 3, action: "Fee Pending", user: "Amit Kumar", time: "2 hours ago", status: "warning" },
+  { id: 4, action: "Course Created", user: "System Admin", time: "4 hours ago", status: "success" },
 ];
 
 const Dashboard = () => {
@@ -80,10 +99,10 @@ const Dashboard = () => {
         </div>
         <div className="flex items-center gap-3">
           <button className="px-4 py-2 bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-xl text-sm font-semibold hover:shadow-sm transition-all">
-            Export Data
+            Export Report
           </button>
           <button className="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-600/20 hover:scale-105 active:scale-95 transition-all">
-            + New Course
+            + Quick Create
           </button>
         </div>
       </div>
@@ -96,7 +115,7 @@ const Dashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            className="p-6 bg-white dark:bg-slate-950 rounded-3xl border border-gray-50 dark:border-slate-900 shadow-premium hover:shadow-premium-hover transition-all group"
+            className="p-6 bg-white dark:bg-slate-950 rounded-4xl border border-gray-50 dark:border-slate-900 shadow-premium hover:shadow-premium-hover transition-all group"
           >
             <div className="flex items-start justify-between">
               <div className={`p-3 rounded-2xl bg-${stat.color}-50 dark:bg-${stat.color}-500/10 text-${stat.color}-600 dark:text-${stat.color}-500 transition-colors`}>
@@ -116,110 +135,131 @@ const Dashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Growth Chart */}
-        <div className="lg:col-span-2 p-8 bg-white dark:bg-slate-950 rounded-3xl border border-gray-50 dark:border-slate-900 shadow-premium">
-          <div className="flex items-center justify-between mb-8">
-            <h3 className="text-lg font-bold dark:text-white">Student Enrollment Growth</h3>
-            <select className="bg-gray-50 dark:bg-slate-900 border-none text-xs font-bold rounded-lg px-3 py-1.5 outline-none">
-              <option>Last 6 Months</option>
-              <option>Yearly</option>
-            </select>
+        {/* Charts Section */}
+        <div className="lg:col-span-2 space-y-8">
+          
+          {/* Enrollment Chart */}
+          <div className="p-8 bg-white dark:bg-slate-950 rounded-4xl border border-gray-50 dark:border-slate-900 shadow-premium">
+            <div className="flex items-center justify-between mb-8">
+              <h3 className="text-lg font-bold dark:text-white">Enrollment Analytics</h3>
+              <select className="bg-gray-50 dark:bg-slate-900 border-none text-xs font-bold rounded-lg px-3 py-1.5 outline-none">
+                <option>Last 6 Months</option>
+                <option>Yearly</option>
+              </select>
+            </div>
+            <div className="h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={enrollmentData}>
+                  <defs>
+                    <linearGradient id="colorStudents" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.1}/>
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDarkMode ? '#1e293b' : '#f1f5f9'} />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: isDarkMode ? '#64748b' : '#94a3b8' }} dy={10} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: isDarkMode ? '#64748b' : '#94a3b8' }} />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: isDarkMode ? '#020617' : '#ffffff', borderRadius: '16px', border: isDarkMode ? '1px solid #1e293b' : 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)', fontSize: '12px', color: isDarkMode ? '#ffffff' : '#000000' }} 
+                    itemStyle={{ color: isDarkMode ? '#3b82f6' : '#2563eb' }}
+                  />
+                  <Area type="monotone" dataKey="students" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorStudents)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
           </div>
-          <div className="h-[350px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={chartData}>
-                <defs>
-                  <linearGradient id="colorStudents" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.1}/>
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDarkMode ? '#1e293b' : '#f1f5f9'} />
-                <XAxis 
-                  dataKey="name" 
-                  axisLine={false} 
-                  tickLine={false} 
-                  tick={{ fontSize: 12, fill: isDarkMode ? '#64748b' : '#94a3b8' }}
-                  dy={10}
-                />
-                <YAxis 
-                  axisLine={false} 
-                  tickLine={false} 
-                  tick={{ fontSize: 12, fill: isDarkMode ? '#64748b' : '#94a3b8' }}
-                />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: isDarkMode ? '#020617' : '#ffffff',
-                    borderRadius: '16px', 
-                    border: isDarkMode ? '1px solid #1e293b' : 'none', 
-                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-                    fontSize: '12px',
-                    color: isDarkMode ? '#ffffff' : '#000000'
-                  }} 
-                  itemStyle={{ color: isDarkMode ? '#3b82f6' : '#2563eb' }}
-                />
-                <Area 
-                  type="monotone" 
-                  dataKey="students" 
-                  stroke="#3b82f6" 
-                  strokeWidth={3}
-                  fillOpacity={1} 
-                  fill="url(#colorStudents)" 
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+
+          {/* Revenue Chart */}
+          <div className="p-8 bg-white dark:bg-slate-950 rounded-4xl border border-gray-50 dark:border-slate-900 shadow-premium">
+            <div className="flex items-center justify-between mb-8">
+              <h3 className="text-lg font-bold dark:text-white">Revenue Overview</h3>
+            </div>
+            <div className="h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={revenueData} barSize={32}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDarkMode ? '#1e293b' : '#f1f5f9'} />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: isDarkMode ? '#64748b' : '#94a3b8' }} dy={10} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: isDarkMode ? '#64748b' : '#94a3b8' }} tickFormatter={(value) => `₹${value / 1000}k`} />
+                  <Tooltip 
+                    cursor={{ fill: isDarkMode ? '#1e293b' : '#f8fafc' }}
+                    contentStyle={{ backgroundColor: isDarkMode ? '#020617' : '#ffffff', borderRadius: '16px', border: isDarkMode ? '1px solid #1e293b' : 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)', fontSize: '12px', color: isDarkMode ? '#ffffff' : '#000000' }} 
+                  />
+                  <Bar dataKey="revenue" fill="#8b5cf6" radius={[6, 6, 6, 6]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           </div>
+
         </div>
 
-        {/* Quick Actions */}
-        <div className="space-y-6">
-          <h3 className="text-lg font-bold dark:text-white">Quick Actions</h3>
-          <div className="grid grid-cols-1 gap-4">
-            <button className="flex items-center gap-4 p-4 bg-white dark:bg-slate-950 rounded-2xl border border-gray-50 dark:border-slate-900 shadow-premium hover:shadow-premium-hover hover:-translate-y-1 transition-all text-left">
-              <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-600/10 text-blue-600">
-                <Plus size={20} />
-              </div>
-              <div>
-                <p className="text-sm font-bold dark:text-white">New Course</p>
-                <p className="text-xs text-gray-400">Launch a new study program</p>
-              </div>
-            </button>
-            <button className="flex items-center gap-4 p-4 bg-white dark:bg-slate-950 rounded-2xl border border-gray-50 dark:border-slate-900 shadow-premium hover:shadow-premium-hover hover:-translate-y-1 transition-all text-left">
-              <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-600/10 text-emerald-600">
-                <Send size={20} />
-              </div>
-              <div>
-                <p className="text-sm font-bold dark:text-white">Push Notification</p>
-                <p className="text-xs text-gray-400">Alert students about updates</p>
-              </div>
-            </button>
-            <button className="flex items-center gap-4 p-4 bg-white dark:bg-slate-950 rounded-2xl border border-gray-50 dark:border-slate-900 shadow-premium hover:shadow-premium-hover hover:-translate-y-1 transition-all text-left">
-              <div className="p-3 rounded-xl bg-violet-50 dark:bg-violet-600/10 text-violet-600">
-                <Calendar size={20} />
-              </div>
-              <div>
-                <p className="text-sm font-bold dark:text-white">Schedule Event</p>
-                <p className="text-xs text-gray-400">Create a seminar or test</p>
-              </div>
-            </button>
-            <button className="flex items-center gap-4 p-4 bg-white dark:bg-slate-950 rounded-2xl border border-gray-50 dark:border-slate-900 shadow-premium hover:shadow-premium-hover hover:-translate-y-1 transition-all text-left">
-              <div className="p-3 rounded-xl bg-orange-50 dark:bg-orange-600/10 text-orange-600">
-                <Zap size={20} />
-              </div>
-              <div>
-                <p className="text-sm font-bold dark:text-white">Instant Alert</p>
-                <p className="text-xs text-gray-400">Post to Marquee/Ticker</p>
-              </div>
+        {/* Right Sidebar Widgets */}
+        <div className="space-y-8">
+          
+          {/* Quick Actions */}
+          <div className="p-8 bg-white dark:bg-slate-950 rounded-4xl border border-gray-50 dark:border-slate-900 shadow-premium">
+            <h3 className="text-lg font-bold dark:text-white mb-6">Shortcuts</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <button className="flex flex-col items-center justify-center gap-3 p-4 bg-gray-50 dark:bg-slate-900 rounded-2xl hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 transition-colors group">
+                <Plus size={24} className="text-gray-400 group-hover:text-blue-600 transition-colors" />
+                <span className="text-xs font-bold text-gray-600 dark:text-gray-400 group-hover:text-blue-600">Course</span>
+              </button>
+              <button className="flex flex-col items-center justify-center gap-3 p-4 bg-gray-50 dark:bg-slate-900 rounded-2xl hover:bg-emerald-50 dark:hover:bg-emerald-900/20 hover:text-emerald-600 transition-colors group">
+                <Users size={24} className="text-gray-400 group-hover:text-emerald-600 transition-colors" />
+                <span className="text-xs font-bold text-gray-600 dark:text-gray-400 group-hover:text-emerald-600">Student</span>
+              </button>
+              <button className="flex flex-col items-center justify-center gap-3 p-4 bg-gray-50 dark:bg-slate-900 rounded-2xl hover:bg-violet-50 dark:hover:bg-violet-900/20 hover:text-violet-600 transition-colors group">
+                <Calendar size={24} className="text-gray-400 group-hover:text-violet-600 transition-colors" />
+                <span className="text-xs font-bold text-gray-600 dark:text-gray-400 group-hover:text-violet-600">Event</span>
+              </button>
+              <button className="flex flex-col items-center justify-center gap-3 p-4 bg-gray-50 dark:bg-slate-900 rounded-2xl hover:bg-amber-50 dark:hover:bg-amber-900/20 hover:text-amber-600 transition-colors group">
+                <Send size={24} className="text-gray-400 group-hover:text-amber-600 transition-colors" />
+                <span className="text-xs font-bold text-gray-600 dark:text-gray-400 group-hover:text-amber-600">Alert</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Activity Feed */}
+          <div className="p-8 bg-white dark:bg-slate-950 rounded-4xl border border-gray-50 dark:border-slate-900 shadow-premium">
+            <h3 className="text-lg font-bold dark:text-white mb-6">Recent Activity</h3>
+            <div className="space-y-6">
+              {recentActivity.map((activity, index) => (
+                <div key={activity.id} className="flex gap-4 relative">
+                  {index !== recentActivity.length - 1 && (
+                    <div className="absolute left-4 top-8 bottom-[-24px] w-px bg-gray-100 dark:bg-slate-800" />
+                  )}
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 z-10 ${
+                    activity.status === 'success' ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20' :
+                    activity.status === 'warning' ? 'bg-amber-100 text-amber-600 dark:bg-amber-500/20' :
+                    'bg-blue-100 text-blue-600 dark:bg-blue-500/20'
+                  }`}>
+                    {activity.status === 'success' ? <CheckCircle2 size={16} /> :
+                     activity.status === 'warning' ? <AlertCircle size={16} /> :
+                     <Clock size={16} />}
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-gray-900 dark:text-white">{activity.action}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{activity.user} • {activity.time}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <button className="w-full mt-6 py-2 text-sm font-bold text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors">
+              View All Activity
             </button>
           </div>
 
-          <div className="p-6 bg-linear-to-tr from-blue-600 to-indigo-700 rounded-3xl text-white shadow-xl shadow-blue-500/30">
-            <h4 className="font-bold text-lg">System Update</h4>
-            <p className="text-blue-100 text-sm mt-2">The new Student Portal API is now live. Check the logs for performance metrics.</p>
+          {/* System Alert */}
+          <div className="p-6 bg-linear-to-tr from-rose-500 to-orange-500 rounded-3xl text-white shadow-xl shadow-rose-500/30">
+            <div className="flex items-center gap-3 mb-2">
+              <AlertCircle size={20} />
+              <h4 className="font-bold text-lg">System Alert</h4>
+            </div>
+            <p className="text-white/90 text-sm">3 students have reported issues with the study material download API.</p>
             <button className="mt-4 px-4 py-2 bg-white/20 backdrop-blur-md rounded-xl text-xs font-bold hover:bg-white/30 transition-all">
-              View Logs
+              Investigate Log
             </button>
           </div>
+
         </div>
       </div>
     </div>

@@ -47,9 +47,9 @@ const Faculty = () => {
             {facultyList.map((faculty: any, i: number) => (
               <FadeIn delay={i * 0.1} key={faculty._id || i}>
                 <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100 hover:shadow-xl transition-all h-full flex flex-col group relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-gold/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-bl-[100px]" />
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-br from-gold/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-bl-[100px]" />
                   
-                  <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-gold/20 mb-6 flex-shrink-0 mx-auto">
+                  <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-gold/20 mb-6 shrink-0 mx-auto">
                     <img 
                       src={faculty.imageUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(faculty.name || 'F')}&background=0D1B2A&color=D4AF37`} 
                       alt={faculty.name || 'Faculty'} 
@@ -57,7 +57,7 @@ const Faculty = () => {
                     />
                   </div>
 
-                  <div className="text-center flex-grow">
+                  <div className="text-center grow">
                     <h3 className="text-2xl font-bold text-primary mb-2">{faculty.name || 'Expert Faculty'}</h3>
                     {faculty.designation && (
                       <p className="text-gold font-medium mb-4">{faculty.designation}</p>

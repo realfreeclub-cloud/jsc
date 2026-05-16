@@ -162,18 +162,22 @@ const Courses = () => {
         </div>
       )}
 
-      {/* Add/Edit Modal */}
+      {/* Add/Edit Slide-over */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-slate-950 rounded-3xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto hidden-scrollbar border border-gray-100 dark:border-slate-900">
-            <div className="p-6 border-b border-gray-50 dark:border-slate-900 flex justify-between items-center sticky top-0 bg-white dark:bg-slate-950 z-10">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">{editData ? 'Edit Course' : 'Add New Course'}</h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-900 p-2 rounded-xl transition-colors">
+        <div className="fixed inset-0 z-50 flex justify-end bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-white dark:bg-slate-950 w-full max-w-2xl h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300 border-l border-gray-100 dark:border-slate-900">
+            <div className="p-6 md:p-8 border-b border-gray-50 dark:border-slate-900 flex justify-between items-center bg-white dark:bg-slate-950 shrink-0">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{editData ? 'Edit Course' : 'Create Course'}</h2>
+                <p className="text-sm text-gray-500 mt-1">Configure your course settings below.</p>
+              </div>
+              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-900 p-2.5 rounded-xl transition-colors">
                 <X size={20} />
               </button>
             </div>
             
-            <form onSubmit={handleSubmit} className="p-8 space-y-8">
+            <div className="flex-1 overflow-y-auto hidden-scrollbar">
+              <form id="course-form" onSubmit={handleSubmit} className="p-6 md:p-8 space-y-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="col-span-2">
                   <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Course Title *</label>
@@ -259,20 +263,25 @@ const Courses = () => {
                 </div>
               </div>
 
-              <div className="p-8 border-t border-gray-50 dark:border-slate-900 flex justify-end gap-3 sticky bottom-0 bg-white dark:bg-slate-950 -mx-8 -mb-8">
+              </form>
+            </div>
+
+            <div className="p-6 border-t border-gray-50 dark:border-slate-900 bg-white dark:bg-slate-950 shrink-0">
+              <div className="flex items-center justify-end gap-3 max-w-2xl mx-auto">
                 <button type="button" onClick={() => setIsModalOpen(false)} className="px-6 py-3 rounded-xl border border-gray-200 dark:border-slate-800 text-gray-700 dark:text-gray-400 font-bold hover:bg-gray-50 dark:hover:bg-slate-900 transition-all">
                   Cancel
                 </button>
                 <button 
+                  form="course-form"
                   type="submit"
                   disabled={createMutation.isPending || updateMutation.isPending}
                   className="flex items-center gap-2 px-8 py-3 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20 disabled:opacity-50"
                 >
                   {(createMutation.isPending || updateMutation.isPending) && <Loader2 size={18} className="animate-spin" />}
-                  {editData ? 'Update Course' : 'Save Course'}
+                  {editData ? 'Update Course' : 'Create Course'}
                 </button>
               </div>
-            </form>
+            </div>
           </div>
         </div>
       )}
