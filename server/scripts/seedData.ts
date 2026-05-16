@@ -15,7 +15,7 @@ import Notification from '../src/models/Notification';
 import StudyMaterial from '../src/models/StudyMaterial';
 import Event from '../src/models/Event';
 import Testimonial from '../src/models/Testimonial';
-
+import Faculty from '../src/models/Faculty';
 const seedDatabase = async () => {
   try {
     const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/judicial-study';
@@ -32,6 +32,7 @@ const seedDatabase = async () => {
     await StudyMaterial.deleteMany({});
     await Event.deleteMany({});
     await Testimonial.deleteMany({});
+    await Faculty.deleteMany({});
 
     // 1. Create Categories
     const categoriesData = [
@@ -404,6 +405,57 @@ const seedDatabase = async () => {
         content: 'The mock interview sessions gave me the exact confidence I needed. Thank you JSC!',
         rating: 5,
         isApproved: true
+      }
+    ]);
+
+    // 9. Create Faculty
+    await Faculty.insertMany([
+      {
+        name: 'R. N. Rai (Rai Sir)',
+        designation: 'Founder & Director',
+        subjectExpertise: 'All major law subjects like BNS, BSA, BNSS, Police Act, CPC, UP Revenue Code + Minor Act, TPA, Contract, Muslim Law.',
+        experience: '27+ Years Teaching Experience',
+        bio: 'Visionary mentor guiding thousands of judiciary aspirants.',
+        imageUrl: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600',
+        order: 1
+      },
+      {
+        name: 'DR. H D Tripathi Sir',
+        designation: 'Senior Faculty',
+        subjectExpertise: 'Constitution, International Law, Jurisprudence, Tort, Hindu Law, SRA, Trust Act, Equity and GS 9 Minor Act',
+        experience: 'Extensive academic and teaching experience',
+        imageUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=600',
+        order: 2
+      },
+      {
+        name: 'SKD SIR',
+        designation: 'History Expert',
+        subjectExpertise: 'History',
+        order: 3
+      },
+      {
+        name: 'Pawan Rai Sir',
+        designation: 'Geography Expert',
+        subjectExpertise: 'Geography',
+        order: 4
+      },
+      {
+        name: 'Prashant Sir',
+        designation: 'Economics Expert',
+        subjectExpertise: 'Economics',
+        order: 5
+      },
+      {
+        name: 'Ajay Sir',
+        designation: 'Science Expert',
+        subjectExpertise: 'Science',
+        order: 6
+      },
+      {
+        name: 'English/Hindi Teachers',
+        designation: 'Language Faculty',
+        subjectExpertise: 'English & Hindi Language Preparation',
+        order: 7
       }
     ]);
 

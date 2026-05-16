@@ -248,7 +248,7 @@ const Home = () => {
                     <h3 className="text-xl font-bold text-white mb-1">{faculty.name as string}</h3>
                     <p className="text-gold text-sm font-medium mb-3">{faculty.designation as string}</p>
                     <div className="h-0 opacity-0 group-hover:h-auto group-hover:opacity-100 transition-all duration-300">
-                      <p className="text-slate-300 text-sm line-clamp-2">{faculty.bio as string}</p>
+                      <p className="text-slate-300 text-sm line-clamp-2">{(faculty.subjectExpertise as string) || (faculty.bio as string)}</p>
                     </div>
                   </div>
                 </div>

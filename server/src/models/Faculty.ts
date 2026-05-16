@@ -1,9 +1,10 @@
 import mongoose from 'mongoose';
 
 const facultySchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  designation: { type: String, required: true },
+  name: { type: String }, // Made optional as requested
+  designation: { type: String }, // Made optional
   bio: { type: String },
+  subjectExpertise: { type: String },
   imageUrl: { type: String },
   experience: { type: String },
   socialLinks: {

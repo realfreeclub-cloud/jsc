@@ -22,7 +22,7 @@ const Contact = lazy(() => import('./pages/Contact'));
 const Events = () => <div className="pt-24 min-h-screen text-center text-2xl font-serif">Events Page</div>;
 const Notifications = () => <div className="pt-24 min-h-screen text-center text-2xl font-serif">Notifications Page</div>;
 const LatestUpdates = () => <div className="pt-24 min-h-screen text-center text-2xl font-serif">Latest Updates Page</div>;
-const Faculty = () => <div className="pt-24 min-h-screen text-center text-2xl font-serif">Faculty Page</div>;
+const Faculty = lazy(() => import('./pages/Faculty'));
 const Testimonials = () => <div className="pt-24 min-h-screen text-center text-2xl font-serif">Testimonials Page</div>;
 const Register = () => <div className="pt-24 min-h-screen text-center text-2xl font-serif">Register Page</div>;
 

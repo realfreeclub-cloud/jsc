@@ -57,8 +57,10 @@ function App() {
                 title="Faculty" 
                 endpoint="facultys" 
                 fields={[
-                  { name: 'name', label: 'Full Name', type: 'text', required: true },
-                  { name: 'designation', label: 'Designation', type: 'text', required: true },
+                  { name: 'name', label: 'Full Name', type: 'text' },
+                  { name: 'designation', label: 'Designation', type: 'text' },
+                  { name: 'subjectExpertise', label: 'Subject Expertise', type: 'text' },
+                  { name: 'experience', label: 'Experience', type: 'text' },
                   { name: 'bio', label: 'Short Bio', type: 'textarea' },
                   { name: 'imageUrl', label: 'Photo URL', type: 'file' },
                   { name: 'order', label: 'Display Order', type: 'number' },
