@@ -5,6 +5,7 @@ import Footer from './components/layout/Footer';
 import StudentLayout from './components/layout/StudentLayout';
 import FloatingWhatsApp from './components/ui/FloatingWhatsApp';
 import PageLoader from './components/ui/PageLoader';
+import ScrollToTop from './components/utils/ScrollToTop';
 
 // Lazy Loaded Pages (Code Splitting)
 const Home = lazy(() => import('./pages/Home'));
@@ -44,6 +45,7 @@ const PublicLayout = () => {
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         {/* Public Website Routes */}
         <Route element={<PublicLayout />}>
