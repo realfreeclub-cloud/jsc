@@ -8,9 +8,7 @@ const Footer = () => {
         {/* Brand */}
         <div>
           <Link to="/" className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-lg bg-linear-to-br from-gold to-yellow-600 flex items-center justify-center text-primary shadow-lg">
-              <Scale size={24} strokeWidth={2.5} />
-            </div>
+            <img src="/logo.png" alt="Judicial Study Centre Logo" className="w-12 h-12 object-contain" />
             <div>
               <h2 className="text-xl font-serif font-bold text-white leading-tight">Judicial Study Centre</h2>
             </div>

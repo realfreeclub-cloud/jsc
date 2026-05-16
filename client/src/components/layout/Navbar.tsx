@@ -6,9 +6,7 @@ const Navbar = () => {
     <nav className="fixed w-full z-50 top-0 left-0 border-b border-white/10 bg-primary/95 backdrop-blur-md shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
         <Link to="/" className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-linear-to-br from-gold to-yellow-600 flex items-center justify-center text-primary shadow-lg">
-            <Scale size={24} strokeWidth={2.5} />
-          </div>
+          <img src="/logo.png" alt="Judicial Study Centre Logo" className="w-12 h-12 object-contain" />
           <div>
             <h1 className="text-xl font-serif font-bold text-white leading-tight">Judicial Study Centre</h1>
             <p className="text-[10px] text-gold tracking-widest uppercase font-semibold">Excellence in Law</p>
