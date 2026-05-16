@@ -21,6 +21,7 @@ const Navbar = () => {
           <Link to="/study-material" className="hover:text-gold transition-colors">Study Material</Link>
           <Link to="/faculty" className="hover:text-gold transition-colors">Faculty</Link>
           <Link to="/about" className="hover:text-gold transition-colors">About Us</Link>
+          <Link to="/contact" className="hover:text-gold transition-colors">Contact</Link>
         </div>
         <div className="hidden lg:flex items-center space-x-4">
           <Link to="/login" className="text-sm font-medium px-5 py-2.5 rounded-full border border-gold/30 text-gold hover:bg-gold/10 transition-colors">Login</Link>

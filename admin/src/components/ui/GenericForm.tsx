@@ -32,7 +32,7 @@ const GenericForm = <T extends Record<string, unknown>>({
     if (initialData) return { ...initialData };
     
     return fields.reduce((acc, field) => {
-      const defaultValue = (field.type === 'checkbox' ? false : '') as unknown;
+      const defaultValue = (field.type === 'checkbox' ? true : '') as unknown;
       acc[field.name as keyof T] = defaultValue as T[keyof T];
       return acc;
     }, {} as T);
