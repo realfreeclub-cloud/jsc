@@ -268,29 +268,13 @@ const CourseDetails = () => {
           )}
 
           {/* Suitable For */}
-          {course.suitable_for && (
-            <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100">
-              <h3 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
-                <Users size={20} className="text-gold" /> Suitable For
-              </h3>
-              <ul className="space-y-3">
-                {course.suitable_for.map((item, i) => (
-                  <li key={i} className="flex items-start gap-3 text-sm text-slate-600 font-medium">
-                    <ChevronRight size={16} className="text-gold mt-0.5" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-          {/* Fallback for suitableFor naming convention */}
           {course.suitableFor && (
             <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100">
               <h3 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
                 <Users size={20} className="text-gold" /> Suitable For
               </h3>
               <ul className="space-y-3">
-                {course.suitableFor.map((item, i) => (
+                {course.suitableFor.map((item: string, i: number) => (
                   <li key={i} className="flex items-start gap-3 text-sm text-slate-600 font-medium">
                     <ChevronRight size={16} className="text-gold mt-0.5" />
                     <span>{item}</span>

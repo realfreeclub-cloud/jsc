@@ -1,7 +1,7 @@
 import { type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { PlayCircle, Clock, Globe, Users, MessageCircle, Smartphone, Shield, BookOpen } from 'lucide-react';
+import { Clock, Users, MessageCircle, Smartphone, Shield, BookOpen } from 'lucide-react';
 import { openCourseInApp, openWhatsApp } from '../utils/appRedirect';
 
 export interface Course {
