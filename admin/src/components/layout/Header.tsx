@@ -10,13 +10,13 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-40 w-full h-[72px] bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-900 px-6 flex items-center justify-between">
       <div>
-        <h2 className="text-xl font-bold text-slate-800 dark:text-white capitalize">
+        <h2 className="text-lg font-display font-bold text-slate-800 dark:text-white capitalize">
           {path}
         </h2>
         <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium mt-0.5">
           <span>Admin</span>
           <span>/</span>
-          <span className="text-blue-600">{path}</span>
+          <span className="text-gold-DEFAULT font-semibold">{path}</span>
         </div>
       </div>
 
@@ -30,7 +30,7 @@ const Header = () => {
         </button>
 
         <div className="flex items-center gap-2">
-          <button className="p-2.5 rounded-lg text-slate-400 hover:bg-slate-50 hover:text-blue-600 dark:hover:bg-slate-900 transition-colors relative">
+          <button className="p-2.5 rounded-lg text-slate-400 hover:bg-gold-dim hover:text-gold-DEFAULT dark:hover:bg-slate-900 transition-colors relative">
             <Bell size={20} />
             <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-rose-500 border-2 border-white dark:border-slate-950 rounded-full"></span>
           </button>
@@ -47,11 +47,11 @@ const Header = () => {
 
         <div className="flex items-center gap-3 pl-1 cursor-pointer group">
           <div className="text-right hidden sm:block">
-            <p className="text-sm font-bold text-slate-800 dark:text-white group-hover:text-blue-600 transition-colors">System Admin</p>
+            <p className="text-sm font-semibold text-slate-800 dark:text-white group-hover:text-gold-DEFAULT transition-colors">System Admin</p>
             <p className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Super Admin</p>
           </div>
-          <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600 border border-blue-100">
-            <User size={20} />
+          <div className="w-9 h-9 rounded-lg bg-gold-dim flex items-center justify-center text-gold-DEFAULT border border-gold-DEFAULT/20">
+            <User size={18} />
           </div>
         </div>
       </div>

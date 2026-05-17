@@ -48,6 +48,18 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Brand Identity Colors
+        gold: {
+          DEFAULT: '#F4B400',
+          hover: '#FFD24C',
+          light: '#FEF3C7',
+          dim: 'rgba(244,180,0,0.10)',
+        },
+        navy: {
+          main: '#07152F',
+          panel: '#0B1D3A',
+          muted: '#AAB3C5',
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

@@ -10,6 +10,11 @@ const Courses = React.lazy(() => import('./pages/Courses'));
 const GenericModule = React.lazy(() => import('./components/ui/GenericModule'));
 const Login = React.lazy(() => import('./pages/Login'));
 
+// Advanced CMS Modules
+const BlogDashboard = React.lazy(() => import('./pages/blogs/BlogDashboard'));
+const BlogEditor = React.lazy(() => import('./pages/blogs/BlogEditor'));
+const GalleryManager = React.lazy(() => import('./pages/gallery/GalleryManager'));
+
 const PageLoader = () => (
   <div className="flex items-center justify-center min-h-[60vh]">
     <Loader2 size={40} className="animate-spin text-blue-600" />
@@ -62,6 +67,12 @@ function App() {
                 ]}
               />
             } />
+
+            {/* Advanced CMS Modules */}
+            <Route path="blogs" element={<BlogDashboard />} />
+            <Route path="blogs/create" element={<BlogEditor />} />
+            <Route path="blogs/edit/:id" element={<BlogEditor />} />
+            <Route path="gallery" element={<GalleryManager />} />
 
             <Route path="notifications" element={
               <GenericModule 

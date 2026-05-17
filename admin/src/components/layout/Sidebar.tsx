@@ -99,10 +99,10 @@ const Sidebar = () => {
               exit={{ opacity: 0, x: -20 }}
               className="flex items-center gap-3"
             >
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
+              <div className="w-8 h-8 bg-linear-to-br from-gold-DEFAULT to-gold-hover rounded-lg flex items-center justify-center font-bold text-navy-main text-sm shadow-sm">
                 J
               </div>
-              <span className="font-bold text-xl tracking-tight dark:text-white">JSC Admin</span>
+              <span className="font-display font-bold text-xl tracking-tight text-slate-800 dark:text-white">JSC Admin</span>
             </motion.div>
           )}
         </AnimatePresence>
@@ -135,7 +135,7 @@ const Sidebar = () => {
         {filteredNavigation.map((group) => (
           <div key={group.group} className="space-y-1">
             {!isCollapsed && (
-              <h3 className="px-3 text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">
+              <h3 className="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">
                 {group.group}
               </h3>
             )}
@@ -144,15 +144,15 @@ const Sidebar = () => {
                 key={item.path}
                 to={item.path}
                 className={({ isActive }) => cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all group relative border-l-4",
+                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all group relative border-l-[3px]",
                   isActive 
-                    ? "border-blue-600 bg-blue-50/50 text-blue-600 dark:bg-blue-600/10 dark:text-blue-400 dark:border-blue-500" 
+                    ? "border-gold-DEFAULT bg-gold-dim text-navy-main font-semibold" 
                     : "border-transparent text-slate-500 hover:bg-slate-50 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-white"
                 )}
               >
                 <item.icon size={18} className={cn(
                   "shrink-0",
-                  location.pathname === item.path ? "text-blue-600 dark:text-blue-400" : "text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-colors"
+                  location.pathname === item.path ? "text-gold-DEFAULT" : "text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-colors"
                 )} />
                 <AnimatePresence mode="wait">
                   {!isCollapsed && (

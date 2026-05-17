@@ -82,7 +82,7 @@ const GenericModule = ({ title, endpoint, fields }: GenericModuleProps) => {
         </div>
         <button 
           onClick={() => { setEditData(undefined); setIsModalOpen(true); }}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium shadow-sm transition-all"
+          className="flex items-center gap-2 btn-gold px-5 py-2.5 rounded-lg text-sm shadow-sm"
         >
           <Plus size={16} /> Add New {title}
         </button>
@@ -99,11 +99,11 @@ const GenericModule = ({ title, endpoint, fields }: GenericModuleProps) => {
               placeholder={`Search ${title.toLowerCase()}...`}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all shadow-sm"
+              className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 outline-none gold-ring focus:border-gold-DEFAULT transition-all shadow-sm"
             />
           </div>
           {(isLoading || createMutation.isPending || updateMutation.isPending || deleteMutation.isPending) && (
-            <div className="flex items-center gap-2 text-blue-600 text-xs font-bold uppercase tracking-widest">
+            <div className="flex items-center gap-2 text-gold-DEFAULT text-xs font-bold uppercase tracking-widest">
               <Loader2 size={16} className="animate-spin" />
               <span>Syncing...</span>
             </div>
@@ -134,7 +134,7 @@ const GenericModule = ({ title, endpoint, fields }: GenericModuleProps) => {
             <p className="text-slate-500 text-sm mt-1 mb-6">Get started by creating your first record.</p>
             <button 
               onClick={() => { setEditData(undefined); setIsModalOpen(true); }}
-              className="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline"
+              className="text-sm font-medium text-gold-DEFAULT hover:text-gold-hover hover:underline"
             >
               + Create new {title.toLowerCase()}
             </button>
@@ -189,7 +189,7 @@ const GenericModule = ({ title, endpoint, fields }: GenericModuleProps) => {
                       <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button 
                           onClick={() => handleEdit(row)}
-                          className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                          className="p-1.5 text-slate-400 hover:text-gold-DEFAULT hover:bg-gold-dim rounded-md transition-colors"
                           title="Edit"
                         >
                           <Edit2 size={16} />

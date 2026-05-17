@@ -97,7 +97,7 @@ const GenericForm = <T extends Record<string, unknown>>({
                       onChange={(e) => handleChange(field.name, e.target.value)}
                       required={field.required}
                       placeholder={field.placeholder}
-                      className="w-full px-4 py-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none h-32 text-sm dark:text-white transition-all resize-none shadow-sm"
+                      className="w-full px-4 py-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 gold-ring focus:border-gold-DEFAULT outline-none h-32 text-sm dark:text-white transition-all resize-none shadow-sm"
                     />
                   ) : field.type === 'file' ? (
                     <div className="space-y-4">
@@ -159,7 +159,7 @@ const GenericForm = <T extends Record<string, unknown>>({
                       value={(formData[field.name as keyof T] as string | number) || ''}
                       onChange={(e) => handleChange(field.name, e.target.value)}
                       required={field.required}
-                      className="w-full px-4 py-2.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none text-sm dark:text-white transition-all appearance-none shadow-sm"
+                      className="w-full px-4 py-2.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 gold-ring focus:border-gold-DEFAULT outline-none text-sm dark:text-white transition-all appearance-none shadow-sm"
                     >
                       <option value="">Select {field.label}</option>
                       {field.options?.map((opt) => (
@@ -187,7 +187,7 @@ const GenericForm = <T extends Record<string, unknown>>({
                       onChange={(e) => handleChange(field.name, e.target.value)}
                       required={field.required}
                       placeholder={field.placeholder}
-                      className="w-full px-4 py-2.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none text-sm dark:text-white transition-all placeholder:text-slate-400 shadow-sm"
+                      className="w-full px-4 py-2.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 gold-ring focus:border-gold-DEFAULT outline-none text-sm dark:text-white transition-all placeholder:text-slate-400 shadow-sm"
                     />
                   )}
                 </div>
@@ -209,7 +209,7 @@ const GenericForm = <T extends Record<string, unknown>>({
               form="generic-form"
               type="submit"
               disabled={isLoading || uploadingField !== null}
-              className="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-all shadow-sm disabled:opacity-50"
+              className="flex items-center gap-2 btn-gold px-6 py-2.5 rounded-lg text-sm disabled:opacity-50"
             >
               {isLoading && <Loader2 size={16} className="animate-spin" />}
               {initialData ? 'Update' : 'Create'} {title}
