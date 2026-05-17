@@ -1,12 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Save, ArrowLeft, Loader2, Settings, Globe, CheckCircle2, AlertCircle } from 'lucide-react';
-import api from '../../../utils/api';
-import { cn } from '../../../utils/cn';
+import api from '../../utils/api';
+import { cn } from '../../utils/cn';
+
+interface BlogSeo { title?: string; description?: string; keywords?: string[] }
+interface Blog {
+  title?: string; slug?: string; content?: string; excerpt?: string;
+  thumbnail?: string; category?: string; isPublished?: boolean;
+  seo?: BlogSeo;
+}
+interface BlogResponse { data: Blog }
 
 export default function BlogEditor() {
   const { id } = useParams();
@@ -24,16 +32,19 @@ export default function BlogEditor() {
   const [metaTitle, setMetaTitle] = useState('');
   const [metaDescription, setMetaDescription] = useState('');
 
-  // Auto-generate slug from title if not editing
-  useEffect(() => {
-    if (!isEditing && title) {
-      setSlug(title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''));
-    }
-  }, [title, isEditing]);
+  // Auto-generate slug from title if not editing — derived from title, no effect needed
+  const autoSlug = useMemo(
+    () => isEditing ? slug : title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [title, isEditing]
+  );
 
-  const { data: blogData, isLoading: isFetching } = useQuery({
+  // Sync autoSlug back only when not editing (guard prevents re-entry)
+  useEffect(() => { if (!isEditing) setSlug(autoSlug); }, [autoSlug, isEditing]);
+
+  const { data: blogData } = useQuery<BlogResponse>({
     queryKey: ['blogs', id],
-    queryFn: () => api.get(`/blogs/${id}`).then(res => res.data),
+    queryFn: () => api.get<BlogResponse>(`/blogs/${id}`).then(res => res.data),
     enabled: isEditing
   });
 
@@ -50,30 +61,28 @@ export default function BlogEditor() {
     }
   });
 
-  // Populate data when editing
+  // Populate form from fetched data when editing
   useEffect(() => {
-    if (blogData?.data && editor) {
-      const blog = blogData.data;
-      setTitle(blog.title || '');
-      setSlug(blog.slug || '');
-      setExcerpt(blog.excerpt || '');
-      setThumbnail(blog.thumbnail || '');
-      setCategory(blog.category || '');
-      setIsPublished(blog.isPublished || false);
-      setFocusKeyword(blog.seo?.keywords?.[0] || '');
-      setMetaTitle(blog.seo?.title || '');
-      setMetaDescription(blog.seo?.description || '');
-      editor.commands.setContent(blog.content || '');
+    const blog = blogData?.data;
+    if (blog && editor) {
+      setTitle(blog.title ?? '');
+      setSlug(blog.slug ?? '');
+      setExcerpt(blog.excerpt ?? '');
+      setThumbnail(blog.thumbnail ?? '');
+      setCategory(blog.category ?? '');
+      setIsPublished(blog.isPublished ?? false);
+      setFocusKeyword(blog.seo?.keywords?.[0] ?? '');
+      setMetaTitle(blog.seo?.title ?? '');
+      setMetaDescription(blog.seo?.description ?? '');
+      editor.commands.setContent(blog.content ?? '');
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [blogData, editor]);
 
   const saveMutation = useMutation({
-    mutationFn: (payload: any) => {
-      // Temporarily hardcode a dummy author ID for testing until auth is fully hooked up
+    mutationFn: (payload: Record<string, unknown>) => {
       const finalPayload = { ...payload, author: '60d5ecb8b392d700153ee612' };
-      if (isEditing) {
-        return api.patch(`/blogs/${id}`, finalPayload);
-      }
+      if (isEditing) return api.patch(`/blogs/${id}`, finalPayload);
       return api.post('/blogs', finalPayload);
     },
     onSuccess: () => {

@@ -2,17 +2,19 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, Search, AlertCircle, Loader2, Edit2, Trash2, Eye } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import api from '../../../utils/api';
-import { cn } from '../../../utils/cn';
+import api from '../../utils/api';
+import { cn } from '../../utils/cn';
 
 const BlogDashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  const { data, isLoading, error } = useQuery({
+  interface BlogsResponse { data: Record<string, unknown>[] }
+
+  const { data, isLoading, error } = useQuery<BlogsResponse>({
     queryKey: ['blogs', searchTerm],
-    queryFn: () => api.get(`/blogs?search=${searchTerm}`).then(res => res.data)
+    queryFn: () => api.get<BlogsResponse>(`/blogs?search=${searchTerm}`).then(res => res.data)
   });
 
   const results = (data?.data || []) as Record<string, unknown>[];

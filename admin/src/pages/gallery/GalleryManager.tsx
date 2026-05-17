@@ -1,29 +1,39 @@
 import { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Upload, X, Loader2, Image as ImageIcon, Trash2, Settings } from 'lucide-react';
-import api from '../../../utils/api';
-import { cn } from '../../../utils/cn';
+import { Upload, Loader2, Image as ImageIcon, Trash2 } from 'lucide-react';
+import api from '../../utils/api';
+import { cn } from '../../utils/cn';
+
+interface GalleryItem {
+  _id: string;
+  title?: string;
+  imageUrl: string;
+  category?: string;
+  createdAt?: string;
+}
+
+interface ApiListResponse {
+  data: GalleryItem[];
+}
 
 export default function GalleryManager() {
   const queryClient = useQueryClient();
   const [activeCategory, setActiveCategory] = useState('All');
-  
-  // To handle uploading multiple files, we mock a fake upload progress since we don't have a real S3 integration hooked up here.
   const [uploadingFiles, setUploadingFiles] = useState<{file: File, progress: number}[]>([]);
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading } = useQuery<ApiListResponse>({
     queryKey: ['gallery'],
-    queryFn: () => api.get('/galleries').then(res => res.data)
+    queryFn: () => api.get<ApiListResponse>('/galleries').then(res => res.data)
   });
 
-  const images = (data?.data || []) as Record<string, unknown>[];
-
-  const categories = ['All', ...new Set(images.map(img => img.category as string || 'General'))];
+  const images: GalleryItem[] = data?.data || [];
+  const categories = ['All', ...new Set(images.map(img => img.category || 'General'))];
   const filteredImages = activeCategory === 'All' ? images : images.filter(img => img.category === activeCategory);
 
   const createMutation = useMutation({
-    mutationFn: (payload: any) => api.post('/galleries', payload),
+    mutationFn: (payload: { title: string; imageUrl: string; category: string }) =>
+      api.post('/galleries', payload),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['gallery'] })
   });
 
@@ -33,17 +43,12 @@ export default function GalleryManager() {
   });
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    // In a real production scenario, this would upload directly to Cloudinary/S3.
-    // For now, we simulate an upload and save a dummy URL to the database.
     const newUploads = acceptedFiles.map(file => ({ file, progress: 0 }));
     setUploadingFiles(prev => [...prev, ...newUploads]);
 
-    for (let i = 0; i < acceptedFiles.length; i++) {
-      const file = acceptedFiles[i];
-      // Simulate upload delay
+    for (const file of acceptedFiles) {
       await new Promise(resolve => setTimeout(resolve, 800));
-      
-      const fakeUrl = URL.createObjectURL(file); // Temporary blob URL for display
+      const fakeUrl = URL.createObjectURL(file);
 
       await createMutation.mutateAsync({
         title: file.name,
@@ -75,13 +80,13 @@ export default function GalleryManager() {
         className={cn(
           "border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-all duration-300 relative overflow-hidden group",
           isDragActive 
-            ? "border-blue-500 bg-blue-50 dark:bg-blue-500/10" 
+            ? "border-gold-DEFAULT bg-gold-dim" 
             : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 hover:bg-slate-50 dark:hover:bg-slate-900/50 hover:border-slate-300"
         )}
       >
         <input {...getInputProps()} />
         <div className="flex flex-col items-center justify-center gap-4">
-          <div className="w-16 h-16 bg-blue-50 dark:bg-blue-500/10 text-blue-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+          <div className="w-16 h-16 bg-gold-dim text-gold-DEFAULT rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
             <Upload size={28} />
           </div>
           <div>
@@ -92,8 +97,8 @@ export default function GalleryManager() {
       </div>
 
       {uploadingFiles.length > 0 && (
-        <div className="bg-white dark:bg-slate-950 border border-blue-100 dark:border-blue-900 p-4 rounded-xl shadow-sm flex items-center gap-4">
-          <Loader2 className="animate-spin text-blue-600" size={24} />
+        <div className="bg-white dark:bg-slate-950 border border-gold-DEFAULT/20 p-4 rounded-xl shadow-sm flex items-center gap-4">
+          <Loader2 className="animate-spin text-gold-DEFAULT" size={24} />
           <div>
             <p className="text-sm font-bold text-slate-800 dark:text-white">Uploading {uploadingFiles.length} files...</p>
             <p className="text-xs text-slate-500">Please do not close this window.</p>
@@ -110,7 +115,7 @@ export default function GalleryManager() {
             className={cn(
               "px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors",
               activeCategory === cat 
-                ? "bg-slate-800 text-white dark:bg-white dark:text-slate-900"
+                ? "bg-navy-main text-white"
                 : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 dark:bg-slate-950 dark:border-slate-800 dark:text-slate-400"
             )}
           >
@@ -134,7 +139,7 @@ export default function GalleryManager() {
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-          {filteredImages.map((img: any) => (
+          {filteredImages.map((img) => (
             <div key={img._id} className="group relative aspect-square rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
               <img 
                 src={img.imageUrl} 
