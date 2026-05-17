@@ -11,15 +11,12 @@ import {
   ArrowUpRight, 
   ArrowDownRight,
   MoreVertical,
-  CheckCircle2,
   Clock,
   Briefcase
 } from 'lucide-react';
 import { 
   AreaChart, 
   Area, 
-  BarChart,
-  Bar,
   XAxis, 
   YAxis, 
   CartesianGrid, 
