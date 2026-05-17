@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Search, AlertCircle, Loader2, Edit2, Trash2, MoreHorizontal } from 'lucide-react';
+import { Plus, Search, AlertCircle, Loader2, Edit2, Trash2 } from 'lucide-react';
 import api from '../../utils/api';
 import GenericForm, { type Field } from './GenericForm';
 import { cn } from '../../utils/cn';
@@ -77,29 +77,29 @@ const GenericModule = ({ title, endpoint, fields }: GenericModuleProps) => {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{title} Management</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Configure and monitor your {title.toLowerCase()} items.</p>
+          <h1 className="text-2xl font-bold text-slate-800 tracking-tight">{title} Management</h1>
+          <p className="text-slate-500 text-sm mt-1">Configure and monitor your {title.toLowerCase()} items.</p>
         </div>
         <button 
           onClick={() => { setEditData(undefined); setIsModalOpen(true); }}
-          className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl text-sm font-bold shadow-lg shadow-blue-600/20 hover:scale-105 active:scale-95 transition-all"
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium shadow-sm transition-all"
         >
-          <Plus size={18} /> Add New {title}
+          <Plus size={16} /> Add New {title}
         </button>
       </div>
 
       {/* Main Content Card */}
-      <div className="bg-white dark:bg-slate-950 rounded-3xl border border-gray-100 dark:border-slate-900 shadow-premium overflow-hidden">
+      <div className="bg-white dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
         {/* Filter Bar */}
-        <div className="p-6 border-b border-gray-50 dark:border-slate-900 flex items-center justify-between gap-4">
+        <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-900 flex items-center justify-between gap-4 bg-slate-50/50 dark:bg-slate-900/20">
           <div className="relative flex-1 max-w-md group">
-            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
             <input 
               type="text" 
-              placeholder={`Quick search ${title.toLowerCase()}...`}
+              placeholder={`Search ${title.toLowerCase()}...`}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-slate-900 border-none rounded-2xl text-sm outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+              className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all shadow-sm"
             />
           </div>
           {(isLoading || createMutation.isPending || updateMutation.isPending || deleteMutation.isPending) && (
@@ -126,70 +126,78 @@ const GenericModule = ({ title, endpoint, fields }: GenericModuleProps) => {
             <p className="text-gray-500 text-sm mt-1">We couldn't fetch the {title.toLowerCase()} list.</p>
           </div>
         ) : results.length === 0 ? (
-          <div className="p-20 text-center">
-            <div className="w-20 h-20 bg-gray-50 dark:bg-slate-900 rounded-3xl flex items-center justify-center mx-auto mb-6 text-gray-300">
-              <Search size={40} />
+          <div className="p-16 text-center flex flex-col items-center">
+            <div className="w-16 h-16 bg-slate-50 dark:bg-slate-900 rounded-full flex items-center justify-center mb-4 text-slate-400 border border-slate-100 dark:border-slate-800">
+              <Search size={24} />
             </div>
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white">No items found</h3>
-            <p className="text-gray-500 dark:text-gray-400 mt-2">Start by adding your first {title.toLowerCase()} record.</p>
+            <h3 className="text-lg font-bold text-slate-800 dark:text-white">No {title.toLowerCase()} found</h3>
+            <p className="text-slate-500 text-sm mt-1 mb-6">Get started by creating your first record.</p>
+            <button 
+              onClick={() => { setEditData(undefined); setIsModalOpen(true); }}
+              className="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline"
+            >
+              + Create new {title.toLowerCase()}
+            </button>
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left">
+            <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-gray-50/50 dark:bg-slate-900/50">
-                  <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Content Info</th>
-                  <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Created</th>
-                  <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider text-right">Actions</th>
+                <tr className="bg-slate-50/50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800">
+                  <th className="px-6 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider">Details</th>
+                  <th className="px-6 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider">Created</th>
+                  <th className="px-6 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50 dark:divide-slate-900">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
                 {results.map((row: Record<string, unknown>) => (
-                  <tr key={row._id as string} className="group hover:bg-gray-50/50 dark:hover:bg-slate-900/30 transition-colors">
-                    <td className="px-6 py-5">
-                      <div className="flex items-center gap-4">
-                        {row.imageUrl ? (
-                          <img src={row.imageUrl as string} className="w-12 h-12 rounded-xl object-cover shadow-sm" alt="Thumbnail" />
-                        ) : (
-                          <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-slate-800 flex items-center justify-center text-gray-400">
-                            <MoreHorizontal size={20} />
-                          </div>
+                  <tr key={row._id as string} className="group hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-colors">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        {row.imageUrl && typeof row.imageUrl === 'string' && (
+                          <img src={row.imageUrl} alt="Thumbnail" className="w-10 h-10 rounded-lg object-cover border border-slate-200" />
                         )}
                         <div>
-                          <p className="font-bold text-gray-900 dark:text-white truncate max-w-[200px]">
-                            {(row.title as string) || (row.name as string) || 'Untitled Entry'}
+                          <p className="font-medium text-slate-800 dark:text-white">
+                            {String(row.title || row.name || row.courseName || row.platform || 'Untitled Item')}
                           </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 italic">ID: ...{(row._id as string)?.slice(-6)}</p>
+                          <p className="text-xs text-slate-500 mt-0.5 max-w-[300px] truncate">
+                            {String(row._id)}
+                          </p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-5">
-                      <span className={cn(
-                        "px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest",
-                        row.isActive !== false 
-                          ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-600/10" 
-                          : "bg-gray-100 text-gray-500 dark:bg-slate-800"
-                      )}>
-                        {row.isActive !== false ? 'Live' : 'Hidden'}
-                      </span>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {row.isActive !== undefined ? (
+                        <span className={cn(
+                          "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium",
+                          row.isActive 
+                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200/50 dark:bg-emerald-500/10 dark:text-emerald-400" 
+                            : "bg-slate-100 text-slate-600 border border-slate-200/50 dark:bg-slate-800 dark:text-slate-400"
+                        )}>
+                          {row.isActive ? 'Active' : 'Draft'}
+                        </span>
+                      ) : (
+                        <span className="text-slate-400 text-xs">—</span>
+                      )}
                     </td>
-                    <td className="px-6 py-5">
-                      <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">
-                        {new Date(row.createdAt as string).toLocaleDateString()}
-                      </p>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                      {row.createdAt ? new Date(row.createdAt as string).toLocaleDateString() : 'N/A'}
                     </td>
-                    <td className="px-6 py-5 text-right">
+                    <td className="px-6 py-4 whitespace-nowrap text-right">
                       <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button 
                           onClick={() => handleEdit(row)}
-                          className="p-2.5 rounded-xl bg-blue-50 dark:bg-blue-600/10 text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-600/20 transition-colors"
+                          className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                          title="Edit"
                         >
                           <Edit2 size={16} />
                         </button>
                         <button 
                           onClick={() => handleDelete(row)}
-                          className="p-2.5 rounded-xl bg-rose-50 dark:bg-rose-600/10 text-rose-600 hover:bg-rose-100 dark:hover:bg-rose-600/20 transition-colors"
+                          className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors"
+                          title="Delete"
                         >
                           <Trash2 size={16} />
                         </button>
