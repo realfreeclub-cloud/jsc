@@ -155,7 +155,7 @@ const GenericModule = ({ title, endpoint, fields }: GenericModuleProps) => {
                   <tr key={row._id as string} className="group hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        {row.imageUrl && typeof row.imageUrl === 'string' && (
+                        {typeof row.imageUrl === 'string' && (
                           <img src={row.imageUrl} alt="Thumbnail" className="w-10 h-10 rounded-lg object-cover border border-slate-200" />
                         )}
                         <div>
