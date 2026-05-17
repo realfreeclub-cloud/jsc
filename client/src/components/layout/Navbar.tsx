@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Scale, Menu } from 'lucide-react';
+import { Menu } from 'lucide-react';
 
 const Navbar = () => {
   return (

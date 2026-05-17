@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Scale, Mail, Phone, MapPin, MessageCircle, Camera, Video, Send } from 'lucide-react';
+import { Mail, Phone, MapPin, MessageCircle, Camera, Video, Send } from 'lucide-react';
 
 const Footer = () => {
   return (
