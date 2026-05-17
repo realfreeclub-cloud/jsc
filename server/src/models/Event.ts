@@ -8,6 +8,8 @@ const eventSchema = new mongoose.Schema({
   location: { type: String },
   banner: { type: String },
   registrationLink: { type: String },
+  rsvpCount: { type: Number, default: 0 },
+  status: { type: String, enum: ['upcoming', 'ongoing', 'completed'], default: 'upcoming' },
   isActive: { type: Boolean, default: true }
 }, { timestamps: true });
 

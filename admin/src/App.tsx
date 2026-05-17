@@ -7,8 +7,6 @@ import ScrollToTop from './components/utils/ScrollToTop';
 
 const Dashboard = React.lazy(() => import('./pages/Dashboard'));
 const Courses = React.lazy(() => import('./pages/Courses'));
-const Students = React.lazy(() => import('./pages/Students'));
-const WhatsAppSettings = React.lazy(() => import('./pages/WhatsAppSettings'));
 const GenericModule = React.lazy(() => import('./components/ui/GenericModule'));
 const Login = React.lazy(() => import('./pages/Login'));
 
@@ -31,7 +29,22 @@ function App() {
           <Route path="/" element={<AdminLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="courses" element={<Courses />} />
-            <Route path="students" element={<Students />} />
+            <Route path="students" element={
+              <GenericModule 
+                title="Student" 
+                endpoint="students" 
+                fields={[
+                  { name: 'name', label: 'Full Name', type: 'text', required: true },
+                  { name: 'email', label: 'Email', type: 'text' },
+                  { name: 'phone', label: 'Phone', type: 'text', required: true },
+                  { name: 'course', label: 'Enrolled Course', type: 'text' },
+                  { name: 'status', label: 'Status', type: 'text' },
+                  { name: 'feesPaid', label: 'Fees Paid', type: 'number' },
+                  { name: 'totalFees', label: 'Total Fees', type: 'number' },
+                  { name: 'isActive', label: 'Active', type: 'checkbox' }
+                ]}
+              />
+            } />
             
             {/* Fully working generic CRUD modules */}
             <Route path="hero-slider" element={
@@ -96,54 +109,86 @@ function App() {
               />
             } />
 
-            <Route path="latest-updates" element={
+            {/* Academics - Missing routes added back */}
+            <Route path="demo-classes" element={
               <GenericModule 
-                title="Latest Update" 
-                endpoint="latestupdates" 
+                title="Demo Classes" 
+                endpoint="democlasses" 
                 fields={[
-                  { name: 'title', label: 'Update Text', type: 'text', required: true },
-                  { name: 'link', label: 'Target Link', type: 'text' },
-                  { name: 'isActive', label: 'Status', type: 'checkbox' }
+                  { name: 'name', label: 'Student Name', type: 'text', required: true },
+                  { name: 'phone', label: 'Phone', type: 'text', required: true },
+                  { name: 'email', label: 'Email', type: 'text' },
+                  { name: 'courseInterest', label: 'Course Interest', type: 'text' },
+                  { name: 'scheduleDate', label: 'Scheduled Date', type: 'date' },
+                  { name: 'status', label: 'Status', type: 'text' },
+                  { name: 'isActive', label: 'Active', type: 'checkbox' }
                 ]}
               />
             } />
 
-            <Route path="blogs" element={<GenericModule title="Blogs" endpoint="blogs" fields={[{name:'title', label:'Title', type:'text', required:true}, {name:'content', label:'Content', type:'textarea'}]} />} />
-            <Route path="gallery" element={<GenericModule title="Gallery" endpoint="gallerys" fields={[{name:'title', label:'Title', type:'text'}, {name:'imageUrl', label:'Image URL', type:'file', required:true}]} />} />
-            <Route path="study-material" element={<GenericModule title="Study Material" endpoint="studymaterials" fields={[{name:'title', label:'Title', type:'text', required:true}, {name:'fileUrl', label:'File URL', type:'url', required:true}]} />} />
-            <Route path="testimonials" element={<GenericModule title="Testimonials" endpoint="testimonials" fields={[{name:'name', label:'Name', type:'text', required:true}, {name:'message', label:'Message', type:'textarea'}]} />} />
-            
-            {/* Settings & New Architecture Placeholders */}
-            <Route path="analytics" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Analytics</h2><p className="text-gray-500">Analytics module coming soon.</p></div>} />
-            <Route path="reports" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Reports</h2><p className="text-gray-500">Reporting module coming soon.</p></div>} />
-            
-            <Route path="batches" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Batch Management</h2></div>} />
-            <Route path="demo-classes" element={<GenericModule title="Demo Classes" endpoint="democlasses" fields={[{name:'title', label:'Title', type:'text'}, {name:'videoUrl', label:'Video URL', type:'text'}]} />} />
-            <Route path="test-series" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Test Series</h2></div>} />
-            <Route path="questions" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Question Bank</h2></div>} />
-            <Route path="assignments" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Assignments</h2></div>} />
-            <Route path="academic-attendance" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Student Attendance</h2></div>} />
-            
-            <Route path="admissions" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Admissions Workflow</h2></div>} />
-            <Route path="fees" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Fee Management</h2></div>} />
-            <Route path="id-cards" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">ID Card Generator</h2></div>} />
-            <Route path="certificates" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Certificates</h2></div>} />
-            <Route path="performance" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Performance Tracking</h2></div>} />
+            {/* Marketing & SEO Components */}
+            <Route path="seo-dashboard" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">SEO Dashboard</h2><p className="text-gray-500">Coming soon.</p></div>} />
+            <Route path="seo-settings" element={
+              <GenericModule 
+                title="SEO Settings" 
+                endpoint="seosettings" 
+                fields={[
+                  { name: 'pageUrl', label: 'Page URL', type: 'text', required: true },
+                  { name: 'metaTitle', label: 'Meta Title', type: 'text', required: true },
+                  { name: 'metaDescription', label: 'Meta Description', type: 'textarea' },
+                  { name: 'keywords', label: 'Keywords (Comma separated)', type: 'textarea' },
+                  { name: 'canonicalUrl', label: 'Canonical URL', type: 'text' },
+                  { name: 'ogImage', label: 'OG Image URL', type: 'file' },
+                  { name: 'isActive', label: 'Active', type: 'checkbox' }
+                ]}
+              />
+            } />
+            <Route path="meta-tags" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Meta Tags Config</h2><p className="text-gray-500">Managed via SEO Settings.</p></div>} />
+            <Route path="social-media" element={
+              <GenericModule 
+                title="Social Media Links" 
+                endpoint="socialmedias" 
+                fields={[
+                  { name: 'platform', label: 'Platform Name', type: 'text', required: true },
+                  { name: 'url', label: 'Profile URL', type: 'text', required: true },
+                  { name: 'icon', label: 'Icon Class (e.g. facebook)', type: 'text' },
+                  { name: 'order', label: 'Order', type: 'number' },
+                  { name: 'isActive', label: 'Active', type: 'checkbox' }
+                ]}
+              />
+            } />
+            <Route path="whatsapp-leads" element={
+              <GenericModule 
+                title="WhatsApp Leads" 
+                endpoint="whatsappleads" 
+                fields={[
+                  { name: 'name', label: 'Name', type: 'text' },
+                  { name: 'phone', label: 'Phone', type: 'text', required: true },
+                  { name: 'message', label: 'Message', type: 'textarea' },
+                  { name: 'sourcePage', label: 'Source Page', type: 'text' },
+                  { name: 'status', label: 'Status', type: 'text' },
+                  { name: 'notes', label: 'Notes', type: 'textarea' },
+                  { name: 'isActive', label: 'Active', type: 'checkbox' }
+                ]}
+              />
+            } />
 
-            <Route path="salary" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Faculty Salary</h2></div>} />
-            <Route path="faculty-attendance" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Faculty Attendance</h2></div>} />
-            <Route path="scheduling" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Lecture Scheduling</h2></div>} />
-
-            <Route path="meta-tags" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Meta Tags Config</h2></div>} />
-            <Route path="social-media" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Social Media Connect</h2></div>} />
-            <Route path="email-campaigns" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Email Campaigns</h2></div>} />
-
-            <Route path="roles" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Roles & Permissions</h2></div>} />
-            <Route path="api-config" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">API Config</h2></div>} />
-            <Route path="security" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Backup & Security</h2></div>} />
-
-            <Route path="seo" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">SEO Config</h2><p className="text-gray-500">Configuration panel loaded.</p></div>} />
-            <Route path="whatsapp-settings" element={<WhatsAppSettings />} />
+            {/* Hero Slider */}
+            <Route path="hero-slider" element={
+              <GenericModule 
+                title="Hero Slider" 
+                endpoint="herosliders" 
+                fields={[
+                  { name: 'title', label: 'Title', type: 'text', required: true },
+                  { name: 'subtitle', label: 'Subtitle', type: 'textarea' },
+                  { name: 'imageUrl', label: 'Image URL', type: 'file', required: true },
+                  { name: 'ctaText', label: 'Button Text', type: 'text' },
+                  { name: 'ctaLink', label: 'Button Link', type: 'text' },
+                  { name: 'order', label: 'Order', type: 'number' },
+                  { name: 'isActive', label: 'Active', type: 'checkbox' }
+                ]}
+              />
+            } />
             <Route path="app-settings" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">App Config</h2><p className="text-gray-500">Configuration panel loaded.</p></div>} />
             <Route path="admins" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Admin Users</h2><p className="text-gray-500">Manage administrative accounts here.</p></div>} />
           </Route>

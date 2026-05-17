@@ -23,6 +23,11 @@ import testimonialsRoutes from './routes/testimonialsRoutes';
 import facultysRoutes from './routes/facultysRoutes';
 import heroslidersRoutes from './routes/heroslidersRoutes';
 import homeRoutes from './routes/homeRoutes';
+import demoClassesRoutes from './routes/demoClassesRoutes';
+import studentsRoutes from './routes/studentsRoutes';
+import socialMediasRoutes from './routes/socialMediasRoutes';
+import whatsappLeadsRoutes from './routes/whatsappLeadsRoutes';
+import seoSettingsRoutes from './routes/seoSettingsRoutes';
 
 import path from 'path';
 import uploadRoutes from './routes/uploadRoutes';
@@ -64,6 +69,11 @@ app.use('/api/v1/testimonials', testimonialsRoutes);
 app.use('/api/v1/facultys', facultysRoutes);
 app.use('/api/v1/herosliders', heroslidersRoutes);
 app.use('/api/v1/home', homeRoutes);
+app.use('/api/v1/democlasses', demoClassesRoutes);
+app.use('/api/v1/students', studentsRoutes);
+app.use('/api/v1/socialmedias', socialMediasRoutes);
+app.use('/api/v1/whatsappleads', whatsappLeadsRoutes);
+app.use('/api/v1/seosettings', seoSettingsRoutes);
 
 // Handle undefined routes
 app.use((req, res, next) => {

@@ -2,16 +2,18 @@ import { motion } from 'framer-motion';
 import { 
   Users, 
   BookOpen, 
-  Activity, 
-  TrendingUp, 
+  FileText, 
+  Camera, 
+  Calendar, 
+  MonitorPlay,
+  MessageSquare,
+  TrendingUp,
   ArrowUpRight, 
   ArrowDownRight,
-  Plus,
-  Send,
-  Calendar,
-  Clock,
+  MoreVertical,
   CheckCircle2,
-  AlertCircle
+  Clock,
+  Briefcase
 } from 'lucide-react';
 import { 
   AreaChart, 
@@ -22,246 +24,256 @@ import {
   YAxis, 
   CartesianGrid, 
   Tooltip, 
-  ResponsiveContainer
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell
 } from 'recharts';
-import { useTheme } from '../store/useTheme';
 
+// Data mapping exactly to the 8 required metrics requested by the user
 const stats = [
-  { 
-    name: 'Total Students', 
-    value: '2,845', 
-    change: '+12.5%', 
-    trend: 'up', 
-    icon: Users,
-    color: 'blue'
-  },
-  { 
-    name: 'Active Courses', 
-    value: '48', 
-    change: '+4', 
-    trend: 'up', 
-    icon: BookOpen,
-    color: 'indigo'
-  },
-  { 
-    name: 'Avg. Attendance', 
-    value: '92%', 
-    change: '-2.1%', 
-    trend: 'down', 
-    icon: Activity,
-    color: 'emerald'
-  },
-  { 
-    name: 'Total Revenue', 
-    value: '₹12.4L', 
-    change: '+18.2%', 
-    trend: 'up', 
-    icon: TrendingUp,
-    color: 'violet'
-  }
+  { name: 'Total Students', value: '2,845', change: '+12.5%', trend: 'up', icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' },
+  { name: 'Total Faculty', value: '42', change: '+2', trend: 'up', icon: Briefcase, color: 'text-indigo-600', bg: 'bg-indigo-50' },
+  { name: 'Total Courses', value: '31', change: '0', trend: 'neutral', icon: BookOpen, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+  { name: 'Total Blogs', value: '156', change: '+12', trend: 'up', icon: FileText, color: 'text-amber-600', bg: 'bg-amber-50' },
+  { name: 'Gallery Images', value: '840', change: '+45', trend: 'up', icon: Camera, color: 'text-rose-600', bg: 'bg-rose-50' },
+  { name: 'Total Events', value: '24', change: '-1', trend: 'down', icon: Calendar, color: 'text-purple-600', bg: 'bg-purple-50' },
+  { name: 'Demo Classes', value: '128', change: '+18%', trend: 'up', icon: MonitorPlay, color: 'text-cyan-600', bg: 'bg-cyan-50' },
+  { name: 'WhatsApp Leads', value: '4,521', change: '+32.4%', trend: 'up', icon: MessageSquare, color: 'text-green-600', bg: 'bg-green-50' },
 ];
 
-const enrollmentData = [
-  { name: 'Jan', students: 400 },
-  { name: 'Feb', students: 600 },
-  { name: 'Mar', students: 500 },
-  { name: 'Apr', students: 900 },
-  { name: 'May', students: 1100 },
-  { name: 'Jun', students: 1500 },
+const trafficData = [
+  { name: 'Jan', organic: 4000, social: 2400 },
+  { name: 'Feb', organic: 3000, social: 1398 },
+  { name: 'Mar', organic: 2000, social: 9800 },
+  { name: 'Apr', organic: 2780, social: 3908 },
+  { name: 'May', organic: 1890, social: 4800 },
+  { name: 'Jun', organic: 2390, social: 3800 },
+  { name: 'Jul', organic: 3490, social: 4300 },
 ];
 
-const revenueData = [
-  { name: 'Jan', revenue: 240000 },
-  { name: 'Feb', revenue: 300000 },
-  { name: 'Mar', revenue: 280000 },
-  { name: 'Apr', revenue: 450000 },
-  { name: 'May', revenue: 600000 },
-  { name: 'Jun', revenue: 800000 },
+const deviceData = [
+  { name: 'Mobile', value: 65, color: '#3b82f6' }, // blue-500
+  { name: 'Desktop', value: 25, color: '#6366f1' }, // indigo-500
+  { name: 'Tablet', value: 10, color: '#10b981' }, // emerald-500
 ];
 
 const recentActivity = [
-  { id: 1, action: "New Admission", user: "Rahul Sharma", time: "10 mins ago", status: "success" },
-  { id: 2, action: "Material Uploaded", user: "Dr. H D Tripathi", time: "1 hour ago", status: "info" },
-  { id: 3, action: "Fee Pending", user: "Amit Kumar", time: "2 hours ago", status: "warning" },
-  { id: 4, action: "Course Created", user: "System Admin", time: "4 hours ago", status: "success" },
+  { id: 1, student: "Rahul Sharma", action: "Registered for MP Civil Judge Demo", date: "Today, 10:30 AM", status: "New Lead", statusColor: "bg-blue-100 text-blue-700" },
+  { id: 2, student: "Priya Verma", action: "Submitted Admission Form", date: "Today, 09:15 AM", status: "Pending Review", statusColor: "bg-amber-100 text-amber-700" },
+  { id: 3, student: "Amit Singh", action: "Fee Payment Successful", date: "Yesterday, 04:45 PM", status: "Completed", statusColor: "bg-emerald-100 text-emerald-700" },
+  { id: 4, student: "Sneha Gupta", action: "Downloaded Study Material (CrPC Notes)", date: "Yesterday, 02:20 PM", status: "Active", statusColor: "bg-gray-100 text-gray-700" },
+  { id: 5, student: "Vikram AD", action: "WhatsApp Inquiry Generated", date: "12 May, 11:10 AM", status: "Follow Up", statusColor: "bg-purple-100 text-purple-700" },
 ];
 
 const Dashboard = () => {
-  const { isDarkMode } = useTheme();
-
   return (
-    <div className="space-y-8">
-      {/* Welcome Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="space-y-6 max-w-[1600px] mx-auto pb-10">
+      
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Good Morning, Admin 👋</h1>
-          <p className="text-gray-500 mt-1">Here's what's happening with Judicial Study Centre today.</p>
+          <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Dashboard Overview</h1>
+          <p className="text-slate-500 text-sm mt-1">Welcome back! Here is the latest data for Judicial Study Centre.</p>
         </div>
         <div className="flex items-center gap-3">
-          <button className="px-4 py-2 bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-xl text-sm font-semibold hover:shadow-sm transition-all">
-            Export Report
-          </button>
-          <button className="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-600/20 hover:scale-105 active:scale-95 transition-all">
-            + Quick Create
+          <select className="bg-white border border-slate-200 text-slate-600 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 outline-none shadow-sm cursor-pointer">
+            <option>Last 7 Days</option>
+            <option>Last 30 Days</option>
+            <option>This Year</option>
+          </select>
+          <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-md shadow-blue-500/20 transition-all flex items-center gap-2">
+            <TrendingUp size={16} /> Generate Report
           </button>
         </div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat, index) => (
+      {/* 8 Metric Cards Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        {stats.map((stat, idx) => (
           <motion.div
             key={stat.name}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-            className="p-6 bg-white dark:bg-slate-950 rounded-4xl border border-gray-50 dark:border-slate-900 shadow-premium hover:shadow-premium-hover transition-all group"
+            transition={{ delay: idx * 0.05 }}
+            className="bg-white rounded-2xl p-5 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all group cursor-default relative overflow-hidden"
           >
-            <div className="flex items-start justify-between">
-              <div className={`p-3 rounded-2xl bg-${stat.color}-50 dark:bg-${stat.color}-500/10 text-${stat.color}-600 dark:text-${stat.color}-500 transition-colors`}>
-                <stat.icon size={24} />
+            {/* Soft decorative background element */}
+            <div className={`absolute -right-6 -top-6 w-24 h-24 rounded-full opacity-50 transition-transform group-hover:scale-150 duration-500 ${stat.bg}`} />
+            
+            <div className="relative z-10">
+              <div className="flex justify-between items-start mb-4">
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${stat.bg} ${stat.color} shadow-sm`}>
+                  <stat.icon size={22} strokeWidth={2.5} />
+                </div>
+                <div className="flex items-center gap-1 text-sm font-medium">
+                  {stat.trend === 'up' ? (
+                    <span className="flex items-center text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
+                      <ArrowUpRight size={14} className="mr-0.5" /> {stat.change}
+                    </span>
+                  ) : stat.trend === 'down' ? (
+                    <span className="flex items-center text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full">
+                      <ArrowDownRight size={14} className="mr-0.5" /> {stat.change}
+                    </span>
+                  ) : (
+                    <span className="flex items-center text-slate-500 bg-slate-50 px-2 py-0.5 rounded-full">
+                      {stat.change}
+                    </span>
+                  )}
+                </div>
               </div>
-              <div className={`flex items-center gap-1 text-xs font-bold ${stat.trend === 'up' ? 'text-emerald-500' : 'text-rose-500'}`}>
-                {stat.trend === 'up' ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
-                {stat.change}
+              
+              <div>
+                <h3 className="text-slate-500 text-sm font-medium mb-1">{stat.name}</h3>
+                <p className="text-2xl font-bold text-slate-800">{stat.value}</p>
               </div>
-            </div>
-            <div className="mt-4">
-              <p className="text-sm font-medium text-gray-400 uppercase tracking-wider">{stat.name}</p>
-              <h3 className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{stat.value}</h3>
             </div>
           </motion.div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Charts Section */}
-        <div className="lg:col-span-2 space-y-8">
-          
-          {/* Enrollment Chart */}
-          <div className="p-8 bg-white dark:bg-slate-950 rounded-4xl border border-gray-50 dark:border-slate-900 shadow-premium">
-            <div className="flex items-center justify-between mb-8">
-              <h3 className="text-lg font-bold dark:text-white">Enrollment Analytics</h3>
-              <select className="bg-gray-50 dark:bg-slate-900 border-none text-xs font-bold rounded-lg px-3 py-1.5 outline-none">
-                <option>Last 6 Months</option>
-                <option>Yearly</option>
-              </select>
+      {/* Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-2">
+        {/* Main Area Chart */}
+        <div className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] border border-slate-100">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-lg font-bold text-slate-800">Platform Traffic</h2>
+              <p className="text-sm text-slate-500">Organic vs Social Media Leads</p>
             </div>
-            <div className="h-[300px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={enrollmentData}>
-                  <defs>
-                    <linearGradient id="colorStudents" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.1}/>
-                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDarkMode ? '#1e293b' : '#f1f5f9'} />
-                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: isDarkMode ? '#64748b' : '#94a3b8' }} dy={10} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: isDarkMode ? '#64748b' : '#94a3b8' }} />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: isDarkMode ? '#020617' : '#ffffff', borderRadius: '16px', border: isDarkMode ? '1px solid #1e293b' : 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)', fontSize: '12px', color: isDarkMode ? '#ffffff' : '#000000' }} 
-                    itemStyle={{ color: isDarkMode ? '#3b82f6' : '#2563eb' }}
-                  />
-                  <Area type="monotone" dataKey="students" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorStudents)" />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
+            <button className="p-2 hover:bg-slate-50 rounded-lg text-slate-400 transition-colors">
+              <MoreVertical size={20} />
+            </button>
           </div>
-
-          {/* Revenue Chart */}
-          <div className="p-8 bg-white dark:bg-slate-950 rounded-4xl border border-gray-50 dark:border-slate-900 shadow-premium">
-            <div className="flex items-center justify-between mb-8">
-              <h3 className="text-lg font-bold dark:text-white">Revenue Overview</h3>
-            </div>
-            <div className="h-[300px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={revenueData} barSize={32}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDarkMode ? '#1e293b' : '#f1f5f9'} />
-                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: isDarkMode ? '#64748b' : '#94a3b8' }} dy={10} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: isDarkMode ? '#64748b' : '#94a3b8' }} tickFormatter={(value) => `₹${value / 1000}k`} />
-                  <Tooltip 
-                    cursor={{ fill: isDarkMode ? '#1e293b' : '#f8fafc' }}
-                    contentStyle={{ backgroundColor: isDarkMode ? '#020617' : '#ffffff', borderRadius: '16px', border: isDarkMode ? '1px solid #1e293b' : 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)', fontSize: '12px', color: isDarkMode ? '#ffffff' : '#000000' }} 
-                  />
-                  <Bar dataKey="revenue" fill="#8b5cf6" radius={[6, 6, 6, 6]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+          <div className="h-[300px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={trafficData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorOrganic" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                  </linearGradient>
+                  <linearGradient id="colorSocial" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} dy={10} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                  itemStyle={{ color: '#0f172a', fontWeight: 500 }}
+                />
+                <Area type="monotone" dataKey="organic" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorOrganic)" />
+                <Area type="monotone" dataKey="social" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorSocial)" />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
-
         </div>
 
-        {/* Right Sidebar Widgets */}
-        <div className="space-y-8">
-          
-          {/* Quick Actions */}
-          <div className="p-8 bg-white dark:bg-slate-950 rounded-4xl border border-gray-50 dark:border-slate-900 shadow-premium">
-            <h3 className="text-lg font-bold dark:text-white mb-6">Shortcuts</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <button className="flex flex-col items-center justify-center gap-3 p-4 bg-gray-50 dark:bg-slate-900 rounded-2xl hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 transition-colors group">
-                <Plus size={24} className="text-gray-400 group-hover:text-blue-600 transition-colors" />
-                <span className="text-xs font-bold text-gray-600 dark:text-gray-400 group-hover:text-blue-600">Course</span>
-              </button>
-              <button className="flex flex-col items-center justify-center gap-3 p-4 bg-gray-50 dark:bg-slate-900 rounded-2xl hover:bg-emerald-50 dark:hover:bg-emerald-900/20 hover:text-emerald-600 transition-colors group">
-                <Users size={24} className="text-gray-400 group-hover:text-emerald-600 transition-colors" />
-                <span className="text-xs font-bold text-gray-600 dark:text-gray-400 group-hover:text-emerald-600">Student</span>
-              </button>
-              <button className="flex flex-col items-center justify-center gap-3 p-4 bg-gray-50 dark:bg-slate-900 rounded-2xl hover:bg-violet-50 dark:hover:bg-violet-900/20 hover:text-violet-600 transition-colors group">
-                <Calendar size={24} className="text-gray-400 group-hover:text-violet-600 transition-colors" />
-                <span className="text-xs font-bold text-gray-600 dark:text-gray-400 group-hover:text-violet-600">Event</span>
-              </button>
-              <button className="flex flex-col items-center justify-center gap-3 p-4 bg-gray-50 dark:bg-slate-900 rounded-2xl hover:bg-amber-50 dark:hover:bg-amber-900/20 hover:text-amber-600 transition-colors group">
-                <Send size={24} className="text-gray-400 group-hover:text-amber-600 transition-colors" />
-                <span className="text-xs font-bold text-gray-600 dark:text-gray-400 group-hover:text-amber-600">Alert</span>
-              </button>
+        {/* Donut Chart */}
+        <div className="bg-white rounded-2xl p-6 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] border border-slate-100 flex flex-col">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-lg font-bold text-slate-800">Traffic Source</h2>
+              <p className="text-sm text-slate-500">Device distribution</p>
             </div>
+            <button className="p-2 hover:bg-slate-50 rounded-lg text-slate-400 transition-colors">
+              <MoreVertical size={20} />
+            </button>
           </div>
-
-          {/* Activity Feed */}
-          <div className="p-8 bg-white dark:bg-slate-950 rounded-4xl border border-gray-50 dark:border-slate-900 shadow-premium">
-            <h3 className="text-lg font-bold dark:text-white mb-6">Recent Activity</h3>
-            <div className="space-y-6">
-              {recentActivity.map((activity, index) => (
-                <div key={activity.id} className="flex gap-4 relative">
-                  {index !== recentActivity.length - 1 && (
-                    <div className="absolute left-4 top-8 bottom-[-24px] w-px bg-gray-100 dark:bg-slate-800" />
-                  )}
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 z-10 ${
-                    activity.status === 'success' ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20' :
-                    activity.status === 'warning' ? 'bg-amber-100 text-amber-600 dark:bg-amber-500/20' :
-                    'bg-blue-100 text-blue-600 dark:bg-blue-500/20'
-                  }`}>
-                    {activity.status === 'success' ? <CheckCircle2 size={16} /> :
-                     activity.status === 'warning' ? <AlertCircle size={16} /> :
-                     <Clock size={16} />}
+          
+          <div className="flex-1 flex flex-col justify-center relative">
+            <div className="h-[220px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={deviceData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={70}
+                    outerRadius={90}
+                    paddingAngle={5}
+                    dataKey="value"
+                    stroke="none"
+                  >
+                    {deviceData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip 
+                    contentStyle={{ borderRadius: '10px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                    itemStyle={{ color: '#0f172a', fontWeight: 500 }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            
+            {/* Custom Legend */}
+            <div className="grid grid-cols-3 gap-2 mt-4">
+              {deviceData.map((item) => (
+                <div key={item.name} className="flex flex-col items-center text-center">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }}></span>
+                    <span className="text-xs font-medium text-slate-500">{item.name}</span>
                   </div>
-                  <div>
-                    <p className="text-sm font-bold text-gray-900 dark:text-white">{activity.action}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{activity.user} • {activity.time}</p>
-                  </div>
+                  <span className="text-sm font-bold text-slate-800">{item.value}%</span>
                 </div>
               ))}
             </div>
-            <button className="w-full mt-6 py-2 text-sm font-bold text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors">
-              View All Activity
-            </button>
           </div>
-
-          {/* System Alert */}
-          <div className="p-6 bg-linear-to-tr from-rose-500 to-orange-500 rounded-3xl text-white shadow-xl shadow-rose-500/30">
-            <div className="flex items-center gap-3 mb-2">
-              <AlertCircle size={20} />
-              <h4 className="font-bold text-lg">System Alert</h4>
-            </div>
-            <p className="text-white/90 text-sm">3 students have reported issues with the study material download API.</p>
-            <button className="mt-4 px-4 py-2 bg-white/20 backdrop-blur-md rounded-xl text-xs font-bold hover:bg-white/30 transition-all">
-              Investigate Log
-            </button>
-          </div>
-
         </div>
       </div>
+
+      {/* Recent Activity Table */}
+      <div className="bg-white rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] border border-slate-100 overflow-hidden">
+        <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-bold text-slate-800">Recent Leads & Activity</h2>
+            <p className="text-sm text-slate-500">Latest actions across all modules</p>
+          </div>
+          <button className="text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors">
+            View All Activity
+          </button>
+        </div>
+        
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-slate-50/50">
+                <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">User / Student</th>
+                <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Action Description</th>
+                <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Date & Time</th>
+                <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {recentActivity.map((activity) => (
+                <tr key={activity.id} className="hover:bg-slate-50/50 transition-colors group">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="font-medium text-slate-800">{activity.student}</div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="text-sm text-slate-600">{activity.action}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center gap-1.5 text-sm text-slate-500">
+                      <Clock size={14} /> {activity.date}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${activity.statusColor}`}>
+                      {activity.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
     </div>
   );
 };

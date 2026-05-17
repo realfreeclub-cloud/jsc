@@ -16,8 +16,6 @@ import {
   Globe,
   Bell,
   MessageSquare,
-  Settings,
-  ShieldCheck,
   LogOut,
   ChevronLeft,
   ChevronRight,
@@ -30,72 +28,42 @@ const navigation = [
   {
     group: 'Dashboard',
     items: [
-      { name: 'Overview', path: '/', icon: LayoutDashboard },
-      { name: 'Analytics', path: '/analytics', icon: Zap },
-      { name: 'Reports', path: '/reports', icon: FileText },
+      { name: 'Overview', path: '/', icon: LayoutDashboard }
     ]
   },
   {
-    group: 'Content Management',
+    group: 'Content',
     items: [
       { name: 'Hero Slider', path: '/hero-slider', icon: Image },
       { name: 'Blogs', path: '/blogs', icon: FileText },
       { name: 'Gallery', path: '/gallery', icon: Camera },
       { name: 'Events', path: '/events', icon: Calendar },
-      { name: 'Announcements', path: '/notifications', icon: Bell },
+      { name: 'Announcements', path: '/notifications', icon: Bell }
     ]
   },
   {
     group: 'Academics',
     items: [
       { name: 'Courses', path: '/courses', icon: BookOpen },
-      { name: 'Batch Management', path: '/batches', icon: Users },
-      { name: 'Demo Classes', path: '/demo-classes', icon: MonitorPlay },
       { name: 'Study Material', path: '/study-material', icon: Download },
-      { name: 'Test Series', path: '/test-series', icon: FileText },
-      { name: 'Question Bank', path: '/questions', icon: BookOpen },
-      { name: 'Assignments', path: '/assignments', icon: FileText },
-      { name: 'Attendance', path: '/academic-attendance', icon: Calendar },
+      { name: 'Demo Classes', path: '/demo-classes', icon: MonitorPlay }
     ]
   },
   {
-    group: 'Student Management',
+    group: 'People',
     items: [
       { name: 'Students', path: '/students', icon: GraduationCap },
-      { name: 'Admissions', path: '/admissions', icon: Users },
-      { name: 'Fee Management', path: '/fees', icon: Zap },
-      { name: 'ID Cards', path: '/id-cards', icon: Image },
-      { name: 'Certificates', path: '/certificates', icon: FileText },
-      { name: 'Performance Tracking', path: '/performance', icon: Zap },
-    ]
-  },
-  {
-    group: 'Faculty Management',
-    items: [
-      { name: 'Faculty', path: '/faculty', icon: Users },
-      { name: 'Salary', path: '/salary', icon: Zap },
-      { name: 'Attendance', path: '/faculty-attendance', icon: Calendar },
-      { name: 'Lecture Scheduling', path: '/scheduling', icon: Calendar },
+      { name: 'Faculty', path: '/faculty', icon: Users }
     ]
   },
   {
     group: 'Marketing & SEO',
     items: [
-      { name: 'SEO Settings', path: '/seo', icon: Globe },
+      { name: 'SEO Dashboard', path: '/seo-dashboard', icon: Zap },
+      { name: 'SEO Settings', path: '/seo-settings', icon: Globe },
       { name: 'Meta Tags', path: '/meta-tags', icon: Globe },
       { name: 'Social Media', path: '/social-media', icon: Globe },
-      { name: 'WhatsApp Leads', path: '/whatsapp-settings', icon: MessageSquare },
-      { name: 'Email Campaigns', path: '/email-campaigns', icon: MessageSquare },
-    ]
-  },
-  {
-    group: 'System',
-    items: [
-      { name: 'Roles & Permissions', path: '/roles', icon: ShieldCheck },
-      { name: 'Admin Users', path: '/admins', icon: ShieldCheck },
-      { name: 'Settings', path: '/app-settings', icon: Settings },
-      { name: 'API Config', path: '/api-config', icon: Settings },
-      { name: 'Backup & Security', path: '/security', icon: ShieldCheck },
+      { name: 'WhatsApp Leads', path: '/whatsapp-leads', icon: MessageSquare }
     ]
   }
 ];
@@ -176,15 +144,15 @@ const Sidebar = () => {
                 key={item.path}
                 to={item.path}
                 className={({ isActive }) => cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group relative",
+                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all group relative border-l-4",
                   isActive 
-                    ? "bg-blue-50 text-blue-600 dark:bg-blue-600/10 dark:text-blue-500 dark:shadow-[0_0_20px_rgba(59,130,246,0.1)]" 
-                    : "text-gray-500 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-slate-900 dark:hover:text-white"
+                    ? "border-blue-600 bg-blue-50/50 text-blue-600 dark:bg-blue-600/10 dark:text-blue-400 dark:border-blue-500" 
+                    : "border-transparent text-slate-500 hover:bg-slate-50 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-white"
                 )}
               >
-                <item.icon size={20} className={cn(
+                <item.icon size={18} className={cn(
                   "shrink-0",
-                  location.pathname === item.path ? "text-blue-600 dark:text-blue-500" : "group-hover:scale-110 transition-transform"
+                  location.pathname === item.path ? "text-blue-600 dark:text-blue-400" : "text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-colors"
                 )} />
                 <AnimatePresence mode="wait">
                   {!isCollapsed && (
@@ -192,13 +160,14 @@ const Sidebar = () => {
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -10 }}
+                      className="tracking-tight"
                     >
                       {item.name}
                     </motion.span>
                   )}
                 </AnimatePresence>
                 {isCollapsed && (
-                  <div className="absolute left-full ml-4 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50">
+                  <div className="absolute left-full ml-4 px-2 py-1 bg-slate-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50">
                     {item.name}
                   </div>
                 )}
