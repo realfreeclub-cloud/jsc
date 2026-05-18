@@ -1,42 +1,46 @@
 import { motion } from 'framer-motion';
-import { 
-  Users, 
-  BookOpen, 
-  FileText, 
-  Camera, 
-  Calendar, 
+import {
+  Users,
+  BookOpen,
+  FileText,
+  Camera,
+  Calendar,
   MonitorPlay,
   MessageSquare,
   TrendingUp,
-  ArrowUpRight, 
+  ArrowUpRight,
   ArrowDownRight,
   MoreVertical,
   Clock,
-  Briefcase
+  Briefcase,
+  Activity,
 } from 'lucide-react';
-import { 
-  AreaChart, 
-  Area, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
   PieChart,
   Pie,
-  Cell
+  Cell,
 } from 'recharts';
 
-// Data mapping exactly to the 8 required metrics requested by the user
+const NAVY = '#07152F';
+const GOLD = '#F4B400';
+const GOLD_LIGHT = '#FFD24C';
+
 const stats = [
-  { name: 'Total Students', value: '2,845', change: '+12.5%', trend: 'up', icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' },
-  { name: 'Total Faculty', value: '42', change: '+2', trend: 'up', icon: Briefcase, color: 'text-indigo-600', bg: 'bg-indigo-50' },
-  { name: 'Total Courses', value: '31', change: '0', trend: 'neutral', icon: BookOpen, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-  { name: 'Total Blogs', value: '156', change: '+12', trend: 'up', icon: FileText, color: 'text-amber-600', bg: 'bg-amber-50' },
-  { name: 'Gallery Images', value: '840', change: '+45', trend: 'up', icon: Camera, color: 'text-rose-600', bg: 'bg-rose-50' },
-  { name: 'Total Events', value: '24', change: '-1', trend: 'down', icon: Calendar, color: 'text-purple-600', bg: 'bg-purple-50' },
-  { name: 'Demo Classes', value: '128', change: '+18%', trend: 'up', icon: MonitorPlay, color: 'text-cyan-600', bg: 'bg-cyan-50' },
-  { name: 'WhatsApp Leads', value: '4,521', change: '+32.4%', trend: 'up', icon: MessageSquare, color: 'text-green-600', bg: 'bg-green-50' },
+  { name: 'Total Students', value: '2,845', change: '+12.5%', trend: 'up', icon: Users, color: '#2563EB', bg: '#EFF6FF' },
+  { name: 'Total Faculty', value: '42', change: '+2', trend: 'up', icon: Briefcase, color: '#7C3AED', bg: '#F5F3FF' },
+  { name: 'Total Courses', value: '31', change: '0', trend: 'neutral', icon: BookOpen, color: '#059669', bg: '#ECFDF5' },
+  { name: 'Total Blogs', value: '156', change: '+12', trend: 'up', icon: FileText, color: '#D97706', bg: '#FFFBEB' },
+  { name: 'Gallery Images', value: '840', change: '+45', trend: 'up', icon: Camera, color: '#DC2626', bg: '#FEF2F2' },
+  { name: 'Total Events', value: '24', change: '-1', trend: 'down', icon: Calendar, color: '#9333EA', bg: '#FAF5FF' },
+  { name: 'Demo Classes', value: '128', change: '+18%', trend: 'up', icon: MonitorPlay, color: '#0891B2', bg: '#ECFEFF' },
+  { name: 'WhatsApp Leads', value: '4,521', change: '+32.4%', trend: 'up', icon: MessageSquare, color: '#16A34A', bg: '#F0FDF4' },
 ];
 
 const trafficData = [
@@ -50,147 +54,244 @@ const trafficData = [
 ];
 
 const deviceData = [
-  { name: 'Mobile', value: 65, color: '#3b82f6' }, // blue-500
-  { name: 'Desktop', value: 25, color: '#6366f1' }, // indigo-500
-  { name: 'Tablet', value: 10, color: '#10b981' }, // emerald-500
+  { name: 'Mobile', value: 65, color: GOLD },
+  { name: 'Desktop', value: 25, color: '#163059' },
+  { name: 'Tablet', value: 10, color: GOLD_LIGHT },
 ];
 
 const recentActivity = [
-  { id: 1, student: "Rahul Sharma", action: "Registered for MP Civil Judge Demo", date: "Today, 10:30 AM", status: "New Lead", statusColor: "bg-blue-100 text-blue-700" },
-  { id: 2, student: "Priya Verma", action: "Submitted Admission Form", date: "Today, 09:15 AM", status: "Pending Review", statusColor: "bg-amber-100 text-amber-700" },
-  { id: 3, student: "Amit Singh", action: "Fee Payment Successful", date: "Yesterday, 04:45 PM", status: "Completed", statusColor: "bg-emerald-100 text-emerald-700" },
-  { id: 4, student: "Sneha Gupta", action: "Downloaded Study Material (CrPC Notes)", date: "Yesterday, 02:20 PM", status: "Active", statusColor: "bg-gray-100 text-gray-700" },
-  { id: 5, student: "Vikram AD", action: "WhatsApp Inquiry Generated", date: "12 May, 11:10 AM", status: "Follow Up", statusColor: "bg-purple-100 text-purple-700" },
+  { id: 1, student: 'Rahul Sharma', action: 'Registered for MP Civil Judge Demo', date: 'Today, 10:30 AM', status: 'New Lead', statusColor: { bg: '#EFF6FF', color: '#2563EB', border: '#BFDBFE' } },
+  { id: 2, student: 'Priya Verma', action: 'Submitted Admission Form', date: 'Today, 09:15 AM', status: 'Pending', statusColor: { bg: '#FFFBEB', color: '#D97706', border: '#FDE68A' } },
+  { id: 3, student: 'Amit Singh', action: 'Fee Payment Successful', date: 'Yesterday, 04:45 PM', status: 'Completed', statusColor: { bg: '#ECFDF5', color: '#059669', border: '#A7F3D0' } },
+  { id: 4, student: 'Sneha Gupta', action: 'Downloaded CrPC Study Notes', date: 'Yesterday, 02:20 PM', status: 'Active', statusColor: { bg: '#F5F3FF', color: '#7C3AED', border: '#DDD6FE' } },
+  { id: 5, student: 'Vikram AD', action: 'WhatsApp Inquiry Generated', date: '12 May, 11:10 AM', status: 'Follow Up', statusColor: { bg: '#FAF5FF', color: '#9333EA', border: '#E9D5FF' } },
 ];
+
+const fadeCard = {
+  initial: { opacity: 0, y: 18 },
+  animate: { opacity: 1, y: 0 },
+};
 
 const Dashboard = () => {
   return (
-    <div className="space-y-6 max-w-[1600px] mx-auto pb-10">
-      
-      {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 28, paddingBottom: 40 }}>
+
+      {/* ── Page Header ── */}
+      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
         <div>
-          <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Dashboard Overview</h1>
-          <p className="text-slate-500 text-sm mt-1">Welcome back! Here is the latest data for Judicial Study Centre.</p>
+          <h1 style={{ fontSize: 24, fontWeight: 800, color: NAVY, letterSpacing: '-0.02em' }}>
+            Dashboard Overview
+          </h1>
+          <p style={{ fontSize: 14, color: 'var(--color-navy-400)', marginTop: 4 }}>
+            Welcome back! Here is the latest data for Judicial Study Centre.
+          </p>
         </div>
-        <div className="flex items-center gap-3">
-          <select className="bg-white border border-slate-200 text-slate-600 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 outline-none shadow-sm cursor-pointer">
+        <div style={{ display: 'flex', gap: 10 }}>
+          <select
+            style={{
+              background: '#fff',
+              border: '1.5px solid var(--color-navy-200)',
+              color: 'var(--color-navy-700)',
+              fontSize: 13,
+              borderRadius: 10,
+              padding: '8px 14px',
+              outline: 'none',
+              cursor: 'pointer',
+              fontWeight: 500,
+            }}
+          >
             <option>Last 7 Days</option>
             <option>Last 30 Days</option>
             <option>This Year</option>
           </select>
-          <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-md shadow-blue-500/20 transition-all flex items-center gap-2">
-            <TrendingUp size={16} /> Generate Report
+          <button className="btn-gold" style={{ padding: '9px 18px', fontSize: 13 }}>
+            <TrendingUp size={15} />
+            Generate Report
           </button>
         </div>
       </div>
 
-      {/* 8 Metric Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      {/* ── 8 Stat Cards ── */}
+      <div
+        className="stagger"
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+          gap: 18,
+        }}
+      >
         {stats.map((stat, idx) => (
           <motion.div
             key={stat.name}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: idx * 0.05 }}
-            className="bg-white rounded-2xl p-5 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all group cursor-default relative overflow-hidden"
+            variants={fadeCard}
+            initial="initial"
+            animate="animate"
+            transition={{ delay: idx * 0.06, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            className="jsc-card jsc-stat-card animate-fade-up"
+            style={{ padding: 22, position: 'relative', overflow: 'hidden' }}
           >
-            {/* Soft decorative background element */}
-            <div className={`absolute -right-6 -top-6 w-24 h-24 rounded-full opacity-50 transition-transform group-hover:scale-150 duration-500 ${stat.bg}`} />
-            
-            <div className="relative z-10">
-              <div className="flex justify-between items-start mb-4">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${stat.bg} ${stat.color} shadow-sm`}>
-                  <stat.icon size={22} strokeWidth={2.5} />
+            {/* Soft bg circle */}
+            <div
+              style={{
+                position: 'absolute',
+                right: -20,
+                top: -20,
+                width: 90,
+                height: 90,
+                borderRadius: '50%',
+                background: stat.bg,
+                opacity: 0.7,
+                transition: 'transform 0.4s',
+              }}
+            />
+
+            <div style={{ position: 'relative', zIndex: 1 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+                <div
+                  style={{
+                    width: 46,
+                    height: 46,
+                    borderRadius: 12,
+                    background: stat.bg,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: stat.color,
+                    border: `1px solid ${stat.bg}`,
+                  }}
+                >
+                  <stat.icon size={21} strokeWidth={2.2} />
                 </div>
-                <div className="flex items-center gap-1 text-sm font-medium">
-                  {stat.trend === 'up' ? (
-                    <span className="flex items-center text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
-                      <ArrowUpRight size={14} className="mr-0.5" /> {stat.change}
-                    </span>
-                  ) : stat.trend === 'down' ? (
-                    <span className="flex items-center text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full">
-                      <ArrowDownRight size={14} className="mr-0.5" /> {stat.change}
-                    </span>
-                  ) : (
-                    <span className="flex items-center text-slate-500 bg-slate-50 px-2 py-0.5 rounded-full">
-                      {stat.change}
-                    </span>
-                  )}
-                </div>
+
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 3,
+                    fontSize: 12,
+                    fontWeight: 700,
+                    padding: '3px 9px',
+                    borderRadius: 99,
+                    background:
+                      stat.trend === 'up'
+                        ? '#ECFDF5'
+                        : stat.trend === 'down'
+                        ? '#FEF2F2'
+                        : '#F8FAFC',
+                    color:
+                      stat.trend === 'up'
+                        ? '#059669'
+                        : stat.trend === 'down'
+                        ? '#DC2626'
+                        : '#64748b',
+                  }}
+                >
+                  {stat.trend === 'up' && <ArrowUpRight size={12} />}
+                  {stat.trend === 'down' && <ArrowDownRight size={12} />}
+                  {stat.change}
+                </span>
               </div>
-              
-              <div>
-                <h3 className="text-slate-500 text-sm font-medium mb-1">{stat.name}</h3>
-                <p className="text-2xl font-bold text-slate-800">{stat.value}</p>
-              </div>
+
+              <p style={{ fontSize: 13, color: 'var(--color-navy-400)', fontWeight: 500, marginBottom: 4 }}>
+                {stat.name}
+              </p>
+              <p style={{ fontSize: 26, fontWeight: 800, color: NAVY, letterSpacing: '-0.02em' }}>
+                {stat.value}
+              </p>
             </div>
           </motion.div>
         ))}
       </div>
 
-      {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-2">
-        {/* Main Area Chart */}
-        <div className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] border border-slate-100">
-          <div className="flex items-center justify-between mb-6">
+      {/* ── Charts Row ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 20 }}>
+        {/* Area Chart */}
+        <div className="jsc-card" style={{ padding: 28 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
             <div>
-              <h2 className="text-lg font-bold text-slate-800">Platform Traffic</h2>
-              <p className="text-sm text-slate-500">Organic vs Social Media Leads</p>
+              <h2 style={{ fontSize: 16, fontWeight: 700, color: NAVY }}>Platform Traffic</h2>
+              <p style={{ fontSize: 12.5, color: 'var(--color-navy-400)', marginTop: 2 }}>Organic vs Social Media Leads</p>
             </div>
-            <button className="p-2 hover:bg-slate-50 rounded-lg text-slate-400 transition-colors">
-              <MoreVertical size={20} />
+            <button
+              style={{
+                padding: 7,
+                borderRadius: 8,
+                border: '1.5px solid var(--color-navy-100)',
+                background: 'transparent',
+                color: 'var(--color-navy-400)',
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+              }}
+            >
+              <MoreVertical size={17} />
             </button>
           </div>
-          <div className="h-[300px] w-full">
+          <div style={{ height: 280 }}>
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={trafficData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <AreaChart data={trafficData} margin={{ top: 8, right: 8, left: -24, bottom: 0 }}>
                 <defs>
-                  <linearGradient id="colorOrganic" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                  <linearGradient id="gOrganic" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor={NAVY} stopOpacity={0.18} />
+                    <stop offset="95%" stopColor={NAVY} stopOpacity={0} />
                   </linearGradient>
-                  <linearGradient id="colorSocial" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                  <linearGradient id="gSocial" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor={GOLD} stopOpacity={0.22} />
+                    <stop offset="95%" stopColor={GOLD} stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} dy={10} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                  itemStyle={{ color: '#0f172a', fontWeight: 500 }}
+                <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="#EEF1F8" />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#AAB3C5', fontSize: 12, fontWeight: 500 }} dy={8} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#AAB3C5', fontSize: 12 }} />
+                <Tooltip
+                  contentStyle={{
+                    background: '#fff',
+                    border: '1px solid #EEF1F8',
+                    borderRadius: 12,
+                    boxShadow: '0 8px 24px rgba(7,21,47,0.10)',
+                    fontSize: 13,
+                  }}
+                  itemStyle={{ color: NAVY, fontWeight: 600 }}
+                  cursor={{ stroke: '#EEF1F8', strokeWidth: 2 }}
                 />
-                <Area type="monotone" dataKey="organic" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorOrganic)" />
-                <Area type="monotone" dataKey="social" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorSocial)" />
+                <Area type="monotone" dataKey="organic" name="Organic" stroke={NAVY} strokeWidth={2.5} fill="url(#gOrganic)" />
+                <Area type="monotone" dataKey="social" name="Social" stroke={GOLD} strokeWidth={2.5} fill="url(#gSocial)" />
               </AreaChart>
             </ResponsiveContainer>
+          </div>
+
+          {/* Legend */}
+          <div style={{ display: 'flex', gap: 20, marginTop: 16, justifyContent: 'center' }}>
+            {[{ label: 'Organic', color: NAVY }, { label: 'Social Media', color: GOLD }].map((l) => (
+              <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 12.5, color: 'var(--color-navy-500)', fontWeight: 500 }}>
+                <span style={{ width: 10, height: 10, borderRadius: '50%', background: l.color, display: 'inline-block' }} />
+                {l.label}
+              </div>
+            ))}
           </div>
         </div>
 
         {/* Donut Chart */}
-        <div className="bg-white rounded-2xl p-6 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] border border-slate-100 flex flex-col">
-          <div className="flex items-center justify-between mb-6">
+        <div className="jsc-card" style={{ padding: 28, display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
             <div>
-              <h2 className="text-lg font-bold text-slate-800">Traffic Source</h2>
-              <p className="text-sm text-slate-500">Device distribution</p>
+              <h2 style={{ fontSize: 16, fontWeight: 700, color: NAVY }}>Traffic Source</h2>
+              <p style={{ fontSize: 12.5, color: 'var(--color-navy-400)', marginTop: 2 }}>Device distribution</p>
             </div>
-            <button className="p-2 hover:bg-slate-50 rounded-lg text-slate-400 transition-colors">
-              <MoreVertical size={20} />
+            <button style={{ padding: 7, borderRadius: 8, border: '1.5px solid var(--color-navy-100)', background: 'transparent', color: 'var(--color-navy-400)', cursor: 'pointer' }}>
+              <MoreVertical size={17} />
             </button>
           </div>
-          
-          <div className="flex-1 flex flex-col justify-center relative">
-            <div className="h-[220px] w-full">
+
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+            <div style={{ height: 200 }}>
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={deviceData}
                     cx="50%"
                     cy="50%"
-                    innerRadius={70}
-                    outerRadius={90}
+                    innerRadius={62}
+                    outerRadius={84}
                     paddingAngle={5}
                     dataKey="value"
                     stroke="none"
@@ -199,23 +300,22 @@ const Dashboard = () => {
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip 
-                    contentStyle={{ borderRadius: '10px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
-                    itemStyle={{ color: '#0f172a', fontWeight: 500 }}
+                  <Tooltip
+                    contentStyle={{ borderRadius: 10, border: '1px solid #EEF1F8', boxShadow: '0 8px 24px rgba(7,21,47,0.10)', fontSize: 13 }}
+                    itemStyle={{ color: NAVY, fontWeight: 600 }}
                   />
                 </PieChart>
               </ResponsiveContainer>
             </div>
-            
-            {/* Custom Legend */}
-            <div className="grid grid-cols-3 gap-2 mt-4">
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginTop: 12 }}>
               {deviceData.map((item) => (
-                <div key={item.name} className="flex flex-col items-center text-center">
-                  <div className="flex items-center gap-1.5 mb-1">
-                    <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }}></span>
-                    <span className="text-xs font-medium text-slate-500">{item.name}</span>
+                <div key={item.name} style={{ textAlign: 'center' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 5, justifyContent: 'center', marginBottom: 3 }}>
+                    <span style={{ width: 8, height: 8, borderRadius: '50%', background: item.color, display: 'inline-block' }} />
+                    <span style={{ fontSize: 11.5, color: 'var(--color-navy-400)', fontWeight: 500 }}>{item.name}</span>
                   </div>
-                  <span className="text-sm font-bold text-slate-800">{item.value}%</span>
+                  <span style={{ fontSize: 16, fontWeight: 800, color: NAVY }}>{item.value}%</span>
                 </div>
               ))}
             </div>
@@ -223,45 +323,99 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Recent Activity Table */}
-      <div className="bg-white rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] border border-slate-100 overflow-hidden">
-        <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+      {/* ── Recent Activity Table ── */}
+      <div className="jsc-card" style={{ overflow: 'hidden' }}>
+        <div
+          style={{
+            padding: '20px 24px',
+            borderBottom: '1px solid var(--color-navy-100)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
           <div>
-            <h2 className="text-lg font-bold text-slate-800">Recent Leads & Activity</h2>
-            <p className="text-sm text-slate-500">Latest actions across all modules</p>
+            <h2 style={{ fontSize: 16, fontWeight: 700, color: NAVY }}>Recent Leads & Activity</h2>
+            <p style={{ fontSize: 12.5, color: 'var(--color-navy-400)', marginTop: 2 }}>Latest actions across all modules</p>
           </div>
-          <button className="text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors">
-            View All Activity
+          <button
+            style={{
+              fontSize: 13,
+              fontWeight: 700,
+              color: 'var(--color-gold-600)',
+              background: 'var(--color-gold-dim)',
+              border: '1px solid rgba(244,180,0,0.20)',
+              borderRadius: 8,
+              padding: '6px 14px',
+              cursor: 'pointer',
+              transition: 'all 0.15s',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+            }}
+          >
+            <Activity size={14} />
+            View All
           </button>
         </div>
-        
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+
+        <div style={{ overflowX: 'auto' }}>
+          <table className="jsc-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
-              <tr className="bg-slate-50/50">
-                <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">User / Student</th>
-                <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Action Description</th>
-                <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Date & Time</th>
-                <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
+              <tr>
+                <th style={{ textAlign: 'left' }}>Student</th>
+                <th style={{ textAlign: 'left' }}>Action</th>
+                <th style={{ textAlign: 'left' }}>Date & Time</th>
+                <th style={{ textAlign: 'left' }}>Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
-              {recentActivity.map((activity) => (
-                <tr key={activity.id} className="hover:bg-slate-50/50 transition-colors group">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="font-medium text-slate-800">{activity.student}</div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="text-sm text-slate-600">{activity.action}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center gap-1.5 text-sm text-slate-500">
-                      <Clock size={14} /> {activity.date}
+            <tbody>
+              {recentActivity.map((a) => (
+                <tr key={a.id}>
+                  <td>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <div
+                        style={{
+                          width: 34,
+                          height: 34,
+                          borderRadius: 10,
+                          background: 'linear-gradient(135deg, var(--color-navy-800), var(--color-navy-700))',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: GOLD,
+                          fontSize: 13,
+                          fontWeight: 700,
+                          flexShrink: 0,
+                        }}
+                      >
+                        {a.student[0]}
+                      </div>
+                      <span style={{ fontWeight: 600, color: NAVY, fontSize: 13.5 }}>{a.student}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${activity.statusColor}`}>
-                      {activity.status}
+                  <td style={{ color: 'var(--color-navy-600)', maxWidth: 280 }}>{a.action}</td>
+                  <td>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-navy-400)', fontSize: 12.5 }}>
+                      <Clock size={13} />
+                      {a.date}
+                    </div>
+                  </td>
+                  <td>
+                    <span
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        padding: '3px 10px',
+                        borderRadius: 99,
+                        fontSize: 11.5,
+                        fontWeight: 700,
+                        background: a.statusColor.bg,
+                        color: a.statusColor.color,
+                        border: `1px solid ${a.statusColor.border}`,
+                      }}
+                    >
+                      {a.status}
                     </span>
                   </td>
                 </tr>
@@ -270,7 +424,6 @@ const Dashboard = () => {
           </table>
         </div>
       </div>
-
     </div>
   );
 };

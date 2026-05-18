@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import User from '../models/User';
+import Student from '../models/Student';
 import bcrypt from 'bcryptjs';
 
 const signToken = (id: string) => {
@@ -19,7 +20,21 @@ export const register = async (req: Request, res: Response) => {
       name,
       email,
       password: hashedPassword,
-      phone
+      phone,
+      role: 'student'
+    });
+
+    // Automatically create a corresponding Student document
+    // so they are linked and show up in the Admin Panel "Students" section
+    await Student.create({
+      name,
+      email,
+      phone: phone || `999${Math.floor(1000000 + Math.random() * 9000000)}`, // guarantee a valid phone number
+      course: 'Not Enrolled',
+      status: 'active',
+      isActive: true
+    }).catch(err => {
+      console.warn('Matching Student creation warning:', err.message);
     });
 
     const token = signToken(newUser._id.toString());
@@ -69,6 +84,37 @@ export const login = async (req: Request, res: Response): Promise<any> => {
       status: 'success',
       token,
       data: userToReturn
+    });
+  } catch (err) {
+    res.status(400).json({ status: 'fail', message: (err as any).message });
+  }
+};
+
+export const updatePassword = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const userId = (req as any).user._id;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ status: 'fail', message: 'Please provide current and new passwords!' });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ status: 'fail', message: 'User not found' });
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ status: 'fail', message: 'Incorrect current password' });
+    }
+
+    user.password = await bcrypt.hash(newPassword, 12);
+    await user.save();
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Password successfully updated!'
     });
   } catch (err) {
     res.status(400).json({ status: 'fail', message: (err as any).message });

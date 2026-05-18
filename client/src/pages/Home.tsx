@@ -119,7 +119,7 @@ const Home = () => {
       <section className="py-16 bg-white relative z-20 -mt-10 mx-6 md:mx-auto max-w-7xl rounded-2xl shadow-xl border border-gray-100">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 px-8">
           {[
-            { icon: Users, label: "Selected Candidates", value: "2500+" },
+            { icon: Users, label: "Selected Candidates", value: "900+" },
             { icon: Trophy, label: "Top 10 Ranks", value: "50+" },
             { icon: Shield, label: "Expert Faculty", value: "30+" },
             { icon: Star, label: "Success Rate", value: "92%" }

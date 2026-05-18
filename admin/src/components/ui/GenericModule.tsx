@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Search, AlertCircle, Loader2, Edit2, Trash2 } from 'lucide-react';
+import { Plus, Search, AlertCircle, Loader2, Edit2, Trash2, RefreshCw } from 'lucide-react';
 import api from '../../utils/api';
 import GenericForm, { type Field } from './GenericForm';
-import { cn } from '../../utils/cn';
 
 interface GenericModuleProps {
   title: string;
@@ -11,15 +10,18 @@ interface GenericModuleProps {
   fields: Field[];
 }
 
+const NAVY = '#07152F';
+const GOLD = '#F4B400';
+
 const GenericModule = ({ title, endpoint, fields }: GenericModuleProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editData, setEditData] = useState<Record<string, unknown> | undefined>(undefined);
   const queryClient = useQueryClient();
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: [endpoint, searchTerm],
-    queryFn: () => api.get(`/${endpoint}?search=${searchTerm}`).then(res => res.data)
+    queryFn: () => api.get(`/${endpoint}?search=${searchTerm}`).then(res => res.data),
   });
 
   const results = (data?.data || []) as Record<string, unknown>[];
@@ -30,23 +32,24 @@ const GenericModule = ({ title, endpoint, fields }: GenericModuleProps) => {
       queryClient.invalidateQueries({ queryKey: [endpoint] });
       setIsModalOpen(false);
       setEditData(undefined);
-    }
+    },
   });
 
   const updateMutation = useMutation({
-    mutationFn: (updateData: Record<string, unknown>) => api.patch(`/${endpoint}/${updateData._id}`, updateData),
+    mutationFn: (updateData: Record<string, unknown>) =>
+      api.patch(`/${endpoint}/${updateData._id}`, updateData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [endpoint] });
       setIsModalOpen(false);
       setEditData(undefined);
-    }
+    },
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => api.delete(`/${endpoint}/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [endpoint] });
-    }
+    },
   });
 
   const handleSave = async (formData: Record<string, unknown>) => {
@@ -67,139 +70,280 @@ const GenericModule = ({ title, endpoint, fields }: GenericModuleProps) => {
   };
 
   const handleDelete = (row: Record<string, unknown>) => {
-    if (window.confirm(`Are you sure you want to delete this ${title.toLowerCase()}?`)) {
+    if (window.confirm(`Delete this ${title.toLowerCase()}? This cannot be undone.`)) {
       deleteMutation.mutate(row._id as string);
     }
   };
 
+  const isBusy =
+    isLoading ||
+    createMutation.isPending ||
+    updateMutation.isPending ||
+    deleteMutation.isPending;
+
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
-      {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-800 tracking-tight">{title} Management</h1>
-          <p className="text-slate-500 text-sm mt-1">Configure and monitor your {title.toLowerCase()} items.</p>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+
+      {/* ── Page Header ── */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: 16,
+        }}
+      >
+        <div className="jsc-page-header">
+          <h1 className="jsc-page-title">{title} Management</h1>
+          <p className="jsc-page-subtitle">Configure and monitor your {title.toLowerCase()} records.</p>
         </div>
-        <button 
-          onClick={() => { setEditData(undefined); setIsModalOpen(true); }}
-          className="flex items-center gap-2 btn-gold px-5 py-2.5 rounded-lg text-sm shadow-sm"
-        >
-          <Plus size={16} /> Add New {title}
-        </button>
+
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+          {isBusy && (
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                fontSize: 12,
+                fontWeight: 700,
+                color: GOLD,
+                letterSpacing: '0.05em',
+                textTransform: 'uppercase',
+              }}
+            >
+              <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />
+              Syncing...
+            </div>
+          )}
+          <button
+            onClick={() => refetch()}
+            className="btn-outline"
+            style={{ padding: '8px 14px', fontSize: 13, gap: 6 }}
+          >
+            <RefreshCw size={14} />
+            Refresh
+          </button>
+          <button
+            onClick={() => { setEditData(undefined); setIsModalOpen(true); }}
+            className="btn-gold"
+            style={{ padding: '9px 18px', fontSize: 13 }}
+          >
+            <Plus size={15} />
+            Add New {title}
+          </button>
+        </div>
       </div>
 
-      {/* Main Content Card */}
-      <div className="bg-white dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+      {/* ── Main Card ── */}
+      <div className="jsc-card" style={{ overflow: 'hidden' }}>
+
         {/* Filter Bar */}
-        <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-900 flex items-center justify-between gap-4 bg-slate-50/50 dark:bg-slate-900/20">
-          <div className="relative flex-1 max-w-md group">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
-            <input 
-              type="text" 
+        <div className="jsc-filter-bar">
+          <div style={{ position: 'relative', flex: 1, maxWidth: 380 }}>
+            <Search
+              size={15}
+              style={{
+                position: 'absolute',
+                left: 12,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                color: 'var(--color-navy-400)',
+                pointerEvents: 'none',
+              }}
+            />
+            <input
+              type="text"
               placeholder={`Search ${title.toLowerCase()}...`}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 outline-none gold-ring focus:border-gold-DEFAULT transition-all shadow-sm"
+              className="jsc-search-bar"
+              style={{ paddingLeft: 36 }}
             />
           </div>
-          {(isLoading || createMutation.isPending || updateMutation.isPending || deleteMutation.isPending) && (
-            <div className="flex items-center gap-2 text-gold-DEFAULT text-xs font-bold uppercase tracking-widest">
-              <Loader2 size={16} className="animate-spin" />
-              <span>Syncing...</span>
-            </div>
-          )}
+
+          <div style={{ marginLeft: 'auto', fontSize: 12.5, color: 'var(--color-navy-400)', fontWeight: 500 }}>
+            {results.length > 0 && `${results.length} record${results.length > 1 ? 's' : ''}`}
+          </div>
         </div>
 
-        {/* Dynamic Table Area */}
+        {/* Content Area */}
         {isLoading ? (
-          <div className="p-12 space-y-4">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="h-16 bg-gray-50 dark:bg-slate-900 rounded-2xl animate-pulse" />
+          <div style={{ padding: '48px 24px' }}>
+            {[1, 2, 3, 4].map((i) => (
+              <div
+                key={i}
+                style={{
+                  height: 56,
+                  background: 'var(--color-navy-50)',
+                  borderRadius: 10,
+                  marginBottom: 10,
+                  animation: 'pulse 1.5s ease-in-out infinite',
+                }}
+              />
             ))}
           </div>
         ) : error ? (
-          <div className="p-12 text-center">
-            <div className="w-16 h-16 bg-red-50 dark:bg-red-500/10 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
-              <AlertCircle size={32} />
+          <div
+            style={{
+              padding: '64px 32px',
+              textAlign: 'center',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
+            <div
+              style={{
+                width: 64,
+                height: 64,
+                borderRadius: '50%',
+                background: '#FEF2F2',
+                border: '1px solid #FECACA',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: 16,
+                color: '#DC2626',
+              }}
+            >
+              <AlertCircle size={28} />
             </div>
-            <h3 className="text-lg font-bold dark:text-white">Connection Error</h3>
-            <p className="text-gray-500 text-sm mt-1">We couldn't fetch the {title.toLowerCase()} list.</p>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: NAVY, marginBottom: 6 }}>Connection Error</h3>
+            <p style={{ fontSize: 13.5, color: 'var(--color-navy-400)' }}>
+              We couldn't fetch the {title.toLowerCase()} list. Check the server connection.
+            </p>
+            <button
+              onClick={() => refetch()}
+              className="btn-navy"
+              style={{ marginTop: 20, padding: '9px 20px', fontSize: 13 }}
+            >
+              <RefreshCw size={14} /> Retry
+            </button>
           </div>
         ) : results.length === 0 ? (
-          <div className="p-16 text-center flex flex-col items-center">
-            <div className="w-16 h-16 bg-slate-50 dark:bg-slate-900 rounded-full flex items-center justify-center mb-4 text-slate-400 border border-slate-100 dark:border-slate-800">
-              <Search size={24} />
+          <div className="jsc-empty-state">
+            <div className="jsc-empty-icon">
+              <Search size={26} />
             </div>
-            <h3 className="text-lg font-bold text-slate-800 dark:text-white">No {title.toLowerCase()} found</h3>
-            <p className="text-slate-500 text-sm mt-1 mb-6">Get started by creating your first record.</p>
-            <button 
+            <h3 style={{ fontSize: 17, fontWeight: 700, color: NAVY, marginBottom: 8 }}>
+              No {title.toLowerCase()} found
+            </h3>
+            <p style={{ fontSize: 13.5, color: 'var(--color-navy-400)', marginBottom: 24 }}>
+              Get started by creating your first {title.toLowerCase()} record.
+            </p>
+            <button
               onClick={() => { setEditData(undefined); setIsModalOpen(true); }}
-              className="text-sm font-medium text-gold-DEFAULT hover:text-gold-hover hover:underline"
+              className="btn-gold"
+              style={{ padding: '10px 24px' }}
             >
-              + Create new {title.toLowerCase()}
+              <Plus size={15} />
+              Create First {title}
             </button>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+          <div style={{ overflowX: 'auto' }}>
+            <table className="jsc-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
-                <tr className="bg-slate-50/50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800">
-                  <th className="px-6 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider">Details</th>
-                  <th className="px-6 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider">Created</th>
-                  <th className="px-6 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider text-right">Actions</th>
+                <tr>
+                  <th style={{ textAlign: 'left' }}>Details</th>
+                  <th style={{ textAlign: 'left' }}>Status</th>
+                  <th style={{ textAlign: 'left' }}>Created</th>
+                  <th style={{ textAlign: 'right' }}>Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
-                {results.map((row: Record<string, unknown>) => (
-                  <tr key={row._id as string} className="group hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        {typeof row.imageUrl === 'string' && (
-                          <img src={row.imageUrl} alt="Thumbnail" className="w-10 h-10 rounded-lg object-cover border border-slate-200" />
+              <tbody>
+                {results.map((row) => (
+                  <tr key={row._id as string} className="group">
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                        {typeof row.imageUrl === 'string' && row.imageUrl && (
+                          <img
+                            src={row.imageUrl}
+                            alt="Thumbnail"
+                            style={{
+                              width: 40,
+                              height: 40,
+                              borderRadius: 8,
+                              objectFit: 'cover',
+                              border: '1.5px solid var(--color-navy-100)',
+                              flexShrink: 0,
+                            }}
+                          />
                         )}
                         <div>
-                          <p className="font-medium text-slate-800 dark:text-white">
-                            {String(row.title || row.name || row.courseName || row.platform || 'Untitled Item')}
+                          <p style={{ fontWeight: 600, color: NAVY, fontSize: 13.5, marginBottom: 2 }}>
+                            {String(row.title || row.name || row.platform || row.courseName || 'Untitled')}
                           </p>
-                          <p className="text-xs text-slate-500 mt-0.5 max-w-[300px] truncate">
+                          <p
+                            style={{
+                              fontSize: 11.5,
+                              color: 'var(--color-navy-300)',
+                              fontFamily: 'monospace',
+                              maxWidth: 260,
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
                             {String(row._id)}
                           </p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td>
                       {row.isActive !== undefined ? (
-                        <span className={cn(
-                          "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium",
-                          row.isActive 
-                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200/50 dark:bg-emerald-500/10 dark:text-emerald-400" 
-                            : "bg-slate-100 text-slate-600 border border-slate-200/50 dark:bg-slate-800 dark:text-slate-400"
-                        )}>
-                          {row.isActive ? 'Active' : 'Draft'}
-                        </span>
+                        row.isActive ? (
+                          <span className="badge-active">
+                            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', display: 'inline-block' }} />
+                            Active
+                          </span>
+                        ) : (
+                          <span className="badge-inactive">
+                            <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--color-navy-300)', display: 'inline-block' }} />
+                            Draft
+                          </span>
+                        )
                       ) : (
-                        <span className="text-slate-400 text-xs">—</span>
+                        <span style={{ color: 'var(--color-navy-300)', fontSize: 13 }}>—</span>
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
-                      {row.createdAt ? new Date(row.createdAt as string).toLocaleDateString() : 'N/A'}
+                    <td style={{ fontSize: 13, color: 'var(--color-navy-500)' }}>
+                      {row.createdAt
+                        ? new Date(row.createdAt as string).toLocaleDateString('en-IN', {
+                            day: 'numeric',
+                            month: 'short',
+                            year: 'numeric',
+                          })
+                        : 'N/A'}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right">
-                      <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button 
+                    <td>
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'flex-end',
+                          gap: 6,
+                          opacity: 0,
+                          transition: 'opacity 0.15s',
+                        }}
+                        className="group-action-btns"
+                      >
+                        <button
                           onClick={() => handleEdit(row)}
-                          className="p-1.5 text-slate-400 hover:text-gold-DEFAULT hover:bg-gold-dim rounded-md transition-colors"
+                          className="jsc-action-btn edit"
                           title="Edit"
                         >
-                          <Edit2 size={16} />
+                          <Edit2 size={15} />
                         </button>
-                        <button 
+                        <button
                           onClick={() => handleDelete(row)}
-                          className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors"
+                          className="jsc-action-btn delete"
                           title="Delete"
+                          disabled={deleteMutation.isPending}
                         >
-                          <Trash2 size={16} />
+                          <Trash2 size={15} />
                         </button>
                       </div>
                     </td>
@@ -212,7 +356,7 @@ const GenericModule = ({ title, endpoint, fields }: GenericModuleProps) => {
       </div>
 
       {isModalOpen && (
-        <GenericForm 
+        <GenericForm
           title={title}
           fields={fields}
           initialData={editData}

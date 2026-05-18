@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Phone, Mail, Clock, Send, MessageCircle, Camera, Video } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Send, MessageCircle, Camera, Video, Loader2 } from 'lucide-react';
+import api from '../utils/api';
 
 const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) => (
   <motion.div
@@ -13,6 +15,41 @@ const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode, delay?: nu
 );
 
 const Contact = () => {
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [courseInterest, setCourseInterest] = useState('PCS-J Foundation');
+  const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+
+  const handleContactSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
+    setLoading(true);
+
+    try {
+      await api.post('/democlasses', {
+        name,
+        phone,
+        email,
+        courseInterest,
+        notes: message
+      });
+      setSuccess('Your inquiry was successfully submitted! Our team will contact you shortly.');
+      setName('');
+      setPhone('');
+      setEmail('');
+      setMessage('');
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to submit form. Please check your network and try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const contactInfo = [
     {
       icon: MapPin,
@@ -92,24 +129,61 @@ const Contact = () => {
           <FadeIn>
             <div className="bg-white p-10 rounded-[2.5rem] shadow-xl border border-slate-100">
               <h2 className="text-3xl font-serif font-bold text-primary mb-8">Send us a Message</h2>
-              <form className="space-y-6">
+              
+              {error && (
+                <div className="mb-6 p-4 bg-red-50 border border-red-150 rounded-2xl text-sm font-semibold text-red-600">
+                  {error}
+                </div>
+              )}
+              {success && (
+                <div className="mb-6 p-4 bg-green-50 border border-green-150 rounded-2xl text-sm font-semibold text-green-700 animate-pulse">
+                  {success}
+                </div>
+              )}
+
+              <form onSubmit={handleContactSubmit} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-bold text-slate-700 mb-2">Full Name</label>
-                    <input type="text" className="w-full px-6 py-4 rounded-xl bg-slate-50 border border-slate-200 focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all outline-none" placeholder="John Doe" />
+                    <input 
+                      type="text" 
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required 
+                      className="w-full px-6 py-4 rounded-xl bg-slate-50 border border-slate-200 focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all outline-none" 
+                      placeholder="John Doe" 
+                    />
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-slate-700 mb-2">Phone Number</label>
-                    <input type="text" className="w-full px-6 py-4 rounded-xl bg-slate-50 border border-slate-200 focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all outline-none" placeholder="+91 00000 00000" />
+                    <input 
+                      type="text" 
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      required 
+                      className="w-full px-6 py-4 rounded-xl bg-slate-50 border border-slate-200 focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all outline-none" 
+                      placeholder="+91 00000 00000" 
+                    />
                   </div>
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-slate-700 mb-2">Email Address</label>
-                  <input type="email" className="w-full px-6 py-4 rounded-xl bg-slate-50 border border-slate-200 focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all outline-none" placeholder="john@example.com" />
+                  <input 
+                    type="email" 
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required 
+                    className="w-full px-6 py-4 rounded-xl bg-slate-50 border border-slate-200 focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all outline-none" 
+                    placeholder="john@example.com" 
+                  />
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-slate-700 mb-2">Course Interest</label>
-                  <select className="w-full px-6 py-4 rounded-xl bg-slate-50 border border-slate-200 focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all outline-none">
+                  <select 
+                    value={courseInterest}
+                    onChange={(e) => setCourseInterest(e.target.value)}
+                    className="w-full px-6 py-4 rounded-xl bg-slate-50 border border-slate-200 focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all outline-none"
+                  >
                     <option>PCS-J Foundation</option>
                     <option>APO Special Batch</option>
                     <option>HJS Preparation</option>
@@ -119,10 +193,30 @@ const Contact = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-slate-700 mb-2">Message</label>
-                  <textarea rows={4} className="w-full px-6 py-4 rounded-xl bg-slate-50 border border-slate-200 focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all outline-none resize-none" placeholder="How can we help you?"></textarea>
+                  <textarea 
+                    rows={4} 
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    required
+                    className="w-full px-6 py-4 rounded-xl bg-slate-50 border border-slate-200 focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all outline-none resize-none" 
+                    placeholder="How can we help you?"
+                  ></textarea>
                 </div>
-                <button className="w-full py-5 bg-primary text-white font-bold rounded-2xl hover:bg-primary-light transition-all shadow-lg flex items-center justify-center gap-2 group">
-                  Send Message <Send size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                <button 
+                  type="submit"
+                  disabled={loading}
+                  className="w-full py-5 bg-primary text-white font-bold rounded-2xl hover:bg-primary-light disabled:opacity-50 transition-all shadow-lg flex items-center justify-center gap-2 group cursor-pointer"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="animate-spin" size={20} />
+                      Submitting Message...
+                    </>
+                  ) : (
+                    <>
+                      Send Message <Send size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                    </>
+                  )}
                 </button>
               </form>
             </div>

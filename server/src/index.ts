@@ -28,6 +28,7 @@ import studentsRoutes from './routes/studentsRoutes';
 import socialMediasRoutes from './routes/socialMediasRoutes';
 import whatsappLeadsRoutes from './routes/whatsappLeadsRoutes';
 import seoSettingsRoutes from './routes/seoSettingsRoutes';
+import courseCategoryRoutes from './routes/courseCategoryRoutes';
 
 import path from 'path';
 import uploadRoutes from './routes/uploadRoutes';
@@ -74,6 +75,7 @@ app.use('/api/v1/students', studentsRoutes);
 app.use('/api/v1/socialmedias', socialMediasRoutes);
 app.use('/api/v1/whatsappleads', whatsappLeadsRoutes);
 app.use('/api/v1/seosettings', seoSettingsRoutes);
+app.use('/api/v1/course-categories', courseCategoryRoutes);
 
 // Handle undefined routes
 app.use((req, res, next) => {

@@ -17,146 +17,291 @@ interface ApiListResponse {
   data: GalleryItem[];
 }
 
+const NAVY = '#07152F';
+
 export default function GalleryManager() {
   const queryClient = useQueryClient();
   const [activeCategory, setActiveCategory] = useState('All');
-  const [uploadingFiles, setUploadingFiles] = useState<{file: File, progress: number}[]>([]);
+  const [uploadingFiles, setUploadingFiles] = useState<{ file: File; progress: number }[]>([]);
 
   const { data, isLoading } = useQuery<ApiListResponse>({
     queryKey: ['gallery'],
-    queryFn: () => api.get<ApiListResponse>('/galleries').then(res => res.data)
+    queryFn: () => api.get<ApiListResponse>('/galleries').then((res) => res.data),
   });
 
   const images: GalleryItem[] = data?.data || [];
-  const categories = ['All', ...new Set(images.map(img => img.category || 'General'))];
-  const filteredImages = activeCategory === 'All' ? images : images.filter(img => img.category === activeCategory);
+  const categories = ['All', ...new Set(images.map((img) => img.category || 'General'))];
+  const filteredImages =
+    activeCategory === 'All' ? images : images.filter((img) => img.category === activeCategory);
 
   const createMutation = useMutation({
     mutationFn: (payload: { title: string; imageUrl: string; category: string }) =>
       api.post('/galleries', payload),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['gallery'] })
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['gallery'] }),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => api.delete(`/galleries/${id}`),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['gallery'] })
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['gallery'] }),
   });
 
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    const newUploads = acceptedFiles.map(file => ({ file, progress: 0 }));
-    setUploadingFiles(prev => [...prev, ...newUploads]);
+  const onDrop = useCallback(
+    async (acceptedFiles: File[]) => {
+      const newUploads = acceptedFiles.map((file) => ({ file, progress: 0 }));
+      setUploadingFiles((prev) => [...prev, ...newUploads]);
 
-    for (const file of acceptedFiles) {
-      await new Promise(resolve => setTimeout(resolve, 800));
-      const fakeUrl = URL.createObjectURL(file);
+      for (const file of acceptedFiles) {
+        await new Promise((resolve) => setTimeout(resolve, 800));
+        const fakeUrl = URL.createObjectURL(file);
 
-      await createMutation.mutateAsync({
-        title: file.name,
-        imageUrl: fakeUrl,
-        category: activeCategory === 'All' ? 'General' : activeCategory
-      });
+        await createMutation.mutateAsync({
+          title: file.name,
+          imageUrl: fakeUrl,
+          category: activeCategory === 'All' ? 'General' : activeCategory,
+        });
 
-      setUploadingFiles(prev => prev.filter(p => p.file !== file));
-    }
-  }, [createMutation, activeCategory]);
+        setUploadingFiles((prev) => prev.filter((p) => p.file !== file));
+      }
+    },
+    [createMutation, activeCategory]
+  );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: { 'image/*': [] }
+    accept: { 'image/*': [] },
   });
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500 pb-12">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Media Gallery</h1>
-          <p className="text-slate-500 text-sm mt-1">Upload and organize images for your platform.</p>
-        </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }} className="animate-fade-up">
+      {/* ── Page Header ── */}
+      <div className="jsc-page-header">
+        <h1 className="jsc-page-title">Media Gallery</h1>
+        <p className="jsc-page-subtitle">Upload and organize images for the platform.</p>
       </div>
 
-      {/* Upload Zone */}
-      <div 
-        {...getRootProps()} 
+      {/* ── Upload Zone ── */}
+      <div
+        {...getRootProps()}
         className={cn(
-          "border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-all duration-300 relative overflow-hidden group",
-          isDragActive 
-            ? "border-gold-DEFAULT bg-gold-dim" 
-            : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 hover:bg-slate-50 dark:hover:bg-slate-900/50 hover:border-slate-300"
+          "jsc-upload-zone",
+          isDragActive && "is-drag-active"
         )}
+        style={{
+          border: '2px dashed var(--color-navy-200)',
+          borderRadius: 16,
+          background: '#fff',
+          padding: '48px 24px',
+          textAlign: 'center',
+          cursor: 'pointer',
+          transition: 'all 0.25s',
+          boxShadow: 'var(--shadow-card)',
+        }}
       >
         <input {...getInputProps()} />
-        <div className="flex flex-col items-center justify-center gap-4">
-          <div className="w-16 h-16 bg-gold-dim text-gold-DEFAULT rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-            <Upload size={28} />
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+          <div
+            style={{
+              width: 56,
+              height: 56,
+              borderRadius: '50%',
+              background: 'var(--color-gold-dim)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'var(--color-gold-500)',
+            }}
+          >
+            <Upload size={24} />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-slate-800 dark:text-white">Click or drag images to upload</h3>
-            <p className="text-slate-500 text-sm mt-1">Supports JPG, PNG and WebP up to 10MB</p>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: NAVY }}>
+              Click or drag images to upload
+            </h3>
+            <p style={{ fontSize: 13, color: 'var(--color-navy-400)', marginTop: 4 }}>
+              Supports JPG, PNG and WebP up to 10MB
+            </p>
           </div>
         </div>
       </div>
 
       {uploadingFiles.length > 0 && (
-        <div className="bg-white dark:bg-slate-950 border border-gold-DEFAULT/20 p-4 rounded-xl shadow-sm flex items-center gap-4">
-          <Loader2 className="animate-spin text-gold-DEFAULT" size={24} />
+        <div
+          className="jsc-card animate-fade-in"
+          style={{
+            padding: 18,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 14,
+            borderColor: 'rgba(244,180,0,0.25)',
+            background: 'var(--color-gold-100)',
+          }}
+        >
+          <Loader2
+            className="animate-spin text-gold-DEFAULT"
+            size={20}
+            style={{ color: 'var(--color-gold-500)', animation: 'spin 1s linear infinite' }}
+          />
           <div>
-            <p className="text-sm font-bold text-slate-800 dark:text-white">Uploading {uploadingFiles.length} files...</p>
-            <p className="text-xs text-slate-500">Please do not close this window.</p>
+            <p style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--color-gold-600)' }}>
+              Uploading {uploadingFiles.length} file{uploadingFiles.length > 1 ? 's' : ''}...
+            </p>
+            <p style={{ fontSize: 11.5, color: 'var(--color-navy-400)' }}>
+              Please do not close this page.
+            </p>
           </div>
         </div>
       )}
 
-      {/* Category Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 hidden-scrollbar">
-        {categories.map(cat => (
+      {/* ── Category Tabs ── */}
+      <div
+        className="hidden-scrollbar"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          overflowX: 'auto',
+          paddingBottom: 4,
+        }}
+      >
+        {categories.map((cat) => (
           <button
             key={cat}
             onClick={() => setActiveCategory(cat)}
-            className={cn(
-              "px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors",
-              activeCategory === cat 
-                ? "bg-navy-main text-white"
-                : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 dark:bg-slate-950 dark:border-slate-800 dark:text-slate-400"
-            )}
+            className="btn-outline"
+            style={{
+              padding: '8px 18px',
+              fontSize: 13,
+              borderRadius: 20,
+              whiteSpace: 'nowrap',
+              background: activeCategory === cat ? 'var(--color-navy-900)' : 'transparent',
+              color: activeCategory === cat ? '#fff' : 'var(--color-navy-700)',
+              borderColor: activeCategory === cat ? 'var(--color-navy-900)' : 'var(--color-navy-200)',
+            }}
           >
             {cat}
           </button>
         ))}
       </div>
 
-      {/* Masonry-style Grid */}
+      {/* ── Masonry Grid ── */}
       {isLoading ? (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {[1,2,3,4,5,6,7,8].map(i => (
-            <div key={i} className="aspect-square bg-slate-100 dark:bg-slate-900 rounded-xl animate-pulse" />
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+            gap: 18,
+          }}
+        >
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div
+              key={i}
+              style={{
+                aspectRatio: '1/1',
+                background: 'var(--color-navy-50)',
+                borderRadius: 12,
+                animation: 'pulse 1.5s ease-in-out infinite',
+              }}
+            />
           ))}
         </div>
       ) : filteredImages.length === 0 ? (
-        <div className="p-20 text-center bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl flex flex-col items-center">
-          <ImageIcon size={48} className="text-slate-300 mb-4" />
-          <h3 className="text-lg font-bold text-slate-800 dark:text-white">No images in this album</h3>
-          <p className="text-slate-500 text-sm mt-1">Drag and drop images above to add them.</p>
+        <div className="jsc-empty-state jsc-card" style={{ background: '#fff' }}>
+          <div className="jsc-empty-icon">
+            <ImageIcon size={26} />
+          </div>
+          <h3 style={{ fontSize: 16, fontWeight: 700, color: NAVY, marginBottom: 6 }}>
+            No images in this album
+          </h3>
+          <p style={{ fontSize: 13.5, color: 'var(--color-navy-400)' }}>
+            Drag and drop images above to add them to this category.
+          </p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+            gap: 20,
+          }}
+        >
           {filteredImages.map((img) => (
-            <div key={img._id} className="group relative aspect-square rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
-              <img 
-                src={img.imageUrl} 
-                alt={img.title || 'Gallery image'} 
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            <div
+              key={img._id}
+              className="jsc-card group"
+              style={{
+                aspectRatio: '1/1',
+                borderRadius: 14,
+                overflow: 'hidden',
+                position: 'relative',
+                border: '1.5px solid var(--color-navy-100)',
+                background: '#fff',
+              }}
+            >
+              <img
+                src={img.imageUrl}
+                alt={img.title || 'Gallery image'}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  transition: 'transform 0.4s ease',
+                }}
+                className="group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-linear-to-t from-slate-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-                <p className="text-white text-sm font-medium truncate">{img.title}</p>
-                <p className="text-slate-300 text-xs">{img.category}</p>
+
+              {/* Hover overlay */}
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  background: 'linear-gradient(to top, rgba(7,21,47,0.85) 0%, transparent 60%)',
+                  opacity: 0,
+                  transition: 'opacity 0.25s',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'flex-end',
+                  padding: 14,
+                }}
+                className="group-hover:opacity-100"
+              >
+                <p style={{ color: '#fff', fontSize: 13, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {img.title}
+                </p>
+                <p style={{ color: 'var(--color-gold-400)', fontSize: 11.5, fontWeight: 500, marginTop: 2 }}>
+                  {img.category || 'General'}
+                </p>
               </div>
-              <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
-                <button 
-                  onClick={() => deleteMutation.mutate(img._id)}
-                  className="p-2 bg-rose-500 text-white rounded-lg hover:bg-rose-600 transition-colors shadow-lg"
-                  title="Delete Image"
+
+              {/* Hover Delete Action */}
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 10,
+                  right: 10,
+                  opacity: 0,
+                  transition: 'opacity 0.25s',
+                }}
+                className="group-hover:opacity-100"
+              >
+                <button
+                  onClick={() => {
+                    if (window.confirm('Delete this image from gallery?')) {
+                      deleteMutation.mutate(img._id);
+                    }
+                  }}
+                  style={{
+                    background: '#EF4444',
+                    border: 'none',
+                    borderRadius: 8,
+                    padding: 7,
+                    color: '#fff',
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 8px rgba(239,68,68,0.3)',
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}
                 >
-                  <Trash2 size={16} />
+                  <Trash2 size={14} />
                 </button>
               </div>
             </div>

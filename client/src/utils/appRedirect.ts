@@ -1,6 +1,8 @@
+import api from './api';
+
 // Simulated config that would typically be fetched from the backend (Admin Settings)
 export const WA_CONFIG = {
-  number: "919876543210",
+  number: "919450614241", // Corrected to active WhatsApp number from Contact page
   defaultMessage: "Hello Judicial Study Centre, I want to know more about your courses and admission process.",
   courseMessageTemplate: "Hello Judicial Study Centre, I want details about [COURSE_NAME]."
 };
@@ -32,6 +34,23 @@ export const openWhatsApp = (courseName?: string) => {
   
   if (courseName) {
     text = WA_CONFIG.courseMessageTemplate.replace('[COURSE_NAME]', courseName);
+  }
+  
+  // Silently post the WhatsApp lead tracking details to the backend
+  try {
+    const userStr = localStorage.getItem('jsc_user');
+    const user = userStr ? JSON.parse(userStr) : null;
+    
+    api.post('/whatsappleads', {
+      name: user?.name || 'Anonymous Visitor',
+      phone: user?.phone || 'Initiated Chat',
+      message: text,
+      sourcePage: window.location.pathname + window.location.search
+    }).catch(err => {
+      console.warn('Silent WhatsApp tracking warning:', err.message);
+    });
+  } catch (e) {
+    console.warn('Failed to post silent WhatsApp tracking:', e);
   }
   
   window.open(`https://wa.me/${WA_CONFIG.number}?text=${encodeURIComponent(text)}`, '_blank');

@@ -1,8 +1,9 @@
-import { type ReactNode } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Clock, Users, MessageCircle, Smartphone, Shield, BookOpen } from 'lucide-react';
 import { openCourseInApp, openWhatsApp } from '../utils/appRedirect';
+import api from '../utils/api';
 
 export interface Course {
   slug: string;
@@ -273,6 +274,41 @@ const FadeIn = ({ children, delay = 0 }: { children: ReactNode, delay?: number }
 );
 
 const Courses = () => {
+  const [liveCourses, setLiveCourses] = useState<Course[]>([]);
+
+  useEffect(() => {
+    api.get('/courses')
+      .then(res => {
+        const mapped = res.data.data.map((c: any) => ({
+          slug: c.slug,
+          title: c.title,
+          subtitle: c.subtitle,
+          category: c.category?.name || 'General',
+          mode: c.mode,
+          thumbnail: c.imageUrl || 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80&w=800',
+          faculty: c.faculty || 'Expert Faculty',
+          duration: c.duration || '12 Months',
+          language: c.language || 'English',
+          studentsEnrolled: c.studentsEnrolled || '1k+',
+          about: c.about || '',
+          highlights: c.highlights || [],
+          features: c.features || [],
+          suitableFor: c.suitableFor || [],
+          states: c.states || [],
+          fees: c.fees || { online: '0' },
+          note: c.note || ''
+        }));
+        if (mapped && mapped.length > 0) {
+          setLiveCourses(mapped);
+        }
+      })
+      .catch(err => {
+        console.warn('API courses fetch warning, using static fallback:', err.message);
+      });
+  }, []);
+
+  const displayCourses = liveCourses.length > 0 ? liveCourses : courses;
+
   return (
     <div className="pt-28 pb-20 bg-slate-50 min-h-screen">
       <div className="max-w-7xl mx-auto px-6">
@@ -285,7 +321,7 @@ const Courses = () => {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {courses.map((course, i) => (
+          {displayCourses.map((course, i) => (
             <FadeIn delay={i * 0.1} key={course.slug}>
               <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden group flex flex-col h-full hover:shadow-2xl transition-all">
                 {/* Thumbnail & Badges */}
@@ -333,7 +369,7 @@ const Courses = () => {
                     </div>
                     <div className="flex items-center gap-2">
                       <Shield size={14} className="text-purple-500" />
-                      <span className="font-bold text-primary">₹{course.fees.online || course.fees.offline}</span>
+                      <span className="font-bold text-primary">₹{course.fees.online || course.fees.offline || course.fees.hybrid || 'TBD'}</span>
                     </div>
                   </div>
 

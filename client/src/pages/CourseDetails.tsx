@@ -1,11 +1,13 @@
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   PlayCircle, Clock, Globe, Users, MessageCircle, Smartphone, 
-  CheckCircle, ChevronRight, MapPin, Award, BookOpen, CreditCard, Info
+  CheckCircle, ChevronRight, MapPin, Award, BookOpen, CreditCard, Info, Loader2
 } from 'lucide-react';
 import { openCourseInApp, openWhatsApp } from '../utils/appRedirect';
 import { courses, type Course } from './Courses.tsx';
+import api from '../utils/api';
 
 const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) => (
   <motion.div
@@ -19,7 +21,60 @@ const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode, delay?: nu
 
 const CourseDetails = () => {
   const { slug } = useParams();
-  const course = courses.find(c => c.slug === slug) as Course;
+  const [course, setCourse] = useState<Course | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    api.get('/courses')
+      .then(res => {
+        const found = res.data.data.find((c: any) => c.slug === slug);
+        if (found) {
+          const mapped: Course = {
+            slug: found.slug,
+            title: found.title,
+            subtitle: found.subtitle,
+            category: found.category?.name || 'General',
+            mode: found.mode,
+            thumbnail: found.imageUrl || 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80&w=800',
+            faculty: found.faculty || 'Expert Faculty',
+            duration: found.duration || '12 Months',
+            language: found.language || 'English',
+            studentsEnrolled: found.studentsEnrolled || '1k+',
+            about: found.about || '',
+            highlights: found.highlights || [],
+            features: found.features || [],
+            suitableFor: found.suitableFor || [],
+            states: found.states || [],
+            fees: found.fees || { online: '0' },
+            note: found.note || ''
+          };
+          setCourse(mapped);
+        } else {
+          const fallback = courses.find(c => c.slug === slug);
+          if (fallback) setCourse(fallback);
+        }
+      })
+      .catch(err => {
+        console.warn('API course fetch error, using static fallback:', err.message);
+        const fallback = courses.find(c => c.slug === slug);
+        if (fallback) setCourse(fallback);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center pt-20">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="animate-spin text-gold" size={48} />
+          <p className="text-slate-500 font-semibold">Loading course details...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!course) {
     return (
@@ -136,7 +191,7 @@ const CourseDetails = () => {
         <div className="lg:col-span-8 space-y-12">
           
           {/* Highlights */}
-          {course.highlights && (
+          {course.highlights && course.highlights.length > 0 && (
             <section className="bg-white rounded-[2.5rem] p-10 shadow-sm border border-slate-100">
               <div className="flex items-center gap-4 mb-8">
                 <div className="w-12 h-12 rounded-2xl bg-gold/10 flex items-center justify-center text-gold">
@@ -158,7 +213,7 @@ const CourseDetails = () => {
           )}
 
           {/* Features (for Recorded) */}
-          {course.features && (
+          {course.features && course.features.length > 0 && (
             <section className="bg-white rounded-[2.5rem] p-10 shadow-sm border border-slate-100">
               <div className="flex items-center gap-4 mb-8">
                 <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600">
@@ -204,6 +259,11 @@ const CourseDetails = () => {
                   <div className="absolute top-0 right-0 px-3 py-1 bg-gold text-primary text-[10px] font-bold rounded-bl-xl uppercase">Best Value</div>
                   <p className="text-sm font-bold text-gold uppercase tracking-widest mb-2">Hybrid</p>
                   <p className="text-3xl font-black text-primary">₹{course.fees.hybrid}</p>
+                </div>
+              )}
+              {!course.fees?.online && !course.fees?.offline && !course.fees?.hybrid && (
+                <div className="col-span-3 p-6 text-center text-slate-500 font-medium bg-slate-50 rounded-2xl border border-slate-100">
+                  Pricing details will be announced soon. Please contact us for more information.
                 </div>
               )}
             </div>
@@ -252,7 +312,7 @@ const CourseDetails = () => {
           </div>
 
           {/* States Covered */}
-          {course.states && (
+          {course.states && course.states.length > 0 && (
             <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100">
               <h3 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
                 <MapPin size={20} className="text-gold" /> States Covered
@@ -268,7 +328,7 @@ const CourseDetails = () => {
           )}
 
           {/* Suitable For */}
-          {course.suitableFor && (
+          {course.suitableFor && course.suitableFor.length > 0 && (
             <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100">
               <h3 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
                 <Users size={20} className="text-gold" /> Suitable For

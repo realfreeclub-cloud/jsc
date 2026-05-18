@@ -4,49 +4,42 @@ import Sidebar from './Sidebar';
 import Header from './Header';
 import { motion } from 'framer-motion';
 import { useSidebar } from '../../store/useSidebar';
-import { useTheme } from '../../store/useTheme';
-import { cn } from '../../utils/cn';
 
 const AdminLayout = () => {
   const { isCollapsed } = useSidebar();
-  const { isDarkMode } = useTheme();
 
-  // Sync theme with document root
+  // Always force light mode — JSC admin uses Navy+Gold light theme
   useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDarkMode]);
+    document.documentElement.classList.remove('dark');
+    document.body.style.backgroundColor = 'var(--color-navy-50, #F5F7FB)';
+  }, []);
 
   return (
-    <div className={cn(
-      "min-h-screen transition-colors duration-300",
-      isDarkMode ? "bg-slate-950" : "bg-gray-50"
-    )}>
+    <div style={{ minHeight: '100vh', background: 'var(--color-navy-50, #F5F7FB)' }}>
       <Sidebar />
-      
+
       <motion.div
-        animate={{ 
-          paddingLeft: isCollapsed ? '80px' : '280px' 
-        }}
-        className={cn(
-          "flex flex-col min-h-screen transition-all duration-300 ease-in-out"
-        )}
+        animate={{ paddingLeft: isCollapsed ? 72 : 268 }}
+        transition={{ duration: 0.28, ease: [0.4, 0, 0.2, 1] }}
+        style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}
       >
         <Header />
-        
-        <main className="flex-1 p-6 lg:p-8">
-          <div className="max-w-7xl mx-auto">
+
+        <main style={{ flex: 1, padding: '28px 32px' }}>
+          <div style={{ maxWidth: 1400, margin: '0 auto' }}>
             <Outlet />
           </div>
         </main>
 
-        <footer className="py-6 px-8 border-t border-gray-100 dark:border-slate-900 text-center">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            &copy; {new Date().getFullYear()} Judicial Study Centre. Premium Admin Panel.
-          </p>
+        <footer
+          className="jsc-footer"
+          style={{
+            padding: '18px 32px',
+            textAlign: 'center',
+            fontSize: 13,
+          }}
+        >
+          © {new Date().getFullYear()} Judicial Study Centre — Premium Admin Panel
         </footer>
       </motion.div>
     </div>

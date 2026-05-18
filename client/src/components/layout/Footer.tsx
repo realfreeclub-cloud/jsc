@@ -7,11 +7,8 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
         {/* Brand */}
         <div>
-          <Link to="/" className="flex items-center gap-3 mb-6">
-            <img src="/logo.png" alt="Judicial Study Centre Logo" className="w-12 h-12 object-contain" />
-            <div>
-              <h2 className="text-xl font-serif font-bold text-white leading-tight">Judicial Study Centre</h2>
-            </div>
+          <Link to="/" className="inline-block mb-6">
+            <img src="/logo.svg" alt="Judicial Study Centre Logo" className="w-16 h-16 object-contain" />
           </Link>
           <p className="text-sm leading-relaxed mb-6">
             Premier coaching institute dedicated to shaping the future of the judiciary. Comprehensive preparation with expert faculty and 900+ success stories.

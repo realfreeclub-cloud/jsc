@@ -15,6 +15,8 @@ interface TableProps<T> {
   searchPlaceholder?: string;
 }
 
+const NAVY = '#07152F';
+
 export function Table<T>({ columns, data, onEdit, onDelete, searchPlaceholder = "Search..." }: TableProps<T>) {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -31,62 +33,83 @@ export function Table<T>({ columns, data, onEdit, onDelete, searchPlaceholder = 
   const currentData = filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div className="jsc-card" style={{ overflow: 'hidden', padding: 0 }}>
       {/* Table Toolbar */}
-      <div className="p-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div className="jsc-filter-bar">
         <div className="relative w-full sm:w-72">
           <input 
             type="text" 
             placeholder={searchPlaceholder}
             value={searchTerm}
             onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-            className="w-full pl-4 pr-10 py-2 border border-gray-300 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500 outline-none"
+            className="jsc-search-bar"
+            style={{ width: '100%' }}
           />
         </div>
-        <div className="flex gap-2">
-          <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 text-gray-700">
-            <Filter size={16} /> Filters
+        <div style={{ marginLeft: 'auto', display: 'flex', gap: 10, alignItems: 'center' }}>
+          <button className="btn-outline" style={{ padding: '8px 14px', fontSize: 13, gap: 6 }}>
+            <Filter size={15} /> Filters
           </button>
         </div>
       </div>
 
       {/* Table */}
       <div className="overflow-x-auto">
-        <table className="w-full text-left text-sm text-gray-500">
-          <thead className="text-xs text-gray-700 uppercase bg-gray-50 border-b border-gray-200">
+        <table className="jsc-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <thead>
             <tr>
               {columns.map((col, i) => (
-                <th key={i} className="px-6 py-4 font-semibold">{col.header}</th>
+                <th key={i} style={{ textAlign: 'left' }}>{col.header}</th>
               ))}
-              {(onEdit || onDelete) && <th className="px-6 py-4 font-semibold text-right">Actions</th>}
+              {(onEdit || onDelete) && <th style={{ textAlign: 'right' }}>Actions</th>}
             </tr>
           </thead>
           <tbody>
             {currentData.length > 0 ? currentData.map((row, i) => (
-              <tr key={i} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+              <tr key={i} className="group">
                 {columns.map((col, j) => (
-                  <td key={j} className="px-6 py-4 text-gray-900">
+                  <td key={j} style={{ color: NAVY, fontWeight: 500, fontSize: 13.5 }}>
                     {col.render ? col.render(row) : String(row[col.key as keyof T] || '')}
                   </td>
                 ))}
                 {(onEdit || onDelete) && (
-                  <td className="px-6 py-4 text-right flex justify-end gap-3">
-                    {onEdit && (
-                      <button onClick={() => onEdit(row)} className="text-blue-600 hover:text-blue-800 bg-blue-50 p-2 rounded-lg transition-colors">
-                        <Edit size={16} />
-                      </button>
-                    )}
-                    {onDelete && (
-                      <button onClick={() => onDelete(row)} className="text-red-600 hover:text-red-800 bg-red-50 p-2 rounded-lg transition-colors">
-                        <Trash2 size={16} />
-                      </button>
-                    )}
+                  <td>
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'flex-end',
+                        gap: 6,
+                        opacity: 0,
+                        transition: 'opacity 0.15s',
+                      }}
+                      className="group-action-btns"
+                    >
+                      {onEdit && (
+                        <button
+                          onClick={() => onEdit(row)}
+                          className="jsc-action-btn edit"
+                          title="Edit"
+                        >
+                          <Edit size={14} />
+                        </button>
+                      )}
+                      {onDelete && (
+                        <button
+                          onClick={() => onDelete(row)}
+                          className="jsc-action-btn delete"
+                          title="Delete"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      )}
+                    </div>
                   </td>
                 )}
               </tr>
             )) : (
               <tr>
-                <td colSpan={columns.length + 1} className="px-6 py-8 text-center text-gray-500">
+                <td colSpan={columns.length + 1} style={{ textAlign: 'center', padding: '32px 16px', color: 'var(--color-navy-400)' }}>
                   No data found matching your search.
                 </td>
               </tr>
@@ -96,22 +119,32 @@ export function Table<T>({ columns, data, onEdit, onDelete, searchPlaceholder = 
       </div>
 
       {/* Pagination */}
-      <div className="p-4 border-t border-gray-200 flex items-center justify-between">
-        <p className="text-sm text-gray-500">
-          Showing <span className="font-semibold text-gray-900">{filteredData.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1}</span> to <span className="font-semibold text-gray-900">{Math.min(currentPage * itemsPerPage, filteredData.length)}</span> of <span className="font-semibold text-gray-900">{filteredData.length}</span> entries
+      <div
+        style={{
+          padding: '16px 24px',
+          borderTop: '1px solid var(--color-navy-100)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
+        <p style={{ fontSize: 13, color: 'var(--color-navy-500)', fontWeight: 500 }}>
+          Showing <span style={{ fontWeight: 700, color: NAVY }}>{filteredData.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1}</span> to <span style={{ fontWeight: 700, color: NAVY }}>{Math.min(currentPage * itemsPerPage, filteredData.length)}</span> of <span style={{ fontWeight: 700, color: NAVY }}>{filteredData.length}</span> entries
         </p>
-        <div className="flex gap-2">
+        <div style={{ display: 'flex', gap: 8 }}>
           <button 
             onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
             disabled={currentPage === 1}
-            className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn-outline"
+            style={{ padding: 8, minWidth: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
           >
             <ChevronLeft size={16} />
           </button>
           <button 
             onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
             disabled={currentPage === totalPages || totalPages === 0}
-            className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn-outline"
+            style={{ padding: 8, minWidth: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
           >
             <ChevronRight size={16} />
           </button>

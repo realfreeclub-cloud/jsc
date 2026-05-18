@@ -17,7 +17,7 @@ const GalleryManager = React.lazy(() => import('./pages/gallery/GalleryManager')
 
 const PageLoader = () => (
   <div className="flex items-center justify-center min-h-[60vh]">
-    <Loader2 size={40} className="animate-spin text-blue-600" />
+    <Loader2 size={40} style={{ animation: 'spin 1s linear infinite', color: '#F4B400' }} />
   </div>
 );
 
@@ -34,6 +34,21 @@ function App() {
           <Route path="/" element={<AdminLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="courses" element={<Courses />} />
+             <Route path="study-material" element={
+               <GenericModule 
+                 title="Study Material" 
+                 endpoint="studymaterials" 
+                 fields={[
+                   { name: 'title', label: 'Material Title', type: 'text', required: true },
+                   { name: 'description', label: 'Short Description', type: 'textarea' },
+                   { name: 'fileUrl', label: 'PDF File / Doc Link (URL)', type: 'file', required: true },
+                   { name: 'fileType', label: 'File Type (e.g. pdf, doc)', type: 'text' },
+                   { name: 'category', label: 'Subject Category (e.g. Criminal Law)', type: 'text' },
+                   { name: 'isFree', label: 'Free for Everyone (Is Free)', type: 'checkbox' },
+                   { name: 'downloads', label: 'Download Counter', type: 'number' }
+                 ]}
+               />
+             } />
             <Route path="students" element={
               <GenericModule 
                 title="Student" 
@@ -46,6 +61,22 @@ function App() {
                   { name: 'status', label: 'Status', type: 'text' },
                   { name: 'feesPaid', label: 'Fees Paid', type: 'number' },
                   { name: 'totalFees', label: 'Total Fees', type: 'number' },
+                  { name: 'isActive', label: 'Active', type: 'checkbox' }
+                ]}
+              />
+            } />
+
+            <Route path="leads" element={
+              <GenericModule 
+                title="Course Lead" 
+                endpoint="democlasses" 
+                fields={[
+                  { name: 'name', label: 'Student Name', type: 'text', required: true },
+                  { name: 'phone', label: 'Phone', type: 'text', required: true },
+                  { name: 'email', label: 'Email', type: 'text' },
+                  { name: 'courseInterest', label: 'Course Interest', type: 'text' },
+                  { name: 'notes', label: 'Message / Inquiry Details', type: 'textarea' },
+                  { name: 'status', label: 'Lead Status', type: 'text' },
                   { name: 'isActive', label: 'Active', type: 'checkbox' }
                 ]}
               />
@@ -138,7 +169,12 @@ function App() {
             } />
 
             {/* Marketing & SEO Components */}
-            <Route path="seo-dashboard" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">SEO Dashboard</h2><p className="text-gray-500">Coming soon.</p></div>} />
+            <Route path="seo-dashboard" element={
+              <div className="jsc-card" style={{ padding: 32 }}>
+                <h2 style={{ fontSize: 20, fontWeight: 700, color: '#07152F', marginBottom: 16 }}>SEO Dashboard</h2>
+                <p style={{ color: 'var(--color-navy-500)', fontSize: 14 }}>The comprehensive SEO tracking dashboard is under construction. Please use SEO Settings to configure individual page tags.</p>
+              </div>
+            } />
             <Route path="seo-settings" element={
               <GenericModule 
                 title="SEO Settings" 
@@ -154,7 +190,12 @@ function App() {
                 ]}
               />
             } />
-            <Route path="meta-tags" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Meta Tags Config</h2><p className="text-gray-500">Managed via SEO Settings.</p></div>} />
+            <Route path="meta-tags" element={
+              <div className="jsc-card" style={{ padding: 32 }}>
+                <h2 style={{ fontSize: 20, fontWeight: 700, color: '#07152F', marginBottom: 16 }}>Meta Tags Config</h2>
+                <p style={{ color: 'var(--color-navy-500)', fontSize: 14 }}>Global meta tags are managed via the SEO Settings tab. Head over there to create or modify parameters.</p>
+              </div>
+            } />
             <Route path="social-media" element={
               <GenericModule 
                 title="Social Media Links" 
@@ -200,8 +241,18 @@ function App() {
                 ]}
               />
             } />
-            <Route path="app-settings" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">App Config</h2><p className="text-gray-500">Configuration panel loaded.</p></div>} />
-            <Route path="admins" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-900 dark:bg-slate-950"><h2 className="text-xl font-bold mb-4 dark:text-white">Admin Users</h2><p className="text-gray-500">Manage administrative accounts here.</p></div>} />
+            <Route path="app-settings" element={
+              <div className="jsc-card" style={{ padding: 32 }}>
+                <h2 style={{ fontSize: 20, fontWeight: 700, color: '#07152F', marginBottom: 16 }}>App Config</h2>
+                <p style={{ color: 'var(--color-navy-500)', fontSize: 14 }}>System level application configurations are currently loaded and optimized in the background.</p>
+              </div>
+            } />
+            <Route path="admins" element={
+              <div className="jsc-card" style={{ padding: 32 }}>
+                <h2 style={{ fontSize: 20, fontWeight: 700, color: '#07152F', marginBottom: 16 }}>Admin Users</h2>
+                <p style={{ color: 'var(--color-navy-500)', fontSize: 14 }}>Manage administrative accounts and privileges. Additional super admin controls are restricted for security.</p>
+              </div>
+            } />
           </Route>
         </Route>
 

@@ -34,4 +34,9 @@ const courseSchema = new mongoose.Schema({
 
 // Indexes removed to prevent mongoose warnings (already handled by unique: true and ref)
 
+courseSchema.pre(/^find/, function (this: any, next: any) {
+  this.populate('category');
+  next();
+});
+
 export default mongoose.model('Course', courseSchema);

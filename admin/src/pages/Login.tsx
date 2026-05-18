@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Lock, Mail, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Lock, Mail, Eye, EyeOff, Loader2, Scale } from 'lucide-react';
 import api from '../utils/api';
 
 const Login = () => {
@@ -15,109 +15,299 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     setError('');
-
     try {
       const response = await api.post('/auth/login', { email, password });
-      
       const { token, data } = response.data;
-      
       if (data.role !== 'admin' && data.role !== 'superadmin') {
-        setError('Access denied. Admin only.');
-        setLoading(false);
+        setError('Access denied. Admin accounts only.');
         return;
       }
-
       localStorage.setItem('adminToken', token);
       localStorage.setItem('adminUser', JSON.stringify(data));
-      
       navigate('/');
     } catch (err: unknown) {
       const axiosError = err as { response?: { data?: { message?: string } } };
-      setError(axiosError.response?.data?.message || 'Invalid email or password');
+      setError(axiosError.response?.data?.message || 'Invalid credentials. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-3xl shadow-2xl overflow-hidden">
-        <div className="bg-blue-600 p-8 text-center">
-          <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4 backdrop-blur-sm">
-            <Lock className="text-white" size={32} />
-          </div>
-          <h2 className="text-2xl font-bold text-white">Admin Portal</h2>
-          <p className="text-blue-100 mt-2">Sign in to manage Judicial Study Centre</p>
-        </div>
+    <div
+      className="jsc-login-bg"
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 24,
+      }}
+    >
+      {/* Decorative blobs */}
+      <div
+        style={{
+          position: 'absolute',
+          top: '-10%',
+          right: '-5%',
+          width: 400,
+          height: 400,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(244,180,0,0.12) 0%, transparent 70%)',
+          pointerEvents: 'none',
+        }}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          bottom: '-10%',
+          left: '-5%',
+          width: 350,
+          height: 350,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(244,180,0,0.08) 0%, transparent 70%)',
+          pointerEvents: 'none',
+        }}
+      />
 
-        <div className="p-8">
-          {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-100 text-red-600 rounded-xl text-sm font-medium flex items-center gap-2">
-              <span className="w-1.5 h-1.5 bg-red-600 rounded-full"></span>
-              {error}
-            </div>
-          )}
+      <div
+        className="animate-fade-up"
+        style={{ width: '100%', maxWidth: 440, position: 'relative', zIndex: 1 }}
+      >
+        {/* Card */}
+        <div
+          style={{
+            background: '#fff',
+            borderRadius: 24,
+            overflow: 'hidden',
+            boxShadow: '0 25px 60px rgba(7,21,47,0.35), 0 0 0 1px rgba(244,180,0,0.12)',
+          }}
+        >
+          {/* Card Header */}
+          <div
+            style={{
+              background: 'linear-gradient(135deg, #07152F 0%, #102444 100%)',
+              padding: '40px 40px 36px',
+              textAlign: 'center',
+              position: 'relative',
+            }}
+          >
+            {/* Gold decorative line */}
+            <div
+              style={{
+                position: 'absolute',
+                top: 0, left: 0, right: 0,
+                height: 3,
+                background: 'linear-gradient(90deg, transparent, #F4B400, transparent)',
+              }}
+            />
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
-              <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                  placeholder="admin@jsc.com"
-                  required
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Password</label>
-              <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-12 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                  placeholder="••••••••"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-600/20 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+            <div
+              className="animate-pulse-gold"
+              style={{
+                width: 72,
+                height: 72,
+                borderRadius: 20,
+                background: 'linear-gradient(135deg, rgba(244,180,0,0.20), rgba(244,180,0,0.08))',
+                border: '2px solid rgba(244,180,0,0.35)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 20px',
+              }}
             >
-              {loading ? (
-                <>
-                  <Loader2 className="animate-spin" size={20} />
-                  Authenticating...
-                </>
-              ) : (
-                'Sign In to Dashboard'
-              )}
-            </button>
-          </form>
+              <Scale size={34} style={{ color: '#F4B400' }} />
+            </div>
 
-          <div className="mt-8 text-center">
-            <p className="text-gray-500 text-sm">
-              Forgot password? Contact system administrator.
+            <h1
+              style={{
+                fontSize: 22,
+                fontWeight: 800,
+                color: '#fff',
+                fontFamily: 'Playfair Display, Georgia, serif',
+                letterSpacing: '-0.01em',
+                marginBottom: 8,
+              }}
+            >
+              Judicial Study Centre
+            </h1>
+            <p style={{ fontSize: 13.5, color: 'rgba(255,255,255,0.50)', fontWeight: 500 }}>
+              Admin Control Panel — Secure Login
+            </p>
+          </div>
+
+          {/* Form */}
+          <div style={{ padding: '36px 40px 40px' }}>
+            {error && (
+              <div
+                style={{
+                  marginBottom: 20,
+                  padding: '12px 16px',
+                  background: '#FEF2F2',
+                  border: '1px solid #FECACA',
+                  borderRadius: 10,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10,
+                  fontSize: 13.5,
+                  color: '#DC2626',
+                  fontWeight: 500,
+                }}
+              >
+                <span
+                  style={{
+                    width: 6,
+                    height: 6,
+                    borderRadius: '50%',
+                    background: '#DC2626',
+                    flexShrink: 0,
+                  }}
+                />
+                {error}
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+              {/* Email */}
+              <div>
+                <label
+                  className="jsc-form-label"
+                  htmlFor="login-email"
+                  style={{ marginBottom: 8 }}
+                >
+                  Email Address
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <Mail
+                    size={17}
+                    style={{
+                      position: 'absolute',
+                      left: 14,
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      color: 'var(--color-navy-400)',
+                    }}
+                  />
+                  <input
+                    id="login-email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="admin@judicialstudycentre.com"
+                    required
+                    className="jsc-input"
+                    style={{ paddingLeft: 42 }}
+                  />
+                </div>
+              </div>
+
+              {/* Password */}
+              <div>
+                <label
+                  className="jsc-form-label"
+                  htmlFor="login-password"
+                  style={{ marginBottom: 8 }}
+                >
+                  Password
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <Lock
+                    size={17}
+                    style={{
+                      position: 'absolute',
+                      left: 14,
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      color: 'var(--color-navy-400)',
+                    }}
+                  />
+                  <input
+                    id="login-password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••••"
+                    required
+                    className="jsc-input"
+                    style={{ paddingLeft: 42, paddingRight: 44 }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={{
+                      position: 'absolute',
+                      right: 14,
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: 'none',
+                      border: 'none',
+                      color: 'var(--color-navy-400)',
+                      cursor: 'pointer',
+                      padding: 0,
+                      display: 'flex',
+                      alignItems: 'center',
+                      transition: 'color 0.15s',
+                    }}
+                    onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.color = '#F4B400')}
+                    onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.color = 'var(--color-navy-400)')}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Submit */}
+              <button
+                type="submit"
+                disabled={loading}
+                className="btn-gold"
+                style={{
+                  width: '100%',
+                  justifyContent: 'center',
+                  padding: '14px 24px',
+                  fontSize: 15,
+                  marginTop: 4,
+                  borderRadius: 12,
+                }}
+              >
+                {loading ? (
+                  <>
+                    <Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} />
+                    Authenticating...
+                  </>
+                ) : (
+                  'Sign In to Dashboard'
+                )}
+              </button>
+            </form>
+
+            <p
+              style={{
+                textAlign: 'center',
+                fontSize: 12.5,
+                color: 'var(--color-navy-400)',
+                marginTop: 24,
+              }}
+            >
+              Forgot password?{' '}
+              <span style={{ color: 'var(--color-gold-600)', fontWeight: 600, cursor: 'pointer' }}>
+                Contact system administrator
+              </span>
             </p>
           </div>
         </div>
+
+        {/* Footer note */}
+        <p
+          style={{
+            textAlign: 'center',
+            fontSize: 12,
+            color: 'rgba(255,255,255,0.25)',
+            marginTop: 20,
+            letterSpacing: '0.02em',
+          }}
+        >
+          © {new Date().getFullYear()} Judicial Study Centre — Secure Admin Panel
+        </p>
       </div>
     </div>
   );
