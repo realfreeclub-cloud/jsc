@@ -39,9 +39,9 @@ function App() {
                  title="Study Material" 
                  endpoint="studymaterials" 
                  fields={[
-                   { name: 'title', label: 'Material Title', type: 'text', required: true },
+                   { name: 'title', label: 'Material Title', type: 'text'},
                    { name: 'description', label: 'Short Description', type: 'textarea' },
-                   { name: 'fileUrl', label: 'PDF File / Doc Link (URL)', type: 'file', required: true },
+                   { name: 'fileUrl', label: 'PDF File / Doc Link (URL)', type: 'file'},
                    { name: 'fileType', label: 'File Type (e.g. pdf, doc)', type: 'text' },
                    { name: 'category', label: 'Subject Category (e.g. Criminal Law)', type: 'text' },
                    { name: 'isFree', label: 'Free for Everyone (Is Free)', type: 'checkbox' },
@@ -54,9 +54,9 @@ function App() {
                 title="Student" 
                 endpoint="students" 
                 fields={[
-                  { name: 'name', label: 'Full Name', type: 'text', required: true },
+                  { name: 'name', label: 'Full Name', type: 'text'},
                   { name: 'email', label: 'Email', type: 'text' },
-                  { name: 'phone', label: 'Phone', type: 'text', required: true },
+                  { name: 'phone', label: 'Phone', type: 'text'},
                   { name: 'course', label: 'Enrolled Course', type: 'text' },
                   { name: 'status', label: 'Status', type: 'text' },
                   { name: 'feesPaid', label: 'Fees Paid', type: 'number' },
@@ -71,8 +71,8 @@ function App() {
                 title="Course Lead" 
                 endpoint="democlasses" 
                 fields={[
-                  { name: 'name', label: 'Student Name', type: 'text', required: true },
-                  { name: 'phone', label: 'Phone', type: 'text', required: true },
+                  { name: 'name', label: 'Student Name', type: 'text'},
+                  { name: 'phone', label: 'Phone', type: 'text'},
                   { name: 'email', label: 'Email', type: 'text' },
                   { name: 'courseInterest', label: 'Course Interest', type: 'text' },
                   { name: 'notes', label: 'Message / Inquiry Details', type: 'textarea' },
@@ -88,9 +88,9 @@ function App() {
                 title="Hero Slider" 
                 endpoint="herosliders" 
                 fields={[
-                  { name: 'title', label: 'Title', type: 'text', required: true },
-                  { name: 'subtitle', label: 'Subtitle', type: 'text' },
-                  { name: 'imageUrl', label: 'Image URL', type: 'file', required: true },
+                  { name: 'title', label: 'Title', type: 'text', required: false},
+                  { name: 'subtitle', label: 'Subtitle', type: 'text', required: false },
+                  { name: 'imageUrl', label: 'Image URL', type: 'file', required: false},
                   { name: 'buttonText', label: 'Button Text', type: 'text' },
                   { name: 'buttonLink', label: 'Button Link', type: 'text' },
                   { name: 'order', label: 'Display Order', type: 'number' },
@@ -110,7 +110,7 @@ function App() {
                 title="Notification" 
                 endpoint="notifications" 
                 fields={[
-                  { name: 'title', label: 'Alert Title', type: 'text', required: true },
+                  { name: 'title', label: 'Alert Title', type: 'text'},
                   { name: 'message', label: 'Full Message', type: 'textarea' },
                   { name: 'link', label: 'Redirect Link', type: 'text' },
                   { name: 'isPinned', label: 'Pin to Top', type: 'checkbox' },
@@ -141,11 +141,10 @@ function App() {
                 title="Event" 
                 endpoint="events" 
                 fields={[
-                  { name: 'title', label: 'Event Title', type: 'text', required: true },
+                  { name: 'title', label: 'Event Title', type: 'text'},
                   { name: 'description', label: 'Description', type: 'textarea' },
-                  { name: 'date', label: 'Event Date', type: 'date', required: true },
+                  { name: 'date', label: 'Event Date', type: 'date'},
                   { name: 'location', label: 'Location/Link', type: 'text' },
-                  { name: 'imageUrl', label: 'Cover Image URL', type: 'file' },
                   { name: 'isActive', label: 'Status', type: 'checkbox' }
                 ]}
               />
@@ -157,8 +156,8 @@ function App() {
                 title="Demo Classes" 
                 endpoint="democlasses" 
                 fields={[
-                  { name: 'name', label: 'Student Name', type: 'text', required: true },
-                  { name: 'phone', label: 'Phone', type: 'text', required: true },
+                  { name: 'name', label: 'Student Name', type: 'text'},
+                  { name: 'phone', label: 'Phone', type: 'text'},
                   { name: 'email', label: 'Email', type: 'text' },
                   { name: 'courseInterest', label: 'Course Interest', type: 'text' },
                   { name: 'scheduleDate', label: 'Scheduled Date', type: 'date' },
@@ -180,8 +179,8 @@ function App() {
                 title="SEO Settings" 
                 endpoint="seosettings" 
                 fields={[
-                  { name: 'pageUrl', label: 'Page URL', type: 'text', required: true },
-                  { name: 'metaTitle', label: 'Meta Title', type: 'text', required: true },
+                  { name: 'pageUrl', label: 'Page URL', type: 'text'},
+                  { name: 'metaTitle', label: 'Meta Title', type: 'text'},
                   { name: 'metaDescription', label: 'Meta Description', type: 'textarea' },
                   { name: 'keywords', label: 'Keywords (Comma separated)', type: 'textarea' },
                   { name: 'canonicalUrl', label: 'Canonical URL', type: 'text' },
@@ -201,8 +200,8 @@ function App() {
                 title="Social Media Links" 
                 endpoint="socialmedias" 
                 fields={[
-                  { name: 'platform', label: 'Platform Name', type: 'text', required: true },
-                  { name: 'url', label: 'Profile URL', type: 'text', required: true },
+                  { name: 'platform', label: 'Platform Name', type: 'text'},
+                  { name: 'url', label: 'Profile URL', type: 'text'},
                   { name: 'icon', label: 'Icon Class (e.g. facebook)', type: 'text' },
                   { name: 'order', label: 'Order', type: 'number' },
                   { name: 'isActive', label: 'Active', type: 'checkbox' }
@@ -215,7 +214,7 @@ function App() {
                 endpoint="whatsappleads" 
                 fields={[
                   { name: 'name', label: 'Name', type: 'text' },
-                  { name: 'phone', label: 'Phone', type: 'text', required: true },
+                  { name: 'phone', label: 'Phone', type: 'text'},
                   { name: 'message', label: 'Message', type: 'textarea' },
                   { name: 'sourcePage', label: 'Source Page', type: 'text' },
                   { name: 'status', label: 'Status', type: 'text' },
@@ -231,9 +230,9 @@ function App() {
                 title="Hero Slider" 
                 endpoint="herosliders" 
                 fields={[
-                  { name: 'title', label: 'Title', type: 'text', required: true },
-                  { name: 'subtitle', label: 'Subtitle', type: 'textarea' },
-                  { name: 'imageUrl', label: 'Image URL', type: 'file', required: true },
+                  { name: 'title', label: 'Title', type: 'text', required: false},
+                  { name: 'subtitle', label: 'Subtitle', type: 'textarea', required: false },
+                  { name: 'imageUrl', label: 'Image URL', type: 'file', required: false},
                   { name: 'ctaText', label: 'Button Text', type: 'text' },
                   { name: 'ctaLink', label: 'Button Link', type: 'text' },
                   { name: 'order', label: 'Order', type: 'number' },

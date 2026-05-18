@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const gallerySchema = new mongoose.Schema({
   title: { type: String },
-  imageUrl: { type: String, required: true },
+  imageUrl: { type: String, required: false },
   category: { type: String, default: 'General' },
   order: { type: Number, default: 0 }
 }, { timestamps: true });

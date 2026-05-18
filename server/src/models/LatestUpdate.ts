@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const latestUpdateSchema = new mongoose.Schema({
-  text: { type: String, required: true },
+  text: { type: String, required: false },
   link: { type: String },
   isActive: { type: Boolean, default: true },
   order: { type: Number, default: 0 }

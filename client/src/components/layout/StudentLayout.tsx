@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, BookOpen, Download, Bell, Key, LogOut, Loader2, X } from 'lucide-react';
+import { LayoutDashboard, BookOpen, Download, Bell, Key, LogOut, Loader2, X, Globe } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../utils/api';
 
@@ -80,7 +80,11 @@ const StudentLayout = () => {
             </div>
             <div>
               <h3 className="font-bold text-slate-900 line-clamp-1">{user?.name || 'Student'}</h3>
-              <p className="text-[11px] font-semibold text-gold tracking-wider uppercase">Portal Access</p>
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className="text-[10px] font-semibold text-gold tracking-wider uppercase">Portal Access</span>
+                <span className="text-gray-350 text-[10px]">•</span>
+                <Link to="/" className="text-[10px] font-semibold text-primary hover:text-gold transition-colors">Visit Site</Link>
+              </div>
             </div>
           </div>
         </div>
@@ -161,6 +165,17 @@ const StudentLayout = () => {
 
       {/* Main Content */}
       <main className="flex-1 md:ml-64 p-4 md:p-8 min-h-screen">
+        {/* Header with Visit Website option */}
+        <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
+          <div>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Judicial Study Centre</span>
+            <h1 className="text-lg font-bold text-slate-800 font-serif mt-0.5">Student Portal</h1>
+          </div>
+          <Link to="/" className="flex items-center gap-2 px-4 py-2 bg-white hover:bg-slate-50 border border-gray-200 rounded-xl text-xs font-bold text-slate-700 transition-all shadow-xs cursor-pointer">
+            <Globe size={14} className="text-slate-500" />
+            Visit Website
+          </Link>
+        </div>
         <Outlet />
       </main>
 

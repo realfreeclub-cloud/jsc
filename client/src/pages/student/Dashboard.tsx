@@ -3,10 +3,14 @@ import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import api from '../../utils/api';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 interface Course {
   title: string;
   about: string;
+  slug?: string;
+  thumbnail?: string;
+  imageUrl?: string;
 }
 
 interface Notice {
@@ -15,6 +19,8 @@ interface Notice {
 }
 
 const StudentDashboard = () => {
+  const { user } = useAuth();
+
   // Fetch Courses
   const { data: coursesData, isLoading: coursesLoading } = useQuery({
     queryKey: ['courses'],
@@ -50,7 +56,7 @@ const StudentDashboard = () => {
             animate={{ opacity: 1, y: 0 }}
             className="text-4xl md:text-5xl font-serif font-bold mb-4"
           >
-            Welcome back, <span className="text-gold">Student!</span> 👋
+            Welcome back, <span className="text-gold">{user?.name?.split(' ')[0] || 'Student'}!</span> 👋
           </motion.h1>
           <motion.p 
             initial={{ opacity: 0, y: 10 }}
@@ -111,15 +117,19 @@ const StudentDashboard = () => {
               </div>
             ) : (
               courses.map((course: Course, i: number) => (
-                <motion.div 
-                  whileHover={{ scale: 1.01 }}
-                  key={i} 
-                  className="bg-white p-4 rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 flex flex-col md:flex-row gap-6 items-center cursor-pointer group"
-                >
-                  <div className="relative w-full md:w-48 h-32 rounded-2xl overflow-hidden shrink-0 bg-slate-100">
-                    <div className="absolute inset-0 bg-primary/5 flex items-center justify-center">
-                      <BookOpen className="text-primary/20" size={48} />
-                    </div>
+                  <Link 
+                    to={`/courses/${course.slug || ''}`}
+                    key={i} 
+                    className="bg-white p-4 rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 flex flex-col md:flex-row gap-6 items-center cursor-pointer group hover:border-gold/30 transition-all"
+                  >
+                    <div className="relative w-full md:w-48 h-32 rounded-2xl overflow-hidden shrink-0 bg-slate-100">
+                      {course.thumbnail || course.imageUrl ? (
+                        <img src={course.thumbnail || course.imageUrl} alt={course.title} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="absolute inset-0 bg-primary/5 flex items-center justify-center">
+                          <BookOpen className="text-primary/20" size={48} />
+                        </div>
+                      )}
                     <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="w-10 h-10 bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center text-white border border-white/50 group-hover:bg-gold group-hover:border-gold transition-colors">
@@ -132,10 +142,10 @@ const StudentDashboard = () => {
                     <div className="flex items-center gap-2 mb-2">
                       <span className="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full">Available</span>
                     </div>
-                    <h3 className="text-xl font-bold text-slate-800 mb-2">{course.title}</h3>
+                    <h3 className="text-xl font-bold text-slate-800 mb-2 group-hover:text-primary transition-colors">{course.title}</h3>
                     <p className="text-sm text-slate-500 line-clamp-2">{course.about}</p>
                   </div>
-                </motion.div>
+                </Link>
               ))
             )}
           </div>
@@ -162,7 +172,7 @@ const StudentDashboard = () => {
                 </div>
               ) : (
                 notices.map((notice: Notice, i: number) => (
-                  <div key={i} className="group cursor-pointer">
+                  <Link to="/notifications" key={i} className="group cursor-pointer block">
                     <div className="flex gap-4 items-start">
                       <div className={`w-2.5 h-2.5 rounded-full mt-1.5 shrink-0 bg-blue-500`}></div>
                       <div>
@@ -173,15 +183,15 @@ const StudentDashboard = () => {
                       </div>
                     </div>
                     {i !== notices.length - 1 && <div className="h-px bg-slate-100 mt-4 ml-6"></div>}
-                  </div>
+                  </Link>
                 ))
               )}
             </div>
             
             {notices.length > 0 && (
-              <button className="w-full mt-6 py-3 rounded-xl bg-slate-50 text-primary font-bold text-sm hover:bg-primary hover:text-white transition-colors duration-300">
+              <Link to="/notifications" className="block text-center w-full mt-6 py-3 rounded-xl bg-slate-50 text-primary font-bold text-sm hover:bg-primary hover:text-white transition-colors duration-300">
                 View All Notices
-              </button>
+              </Link>
             )}
           </div>
         </div>

@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 
 const socialMediaSchema = new mongoose.Schema({
-  platform: { type: String, required: true },
-  url: { type: String, required: true },
+  platform: { type: String, required: false },
+  url: { type: String, required: false },
   icon: { type: String },
   order: { type: Number, default: 0 },
   isActive: { type: Boolean, default: true }

@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 
 const studentSchema = new mongoose.Schema({
-  name: { type: String, required: true },
+  name: { type: String, required: false },
   email: { type: String, unique: true, sparse: true },
-  phone: { type: String, required: true, unique: true },
+  phone: { type: String, required: false, unique: true },
   course: { type: String },
   status: { type: String, enum: ['active', 'inactive', 'graduated', 'suspended'], default: 'active' },
   admissionDate: { type: Date, default: Date.now },

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Users, Trophy, PlayCircle, Calendar, Download, MessageCircle, Star, Shield, BookMarked, Video } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import api from '../utils/api';
-import { courses as mockCourses } from './Courses.tsx';
+
 
 const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) => (
   <motion.div
@@ -37,6 +37,7 @@ interface HomeData {
 const Home = () => {
   const [data, setData] = useState<HomeData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
     const fetchHomeData = async () => {
@@ -53,6 +54,31 @@ const Home = () => {
     fetchHomeData();
   }, []);
 
+  const sliders = data?.sliders || [];
+  const notifications = data?.notifications || [];
+  const coursesFromApi = data?.courses || [];
+  const courses: UnifiedCourse[] = coursesFromApi;
+  const events = data?.events || [];
+  const faculties = data?.faculties || [];
+
+  const slides = sliders.length > 0 ? sliders : [
+    {
+      title: "Master the Law. Secure Your Legacy.",
+      subtitle: "India's premier institution for Judicial Services preparation. Join our expert-led programs and turn your judiciary dreams into reality.",
+      imageUrl: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80",
+      buttonText: "Explore Courses",
+      buttonLink: "/courses"
+    }
+  ];
+
+  useEffect(() => {
+    if (slides.length <= 1) return;
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 5500);
+    return () => clearInterval(timer);
+  }, [slides.length]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-primary">
@@ -61,62 +87,125 @@ const Home = () => {
     );
   }
 
-  const sliders = data?.sliders || [];
-  const notifications = data?.notifications || [];
-  const coursesFromApi = data?.courses || [];
-  const courses: UnifiedCourse[] = coursesFromApi.length > 0 ? coursesFromApi : (mockCourses.slice(0, 3) as unknown as UnifiedCourse[]);
-  const events = data?.events || [];
-  const faculties = data?.faculties || [];
-
-  const mainHero = (sliders[0] as Record<string, unknown>) || {
-    title: "Master the Law. Secure Your Legacy.",
-    subtitle: "India's premier institution for Judicial Services preparation. Join our expert-led programs and turn your judiciary dreams into reality.",
-    imageUrl: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80",
-    buttonText: "Explore Courses",
-    buttonLink: "/courses"
-  };
+  const activeSlide = slides[currentSlide] as Record<string, unknown>;
+  const isPureBannerActive = activeSlide && !(activeSlide.title && (activeSlide.title as string).trim() !== "");
 
   return (
     <div className="bg-slate-50">
-      <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden bg-primary min-h-[90vh] flex items-center">
-        <div className="absolute inset-0 z-0">
-          <img src={mainHero.imageUrl as string} alt="Hero Banner" className="w-full h-full object-cover opacity-20" />
-          <div className="absolute inset-0 bg-linear-to-r from-primary via-primary/90 to-transparent"></div>
-        </div>
-        
-        <div className="max-w-7xl mx-auto px-6 relative z-10 w-full">
-          <div className="max-w-3xl">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
+      {/* Dynamic Hero Slider */}
+      <section className="relative overflow-hidden bg-primary w-full select-none">
+        {slides.length > 1 && (
+          <>
+            {/* Elegant Left Arrow */}
+            <button
+              onClick={() => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length)}
+              className="absolute left-4 top-1/2 -translate-y-1/2 z-30 p-2 md:p-3 rounded-full bg-black/40 hover:bg-gold/90 text-white hover:text-primary transition-all cursor-pointer backdrop-blur-xs group shadow-lg border border-white/10"
+              aria-label="Previous Slide"
             >
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold/10 border border-gold/30 text-gold mb-8">
-                <span className="w-2 h-2 rounded-full bg-gold animate-pulse"></span>
-                <span className="text-sm font-semibold uppercase tracking-wider">Admissions Open 2026-27</span>
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 md:w-6 md:h-6 transform group-hover:-translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+
+            {/* Elegant Right Arrow */}
+            <button
+              onClick={() => setCurrentSlide((prev) => (prev + 1) % slides.length)}
+              className="absolute right-4 top-1/2 -translate-y-1/2 z-30 p-2 md:p-3 rounded-full bg-black/40 hover:bg-gold/90 text-white hover:text-primary transition-all cursor-pointer backdrop-blur-xs group shadow-lg border border-white/10"
+              aria-label="Next Slide"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 md:w-6 md:h-6 transform group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+
+            {/* Premium Indicator Dots */}
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex gap-2.5 bg-black/20 px-4 py-2 rounded-full backdrop-blur-xs">
+              {slides.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentSlide(index)}
+                  className={`h-2.5 rounded-full transition-all cursor-pointer ${
+                    currentSlide === index ? 'w-8 bg-gold' : 'w-2.5 bg-white/50 hover:bg-white'
+                  }`}
+                  aria-label={`Go to slide ${index + 1}`}
+                />
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* Slides Container */}
+        <div className="relative w-full overflow-hidden">
+          {slides.map((slideItem, index) => {
+            const slide = slideItem as Record<string, unknown>;
+            const hasSlideContent = Boolean(slide.title && (slide.title as string).trim() !== "");
+            const isActive = currentSlide === index;
+
+            return (
+              <div
+                key={slide._id as string || index}
+                className={`w-full transition-all duration-700 ease-in-out ${
+                  isActive ? 'opacity-100 relative z-10 block' : 'opacity-0 absolute inset-0 z-0 pointer-events-none'
+                }`}
+              >
+                {hasSlideContent ? (
+                  // Classic Hero layout with text overlays (default design)
+                  <div className="relative pt-32 pb-20 md:pt-48 md:pb-32 min-h-[90vh] flex items-center justify-center bg-primary">
+                    <div className="absolute inset-0 z-0 flex items-center justify-center">
+                      <img
+                        src={slide.imageUrl as string}
+                        alt={(slide.title as string) || "Hero Banner"}
+                        className="w-full h-full object-cover opacity-20"
+                      />
+                      <div className="absolute inset-0 bg-linear-to-r from-primary via-primary/90 to-transparent"></div>
+                    </div>
+
+                    <div className="max-w-7xl mx-auto px-6 relative z-10 w-full animate-in fade-in slide-in-from-left-4 duration-500">
+                      <div className="max-w-3xl">
+                        <div>
+                          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold/10 border border-gold/30 text-gold mb-8">
+                            <span className="w-2 h-2 rounded-full bg-gold animate-pulse"></span>
+                            <span className="text-sm font-semibold uppercase tracking-wider">Admissions Open 2026-27</span>
+                          </div>
+                          <h1 className="text-5xl md:text-7xl font-serif font-bold text-white mb-6 leading-[1.1]">
+                            {(slide.title as string)?.split('.')[0]}{((slide.title as string)?.includes('.')) ? '.' : ''} <br />
+                            <span className="text-transparent bg-clip-text bg-linear-to-r from-gold to-yellow-300">{(slide.title as string)?.split('.')[1] || ''}</span>
+                          </h1>
+                          <p className="text-lg md:text-xl text-slate-300 mb-10 leading-relaxed max-w-2xl">
+                            {slide.subtitle as string}
+                          </p>
+                          <div className="flex flex-col sm:flex-row gap-4">
+                            <Link to={(slide.buttonLink as string) || "/courses"} className="px-8 py-4 rounded-full bg-linear-to-r from-gold to-yellow-600 text-primary font-bold text-lg text-center hover:shadow-[0_0_30px_rgba(212,175,55,0.4)] transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2">
+                              {(slide.buttonText as string) || "Explore Courses"} <ArrowRight size={20} />
+                            </Link>
+                            <Link to="/demo" className="px-8 py-4 rounded-full bg-white/10 text-white font-bold text-lg text-center backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all flex items-center justify-center gap-2">
+                              Watch Demo <PlayCircle size={20} />
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  // Pure Image Banner Slider (100% visible on all devices, no text crop)
+                  <div className="w-full bg-primary pt-[80px] lg:pt-[96px] flex items-center justify-center animate-in fade-in duration-500">
+                    <div className="w-full relative">
+                      <img
+                        src={slide.imageUrl as string}
+                        alt="Hero Banner Slide"
+                        className="w-full h-auto block max-h-[85vh] object-contain"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
-              <h1 className="text-5xl md:text-7xl font-serif font-bold text-white mb-6 leading-[1.1]">
-                {(mainHero.title as string)?.split('.')[0]}. <br />
-                <span className="text-transparent bg-clip-text bg-linear-to-r from-gold to-yellow-300">{(mainHero.title as string)?.split('.')[1] || ''}</span>
-              </h1>
-              <p className="text-lg md:text-xl text-slate-300 mb-10 leading-relaxed max-w-2xl">
-                {mainHero.subtitle as string}
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link to={(mainHero.buttonLink as string) || "/courses"} className="px-8 py-4 rounded-full bg-linear-to-r from-gold to-yellow-600 text-primary font-bold text-lg text-center hover:shadow-[0_0_30px_rgba(212,175,55,0.4)] transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2">
-                  {(mainHero.buttonText as string) || "Explore Courses"} <ArrowRight size={20} />
-                </Link>
-                <Link to="/demo" className="px-8 py-4 rounded-full bg-white/10 text-white font-bold text-lg text-center backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all flex items-center justify-center gap-2">
-                  Watch Demo <PlayCircle size={20} />
-                </Link>
-              </div>
-            </motion.div>
-          </div>
+            );
+          })}
         </div>
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-white relative z-20 -mt-10 mx-6 md:mx-auto max-w-7xl rounded-2xl shadow-xl border border-gray-100">
+      <section className={`py-16 bg-white relative z-20 mx-6 md:mx-auto max-w-7xl rounded-2xl shadow-xl border border-gray-100 transition-all duration-500 ${isPureBannerActive ? 'mt-8' : '-mt-10'}`}>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 px-8">
           {[
             { icon: Users, label: "Selected Candidates", value: "900+" },

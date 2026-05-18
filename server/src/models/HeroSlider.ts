@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const heroSliderSchema = new mongoose.Schema({
   title: { type: String },
   subtitle: { type: String },
-  imageUrl: { type: String, required: true },
+  imageUrl: { type: String, required: false },
   buttonText: { type: String },
   buttonLink: { type: String },
   isActive: { type: Boolean, default: true },

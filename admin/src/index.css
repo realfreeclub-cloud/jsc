@@ -470,36 +470,29 @@
   font-weight: 600;
 }
 
-/* ─── MODAL / DRAWER ─────────────────────────── */
+/* ─── Z-INDEX SYSTEM ─────────────────────────── */
+/* Sidebar:  20  */
+/* Header:   30  */
+/* Overlay:  40  */
+/* Drawer:   50  */
+/* Modal:    60  */
+/* Toast:    70  */
+
+/* ─── APP DRAWER (universal portal drawer) ───── */
+
+/* 100dvh = dynamic viewport height: accounts for mobile browser UI bars.
+   Falls back to 100vh on browsers that don't support dvh units.           */
+.app-drawer-panel {
+  height: 100vh;    /* fallback */
+  height: 100dvh;   /* preferred — clips to true visible viewport */
+}
+
+/* Legacy drawer classes kept for backward compat */
 .jsc-drawer-overlay {
   background: rgba(7,21,47,0.50);
   backdrop-filter: blur(4px);
 }
 
-.jsc-drawer {
-  background: #fff;
-  border-left: 1px solid var(--color-navy-100);
-  box-shadow: -8px 0 40px rgba(7,21,47,0.15);
-}
-
-.jsc-drawer-header {
-  background: linear-gradient(135deg, var(--color-navy-900) 0%, var(--color-navy-800) 100%);
-  border-bottom: none;
-  padding: 24px 28px;
-}
-
-.jsc-drawer-body {
-  background: #fff;
-  flex: 1;
-  overflow-y: auto;
-  padding: 28px;
-}
-
-.jsc-drawer-footer {
-  background: var(--color-navy-50);
-  border-top: 1px solid var(--color-navy-100);
-  padding: 20px 28px;
-}
 
 /* ─── BREADCRUMB ─────────────────────────────── */
 .jsc-breadcrumb {

@@ -8,7 +8,7 @@ const Footer = () => {
         {/* Brand */}
         <div>
           <Link to="/" className="inline-block mb-6">
-            <img src="/logo.svg" alt="Judicial Study Centre Logo" className="w-16 h-16 object-contain" />
+            <img src="/logo.png" alt="Judicial Study Centre Logo" className="w-28 h-28 object-contain hover:scale-105 transition-transform duration-300 drop-shadow-[0_4px_12px_rgba(0,0,0,0.4)]" />
           </Link>
           <p className="text-sm leading-relaxed mb-6">
             Premier coaching institute dedicated to shaping the future of the judiciary. Comprehensive preparation with expert faculty and 900+ success stories.
@@ -34,6 +34,7 @@ const Footer = () => {
           <h3 className="text-white font-serif font-bold text-lg mb-6">Quick Links</h3>
           <ul className="space-y-3 text-sm">
             <li><Link to="/about" className="hover:text-gold transition-colors">About Institute</Link></li>
+            <li><Link to="/blogs" className="hover:text-gold transition-colors">Blog</Link></li>
             <li><Link to="/courses" className="hover:text-gold transition-colors">Our Courses</Link></li>
             <li><Link to="/faculty" className="hover:text-gold transition-colors">Expert Faculty</Link></li>
             <li><Link to="/study-material" className="hover:text-gold transition-colors">Study Material</Link></li>

@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 
 const notificationSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  content: { type: String, required: true },
+  title: { type: String, required: false },
+  content: { type: String, required: false },
   type: { type: String, enum: ['info', 'alert', 'success', 'warning'], default: 'info' },
   isPinned: { type: Boolean, default: false },
   expiryDate: { type: Date },

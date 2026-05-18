@@ -6,7 +6,7 @@ import {
   CheckCircle, ChevronRight, MapPin, Award, BookOpen, CreditCard, Info, Loader2
 } from 'lucide-react';
 import { openCourseInApp, openWhatsApp } from '../utils/appRedirect';
-import { courses, type Course } from './Courses.tsx';
+import { type Course } from './Courses.tsx';
 import api from '../utils/api';
 
 const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) => (
@@ -25,9 +25,9 @@ const CourseDetails = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(true);
     api.get('/courses')
       .then(res => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const found = res.data.data.find((c: any) => c.slug === slug);
         if (found) {
           const mapped: Course = {
@@ -51,14 +51,12 @@ const CourseDetails = () => {
           };
           setCourse(mapped);
         } else {
-          const fallback = courses.find(c => c.slug === slug);
-          if (fallback) setCourse(fallback);
+          setCourse(null);
         }
       })
       .catch(err => {
-        console.warn('API course fetch error, using static fallback:', err.message);
-        const fallback = courses.find(c => c.slug === slug);
-        if (fallback) setCourse(fallback);
+        console.error('API course fetch error:', err.message);
+        setCourse(null);
       })
       .finally(() => {
         setLoading(false);
@@ -282,7 +280,7 @@ const CourseDetails = () => {
         <div className="lg:col-span-4 space-y-8">
           
           {/* Enrollment Card */}
-          <div className="bg-primary rounded-[2.5rem] p-8 shadow-2xl text-white sticky top-28">
+          <div className="bg-primary rounded-[2.5rem] p-8 shadow-2xl text-white">
             <h3 className="text-2xl font-serif font-bold mb-6">Start Enrollment</h3>
             <div className="space-y-4 mb-8">
               <div className="flex items-center gap-3 text-slate-300">

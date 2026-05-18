@@ -1,4 +1,6 @@
 import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import api from '../utils/api';
 import {
   Users,
   BookOpen,
@@ -32,15 +34,15 @@ const NAVY = '#07152F';
 const GOLD = '#F4B400';
 const GOLD_LIGHT = '#FFD24C';
 
-const stats = [
-  { name: 'Total Students', value: '2,845', change: '+12.5%', trend: 'up', icon: Users, color: '#2563EB', bg: '#EFF6FF' },
-  { name: 'Total Faculty', value: '42', change: '+2', trend: 'up', icon: Briefcase, color: '#7C3AED', bg: '#F5F3FF' },
-  { name: 'Total Courses', value: '31', change: '0', trend: 'neutral', icon: BookOpen, color: '#059669', bg: '#ECFDF5' },
-  { name: 'Total Blogs', value: '156', change: '+12', trend: 'up', icon: FileText, color: '#D97706', bg: '#FFFBEB' },
-  { name: 'Gallery Images', value: '840', change: '+45', trend: 'up', icon: Camera, color: '#DC2626', bg: '#FEF2F2' },
-  { name: 'Total Events', value: '24', change: '-1', trend: 'down', icon: Calendar, color: '#9333EA', bg: '#FAF5FF' },
-  { name: 'Demo Classes', value: '128', change: '+18%', trend: 'up', icon: MonitorPlay, color: '#0891B2', bg: '#ECFEFF' },
-  { name: 'WhatsApp Leads', value: '4,521', change: '+32.4%', trend: 'up', icon: MessageSquare, color: '#16A34A', bg: '#F0FDF4' },
+const defaultStats = [
+  { id: 'totalStudents', name: 'Total Students', value: '...', change: '+12.5%', trend: 'up', icon: Users, color: '#2563EB', bg: '#EFF6FF' },
+  { id: 'totalFaculty', name: 'Total Faculty', value: '...', change: '+2', trend: 'up', icon: Briefcase, color: '#7C3AED', bg: '#F5F3FF' },
+  { id: 'totalCourses', name: 'Total Courses', value: '...', change: '0', trend: 'neutral', icon: BookOpen, color: '#059669', bg: '#ECFDF5' },
+  { id: 'totalBlogs', name: 'Total Blogs', value: '...', change: '+12', trend: 'up', icon: FileText, color: '#D97706', bg: '#FFFBEB' },
+  { id: 'totalGalleryImages', name: 'Gallery Images', value: '...', change: '+45', trend: 'up', icon: Camera, color: '#DC2626', bg: '#FEF2F2' },
+  { id: 'totalEvents', name: 'Total Events', value: '...', change: '-1', trend: 'down', icon: Calendar, color: '#9333EA', bg: '#FAF5FF' },
+  { id: 'totalDemoClasses', name: 'Demo Classes', value: '...', change: '+18%', trend: 'up', icon: MonitorPlay, color: '#0891B2', bg: '#ECFEFF' },
+  { id: 'totalWhatsAppLeads', name: 'WhatsApp Leads', value: '...', change: '+32.4%', trend: 'up', icon: MessageSquare, color: '#16A34A', bg: '#F0FDF4' },
 ];
 
 const trafficData = [
@@ -59,13 +61,19 @@ const deviceData = [
   { name: 'Tablet', value: 10, color: GOLD_LIGHT },
 ];
 
-const recentActivity = [
-  { id: 1, student: 'Rahul Sharma', action: 'Registered for MP Civil Judge Demo', date: 'Today, 10:30 AM', status: 'New Lead', statusColor: { bg: '#EFF6FF', color: '#2563EB', border: '#BFDBFE' } },
-  { id: 2, student: 'Priya Verma', action: 'Submitted Admission Form', date: 'Today, 09:15 AM', status: 'Pending', statusColor: { bg: '#FFFBEB', color: '#D97706', border: '#FDE68A' } },
-  { id: 3, student: 'Amit Singh', action: 'Fee Payment Successful', date: 'Yesterday, 04:45 PM', status: 'Completed', statusColor: { bg: '#ECFDF5', color: '#059669', border: '#A7F3D0' } },
-  { id: 4, student: 'Sneha Gupta', action: 'Downloaded CrPC Study Notes', date: 'Yesterday, 02:20 PM', status: 'Active', statusColor: { bg: '#F5F3FF', color: '#7C3AED', border: '#DDD6FE' } },
-  { id: 5, student: 'Vikram AD', action: 'WhatsApp Inquiry Generated', date: '12 May, 11:10 AM', status: 'Follow Up', statusColor: { bg: '#FAF5FF', color: '#9333EA', border: '#E9D5FF' } },
-];
+const getStatusColor = (status: string) => {
+  switch (status.toLowerCase()) {
+    case 'completed':
+    case 'active':
+      return { bg: '#ECFDF5', color: '#059669', border: '#A7F3D0' };
+    case 'pending':
+    case 'new lead':
+    case 'follow up':
+      return { bg: '#FFFBEB', color: '#D97706', border: '#FDE68A' };
+    default:
+      return { bg: '#EFF6FF', color: '#2563EB', border: '#BFDBFE' };
+  }
+};
 
 const fadeCard = {
   initial: { opacity: 0, y: 18 },
@@ -73,6 +81,32 @@ const fadeCard = {
 };
 
 const Dashboard = () => {
+  const [stats, setStats] = useState(defaultStats);
+  const [recentActivity, setRecentActivity] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchDashboardStats = async () => {
+      try {
+        const res = await api.get('/dashboard/stats');
+        const data = res.data.data;
+
+        setStats(defaultStats.map(stat => ({
+          ...stat,
+          value: data.stats[stat.id] !== undefined ? data.stats[stat.id].toLocaleString() : '0'
+        })));
+
+        setRecentActivity(data.recentActivity.map((activity: any) => ({
+          ...activity,
+          date: new Date(activity.date).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
+          statusColor: getStatusColor(activity.status)
+        })));
+      } catch (err) {
+        console.error('Failed to fetch dashboard stats', err);
+      }
+    };
+    fetchDashboardStats();
+  }, []);
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 28, paddingBottom: 40 }}>
 

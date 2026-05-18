@@ -43,6 +43,10 @@ export const getOne = (Model: any, popOptions?: string) => async (req: Request, 
 
 export const createOne = (Model: any) => async (req: Request, res: Response, next: NextFunction) => {
   try {
+    if (!req.body.slug) {
+      const baseName = req.body.title || req.body.name || req.body.courseName || 'untitled';
+      req.body.slug = baseName.toString().toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Date.now();
+    }
     const doc = await Model.create(req.body);
     res.status(201).json({ status: 'success', data: doc });
   } catch (err) {

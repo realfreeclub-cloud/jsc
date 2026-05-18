@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 
 const demoClassSchema = new mongoose.Schema({
-  name: { type: String, required: true },
+  name: { type: String, required: false },
   email: { type: String },
-  phone: { type: String, required: true },
+  phone: { type: String, required: false },
   courseInterest: { type: String },
   scheduleDate: { type: Date },
   status: { type: String, enum: ['pending', 'scheduled', 'completed', 'cancelled'], default: 'pending' },

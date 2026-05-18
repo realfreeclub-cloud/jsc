@@ -1,12 +1,12 @@
 import mongoose from 'mongoose';
 
 const courseSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  slug: { type: String, required: true, unique: true },
+  title: { type: String, required: false },
+  slug: { type: String, required: false, unique: true },
   subtitle: { type: String },
-  category: { type: mongoose.Schema.Types.ObjectId, ref: 'CourseCategory', required: true },
+  category: { type: mongoose.Schema.Types.ObjectId, ref: 'CourseCategory', required: false },
   faculty: { type: String, default: 'Expert Faculty' },
-  mode: { type: String, enum: ['Online', 'Offline', 'Hybrid'], required: true },
+  mode: { type: String, enum: ['Online', 'Offline', 'Hybrid'], required: false },
   imageUrl: { type: String },
   demoVideoUrl: { type: String },
   duration: { type: String },
@@ -34,9 +34,8 @@ const courseSchema = new mongoose.Schema({
 
 // Indexes removed to prevent mongoose warnings (already handled by unique: true and ref)
 
-courseSchema.pre(/^find/, function (this: any, next: any) {
+courseSchema.pre(/^find/, async function (this: any) {
   this.populate('category');
-  next();
 });
 
 export default mongoose.model('Course', courseSchema);

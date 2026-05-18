@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Plus, X, Loader2, AlertCircle, Search, Save, Info, BookOpen, Layers, DollarSign, Image } from 'lucide-react';
+import AppDrawer from '../components/ui/AppDrawer';
+import { Plus, Loader2, AlertCircle, Search, Save, Info, Image } from 'lucide-react';
 import { Table, type Column } from '../components/ui/Table';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../utils/api';
@@ -322,151 +323,79 @@ const Courses = () => {
         />
       )}
 
-      {/* ── Add/Edit Slide-over ── */}
-      {isModalOpen && (
-        <div
-          className="jsc-drawer-overlay animate-fade-in"
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100vw',
-            height: '100vh',
-            zIndex: 100,
-            display: 'flex',
-            justifyContent: 'flex-end',
-          }}
-          onClick={(e) => e.target === e.currentTarget && setIsModalOpen(false)}
-        >
-          <div
-            className="jsc-drawer animate-slide-right"
-            style={{ width: '92%', maxWidth: 1350, height: '100vh', display: 'flex', flexDirection: 'column' }}
-          >
-            {/* Header */}
-            <div className="jsc-drawer-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
-              <div>
-                <h2
-                  style={{
-                    fontSize: 19,
-                    fontWeight: 700,
-                    color: '#fff',
-                    letterSpacing: '-0.01em',
-                  }}
-                >
-                  {editData ? '✏ Edit Course Details' : '+ Configure New Course'}
-                </h2>
-                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.50)', marginTop: 4 }}>
-                  Expose complete course highlights, pricing structures, and media assets.
-                </p>
-              </div>
+      {/* ── Add/Edit Drawer — uses universal AppDrawer component ── */}
+      <AppDrawer
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title={editData ? '✏ Edit Course Details' : '+ Configure New Course'}
+        subtitle="Expose complete course highlights, pricing structures, and media assets."
+        maxWidth={1350}
+        footer={
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <input
+                type="checkbox"
+                id="isActive"
+                checked={formData.isActive !== false}
+                onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+                style={{ cursor: 'pointer', width: 16, height: 16 }}
+              />
+              <label htmlFor="isActive" style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-navy-700)', cursor: 'pointer' }}>
+                Enable Course Access (Is Active)
+              </label>
+            </div>
+            <div style={{ display: 'flex', gap: 12 }}>
+              <button type="button" onClick={() => setIsModalOpen(false)} className="btn-outline">Cancel</button>
               <button
-                onClick={() => setIsModalOpen(false)}
-                style={{
-                  background: 'rgba(255,255,255,0.10)',
-                  border: '1px solid rgba(255,255,255,0.15)',
-                  borderRadius: 10,
-                  padding: 8,
-                  color: 'rgba(255,255,255,0.70)',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s',
-                  display: 'flex',
-                  alignItems: 'center',
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLButtonElement).style.background = 'rgba(244,180,0,0.20)';
-                  (e.currentTarget as HTMLButtonElement).style.color = GOLD;
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.10)';
-                  (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.70)';
-                }}
+                form="course-form"
+                type="submit"
+                disabled={createMutation.isPending || updateMutation.isPending}
+                className="btn-gold"
               >
-                <X size={20} />
+                {(createMutation.isPending || updateMutation.isPending) && (
+                  <Loader2 size={15} style={{ animation: 'spin 1s linear infinite' }} />
+                )}
+                <Save size={15} />
+                {editData ? 'Save Details' : 'Publish Course'}
               </button>
             </div>
+          </div>
+        }
+      >
+        {/* Tabs navigation */}
+        <div style={{ display: 'flex', borderBottom: '1px solid var(--color-navy-100)', marginBottom: 24, background: '#F8FAFC', marginLeft: -28, marginRight: -28, paddingLeft: 28, marginTop: -28 }}>
+          {[
+            { key: 'general', icon: '📋', label: 'General Config' },
+            { key: 'media', icon: '🖼', label: 'Media & Description' },
+            { key: 'pricing', icon: '💰', label: 'Pricing Structure' },
+            { key: 'lists', icon: '📝', label: 'Highlights & Lists' },
+          ].map(tab => (
+            <button
+              key={tab.key}
+              type="button"
+              onClick={() => setActiveTab(tab.key as typeof activeTab)}
+              style={{
+                padding: '16px 12px',
+                fontSize: 13,
+                fontWeight: 700,
+                color: activeTab === tab.key ? GOLD : 'var(--color-navy-600)',
+                borderBottom: activeTab === tab.key ? `2px solid ${GOLD}` : '2px solid transparent',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+              }}
+            >
+              {tab.icon} {tab.label}
+            </button>
+          ))}
+        </div>
 
-            {/* Horizontal Tabs Selector */}
-            <div style={{ display: 'flex', borderBottom: '1px solid var(--color-navy-100)', padding: '0 24px', background: '#F8FAFC', flexShrink: 0 }}>
-              <button
-                type="button"
-                onClick={() => setActiveTab('general')}
-                style={{
-                  padding: '16px 12px',
-                  fontSize: 13,
-                  fontWeight: 700,
-                  color: activeTab === 'general' ? GOLD : 'var(--color-navy-600)',
-                  borderBottom: activeTab === 'general' ? `2px solid ${GOLD}` : '2px solid transparent',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6
-                }}
-              >
-                <BookOpen size={15} /> General Config
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab('media')}
-                style={{
-                  padding: '16px 12px',
-                  fontSize: 13,
-                  fontWeight: 700,
-                  color: activeTab === 'media' ? GOLD : 'var(--color-navy-600)',
-                  borderBottom: activeTab === 'media' ? `2px solid ${GOLD}` : '2px solid transparent',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6
-                }}
-              >
-                <Image size={15} /> Media & Description
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab('pricing')}
-                style={{
-                  padding: '16px 12px',
-                  fontSize: 13,
-                  fontWeight: 700,
-                  color: activeTab === 'pricing' ? GOLD : 'var(--color-navy-600)',
-                  borderBottom: activeTab === 'pricing' ? `2px solid ${GOLD}` : '2px solid transparent',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6
-                }}
-              >
-                <DollarSign size={15} /> Pricing Structure
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab('lists')}
-                style={{
-                  padding: '16px 12px',
-                  fontSize: 13,
-                  fontWeight: 700,
-                  color: activeTab === 'lists' ? GOLD : 'var(--color-navy-600)',
-                  borderBottom: activeTab === 'lists' ? `2px solid ${GOLD}` : '2px solid transparent',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6
-                }}
-              >
-                <Layers size={15} /> highlights & lists
-              </button>
-            </div>
+        {/* Course form — body only, no wrapping overlay */}
 
-            {/* Scrollable Drawer Form Body */}
-            <div className="jsc-drawer-body" style={{ padding: 24, overflowY: 'auto', flex: 1, minHeight: 0 }}>
+
               <form id="course-form" onSubmit={handleSubmit}>
                 {activeTab === 'general' && (
                   <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr', gap: '20px 20px' }}>
@@ -746,44 +675,8 @@ const Courses = () => {
                   </div>
                 )}
               </form>
-            </div>
 
-            {/* Footer */}
-            <div className="jsc-drawer-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexShrink: 0 }}>
-              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                <input
-                  type="checkbox"
-                  id="isActive"
-                  checked={formData.isActive !== false}
-                  onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                  style={{ cursor: 'pointer', width: 16, height: 16 }}
-                />
-                <label htmlFor="isActive" style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-navy-700)', cursor: 'pointer' }}>
-                  Enable Course Access (Is Active)
-                </label>
-              </div>
-
-              <div style={{ display: 'flex', gap: 12 }}>
-                <button type="button" onClick={() => setIsModalOpen(false)} className="btn-outline">
-                  Cancel
-                </button>
-                <button
-                  form="course-form"
-                  type="submit"
-                  disabled={createMutation.isPending || updateMutation.isPending}
-                  className="btn-gold"
-                >
-                  {(createMutation.isPending || updateMutation.isPending) && (
-                    <Loader2 size={15} style={{ animation: 'spin 1s linear infinite' }} />
-                  )}
-                  <Save size={15} />
-                  {editData ? 'Save Details' : 'Publish Course'}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      </AppDrawer>
     </div>
   );
 };

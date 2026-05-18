@@ -1,11 +1,11 @@
 import mongoose from 'mongoose';
 
 const blogSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  slug: { type: String, required: true, unique: true },
-  content: { type: String, required: true },
+  title: { type: String, required: false },
+  slug: { type: String, required: false, unique: true },
+  content: { type: String, required: false },
   excerpt: { type: String },
-  author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false },
   thumbnail: { type: String },
   category: { type: String },
   tags: [{ type: String }],

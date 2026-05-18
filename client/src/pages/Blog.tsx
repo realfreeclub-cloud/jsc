@@ -2,33 +2,39 @@ import { Link } from 'react-router-dom';
 import SEO from '../components/seo/SEO';
 import LazyImage from '../components/ui/LazyImage';
 
-// eslint-disable-next-line react-refresh/only-export-components
-export const blogs = [
-  {
-    slug: 'how-to-prepare-for-pcs-j',
-    title: 'How to Prepare for PCS J: A Complete Strategy',
-    excerpt: 'Discover the ultimate strategy to crack the Provincial Civil Service Judicial (PCS J) examination on your first attempt...',
-    category: 'Preparation Strategy',
-    author: 'Justice R. Sharma',
-    date: 'Oct 15, 2026',
-    readTime: '8 min read',
-    thumbnail: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80&w=800',
-    tags: ['PCS J', 'Strategy', 'Preparation']
-  },
-  {
-    slug: 'latest-amendments-ipc-crpc',
-    title: 'Crucial Recent Amendments in IPC & CrPC',
-    excerpt: 'A detailed breakdown of the latest amendments to the Indian Penal Code and the Code of Criminal Procedure...',
-    category: 'Legal Updates',
-    author: 'Dr. A. Desai',
-    date: 'Oct 10, 2026',
-    readTime: '12 min read',
-    thumbnail: 'https://images.unsplash.com/photo-1505664177941-ac4666fc7cb9?auto=format&fit=crop&q=80&w=800',
-    tags: ['IPC', 'CrPC', 'Amendments', 'Current Affairs']
-  }
-];
+import { useState, useEffect } from 'react';
+import api from '../utils/api';
+import { Loader2 } from 'lucide-react';
+
+interface BlogType {
+  _id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  author: { name?: string; [key: string]: unknown } | string;
+  createdAt: string;
+  thumbnail: string;
+  tags: string[];
+}
 
 const Blog = () => {
+  const [blogs, setBlogs] = useState<BlogType[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    api.get('/blogs?isPublished=true')
+      .then(res => {
+        setBlogs(res.data.data || []);
+      })
+      .catch(err => {
+        console.error('Failed to fetch blogs:', err);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, []);
+
   return (
     <>
       <SEO 
@@ -46,40 +52,51 @@ const Blog = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {blogs.map((blog) => (
-              <article key={blog.slug} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden group flex flex-col h-full">
-                <div className="h-48 overflow-hidden relative">
-                  <LazyImage src={blog.thumbnail} alt={blog.title} className="group-hover:scale-105 transition-transform duration-700" />
-                  <div className="absolute top-4 left-4">
-                    <span className="px-3 py-1 bg-gold text-primary text-xs font-bold rounded-full">{blog.category}</span>
-                  </div>
-                </div>
-                <div className="p-6 flex flex-col grow">
-                  <div className="flex items-center gap-2 text-xs text-slate-500 mb-3">
-                    <span>{blog.date}</span>
-                    <span>•</span>
-                    <span>{blog.readTime}</span>
-                  </div>
-                  <h2 className="text-xl font-bold text-primary mb-3 leading-snug group-hover:text-gold transition-colors">
-                    <Link to={`/blog/${blog.slug}`}>{blog.title}</Link>
-                  </h2>
-                  <p className="text-slate-600 text-sm mb-6 line-clamp-3 grow">
-                    {blog.excerpt}
-                  </p>
-                  <div className="flex items-center justify-between mt-auto">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-primary font-bold text-xs">
-                        {blog.author.charAt(0)}
-                      </div>
-                      <span className="text-xs font-bold text-slate-700">{blog.author}</span>
+          {isLoading ? (
+            <div className="flex justify-center items-center py-20">
+              <Loader2 size={40} className="animate-spin text-gold" />
+            </div>
+          ) : blogs.length === 0 ? (
+            <div className="text-center py-20 text-slate-500">
+              <p className="text-xl font-medium">No articles published yet.</p>
+              <p>Check back later for new insights and updates.</p>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {blogs.map((blog) => (
+                <article key={blog.slug} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden group flex flex-col h-full hover:shadow-md transition-shadow">
+                  <div className="h-48 overflow-hidden relative">
+                    <LazyImage src={blog.thumbnail || 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80&w=800'} alt={blog.title} className="group-hover:scale-105 transition-transform duration-700" />
+                    <div className="absolute top-4 left-4">
+                      <span className="px-3 py-1 bg-gold text-primary text-xs font-bold rounded-full">{blog.category || 'Article'}</span>
                     </div>
-                    <Link to={`/blog/${blog.slug}`} className="text-sm font-bold text-primary hover:text-gold transition-colors">Read More</Link>
                   </div>
-                </div>
-              </article>
-            ))}
-          </div>
+                  <div className="p-6 flex flex-col grow">
+                    <div className="flex items-center gap-2 text-xs text-slate-500 mb-3">
+                      <span>{new Date(blog.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                      <span>•</span>
+                      <span>{Math.max(1, Math.ceil((blog.excerpt?.length || 100) / 100))} min read</span>
+                    </div>
+                    <h2 className="text-xl font-bold text-primary mb-3 leading-snug group-hover:text-gold transition-colors">
+                      <Link to={`/blogs/${blog.slug}`}>{blog.title || 'Untitled'}</Link>
+                    </h2>
+                    <p className="text-slate-600 text-sm mb-6 line-clamp-3 grow">
+                      {blog.excerpt || 'No description available for this article.'}
+                    </p>
+                    <div className="flex items-center justify-between mt-auto">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-primary font-bold text-xs uppercase">
+                          {((typeof blog.author === 'string' ? blog.author : blog.author?.name) || 'Admin').charAt(0)}
+                        </div>
+                        <span className="text-xs font-bold text-slate-700">{(typeof blog.author === 'string' ? blog.author : blog.author?.name) || 'Admin'}</span>
+                      </div>
+                      <Link to={`/blogs/${blog.slug}`} className="text-sm font-bold text-primary hover:text-gold transition-colors">Read More</Link>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </>

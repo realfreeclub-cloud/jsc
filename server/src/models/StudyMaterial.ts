@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 
 const studyMaterialSchema = new mongoose.Schema({
-  title: { type: String, required: true },
+  title: { type: String, required: false },
   description: { type: String },
-  fileUrl: { type: String, required: true },
+  fileUrl: { type: String, required: false },
   fileType: { type: String }, // e.g., 'pdf', 'doc'
   course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course' }, // Optional, if linked to a course
   category: { type: String },

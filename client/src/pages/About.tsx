@@ -130,14 +130,17 @@ const About = () => {
               <FadeIn delay={0.2}>
                 <div className="relative z-10 rounded-3xl overflow-hidden shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500">
                   <img 
-                    src="https://images.unsplash.com/photo-1517673132405-a56a62b18acc?auto=format&fit=crop&q=80" 
-                    alt="Prayagraj Sangam" 
-                    className="w-full h-full object-cover" 
+                    src="/foundation-poster.jpg" 
+                    alt="Judiciary Foundation Course" 
+                    className="w-full h-full object-cover bg-slate-100" 
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80';
+                    }}
                   />
-                  <div className="absolute inset-0 bg-linear-to-t from-primary/60 to-transparent"></div>
+                  <div className="absolute inset-0 bg-linear-to-t from-primary/80 to-transparent"></div>
                   <div className="absolute bottom-6 left-6 text-white">
-                    <p className="text-sm font-bold uppercase tracking-widest opacity-80">City of Knowledge</p>
-                    <h3 className="text-2xl font-serif font-bold">Prayagraj</h3>
+                    <p className="text-sm font-bold uppercase tracking-widest text-gold opacity-90">Comprehensive Program</p>
+                    <h3 className="text-2xl font-serif font-bold">Judiciary Foundation Course</h3>
                   </div>
                 </div>
                 <div className="absolute -top-10 -right-10 w-40 h-40 bg-gold/10 rounded-full blur-3xl"></div>

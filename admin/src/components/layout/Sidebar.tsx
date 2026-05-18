@@ -91,7 +91,7 @@ const Sidebar = () => {
       initial={false}
       animate={{ width: isCollapsed ? 72 : 268 }}
       transition={{ duration: 0.28, ease: [0.4, 0, 0.2, 1] }}
-      className="jsc-sidebar fixed left-0 top-0 h-screen z-50 flex flex-col overflow-hidden"
+      className="jsc-sidebar fixed left-0 top-0 h-screen z-20 flex flex-col overflow-hidden"
     >
       {/* ── Logo Row ── */}
       <div className="jsc-sidebar-logo h-[68px] flex items-center px-4 justify-between shrink-0">
