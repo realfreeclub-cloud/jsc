@@ -69,7 +69,7 @@ const QuestionBank = () => {
         const wb = XLSX.read(bstr, { type: 'binary' });
         const wsname = wb.SheetNames[0];
         const ws = wb.Sheets[wsname];
-        const data = XLSX.utils.sheet_to_json<Record<string, string | number>>(ws);
+        const data = XLSX.utils.sheet_to_json(ws) as Record<string, string | number>[];
 
         const parsedQuestions: QuestionBankItem[] = data.map((row: Record<string, string | number>) => ({
           subject: (row['Subject'] as string) || 'General',
