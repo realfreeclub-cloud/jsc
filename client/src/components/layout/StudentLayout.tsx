@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, BookOpen, Download, Bell, Key, LogOut, Loader2, X, Globe } from 'lucide-react';
+import { LayoutDashboard, BookOpen, Download, Bell, Key, LogOut, Loader2, X, Globe, FileText } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../utils/api';
 
@@ -22,6 +22,7 @@ const StudentLayout = () => {
     { path: '/student/dashboard', icon: LayoutDashboard, label: 'Overview' },
     { path: '/student/courses', icon: BookOpen, label: 'My Courses' },
     { path: '/student/materials', icon: Download, label: 'Materials' },
+    { path: '/student/exams', icon: FileText, label: 'Test Series' },
     { path: '/student/notifications', icon: Bell, label: 'Updates' },
   ];
 

@@ -45,6 +45,7 @@ const navigation = [
       { name: 'Study Material', path: '/study-material', icon: Download },
       { name: 'Demo Classes', path: '/demo-classes', icon: MonitorPlay },
       { name: 'Course Leads', path: '/leads', icon: Users },
+      { name: 'Test Series', path: '/exams', icon: FileText },
     ],
   },
   {

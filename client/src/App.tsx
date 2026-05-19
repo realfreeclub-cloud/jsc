@@ -19,6 +19,9 @@ const StudentDashboard = lazy(() => import('./pages/student/Dashboard'));
 const StudentMaterials = lazy(() => import('./pages/student/Materials'));
 const StudentCourses = lazy(() => import('./pages/student/Courses'));
 const StudentNotifications = lazy(() => import('./pages/student/Notifications'));
+const StudentExamsList = lazy(() => import('./pages/student/ExamsList'));
+const StudentExamAttempt = lazy(() => import('./pages/student/ExamAttempt'));
+const StudentExamResult = lazy(() => import('./pages/student/ExamResult'));
 const DemoClasses = () => <div className="pt-24 min-h-screen text-center text-2xl font-serif">Demo Classes Page</div>;
 const StudyMaterial = lazy(() => import('./pages/StudyMaterial'));
 const Gallery = () => <div className="pt-24 min-h-screen text-center text-2xl font-serif">Gallery Page</div>;
@@ -82,6 +85,9 @@ function App() {
           <Route path="courses" element={<StudentCourses />} />
           <Route path="materials" element={<StudentMaterials />} />
           <Route path="notifications" element={<StudentNotifications />} />
+          <Route path="exams" element={<StudentExamsList />} />
+          <Route path="exams/:id/attempt" element={<StudentExamAttempt />} />
+          <Route path="exams/results/:attemptId" element={<StudentExamResult />} />
           <Route path="profile" element={<div className="p-8 text-2xl font-bold">Profile Placeholder</div>} />
         </Route>
       </Routes>
