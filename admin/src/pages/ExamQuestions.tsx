@@ -4,7 +4,7 @@ import { Plus, Loader2, ArrowLeft, Trash2, Edit2, BookOpen, Search } from 'lucid
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import AppDrawer from '../components/ui/AppDrawer';
-import { QuestionBankItem } from './QuestionBank';
+import type { QuestionBankItem } from './QuestionBank';
 
 const NAVY = '#07152F';
 const GOLD = '#F4B400';
@@ -68,11 +68,11 @@ const ExamQuestions = () => {
 
   const { data: qbData } = useQuery({
     queryKey: ['questionBank'],
-    queryFn: () => api.get('/question-bank').then((res: { data: { questions: QuestionBankItem[] } }) => res.data),
+    queryFn: () => api.get('/question-bank').then((res: { data: { data: { questions: QuestionBankItem[] } } }) => res.data.data),
     enabled: isImportModalOpen
   });
 
-  const questionBank = qbData?.data?.questions || [];
+  const questionBank = qbData?.questions || [];
   const filteredQuestionBank = questionBank.filter((q: QuestionBankItem) => 
     q.text.toLowerCase().includes(importSearchTerm.toLowerCase()) || 
     q.subject?.toLowerCase().includes(importSearchTerm.toLowerCase()) ||

@@ -71,7 +71,7 @@ const QuestionBank = () => {
         const ws = wb.Sheets[wsname];
         const data = XLSX.utils.sheet_to_json<Record<string, string | number>>(ws);
 
-        const parsedQuestions: QuestionBankItem[] = data.map((row) => ({
+        const parsedQuestions: QuestionBankItem[] = data.map((row: Record<string, string | number>) => ({
           subject: (row['Subject'] as string) || 'General',
           topic: (row['Topic'] as string) || '',
           text: (row['Question'] as string),
@@ -83,7 +83,7 @@ const QuestionBank = () => {
           ].filter(Boolean) as string[],
           correctOptionIndex: parseInt(row['Correct Option (1-4)'] as string) - 1,
           marks: parseInt(row['Marks'] as string) || 1
-        })).filter((q) => q.text && q.options.length >= 2);
+        })).filter((q: QuestionBankItem) => q.text && q.options.length >= 2);
 
         if (parsedQuestions.length === 0) {
           alert('No valid questions found in the Excel file. Please ensure column headers match the template.');
@@ -211,7 +211,7 @@ const QuestionBank = () => {
                     <td style={{ textAlign: 'center', fontWeight: 600, color: NAVY }}>{q.marks}</td>
                     <td>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 6 }}>
-                        <button onClick={() => handleDelete(q._id)} className="jsc-action-btn delete" title="Delete"><Trash2 size={15} /></button>
+                        <button onClick={() => handleDelete(q._id as string)} className="jsc-action-btn delete" title="Delete"><Trash2 size={15} /></button>
                       </div>
                     </td>
                   </tr>
