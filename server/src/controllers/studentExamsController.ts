@@ -121,7 +121,7 @@ export const submitExam = async (req: Request, res: Response) => {
         });
     }
 
-    attempt.answers = processedAnswers;
+    attempt.answers = processedAnswers as any;
     attempt.score = score;
     attempt.status = 'completed';
     attempt.submittedAt = new Date();

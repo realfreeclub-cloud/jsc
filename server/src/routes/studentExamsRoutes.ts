@@ -6,11 +6,11 @@ import {
   submitExam,
   getAttemptResult
 } from '../controllers/studentExamsController';
-import { studentAuth } from '../middleware/studentAuthMiddleware';
+import { protect } from '../middleware/auth';
 
 const router = express.Router();
 
-router.use(studentAuth);
+router.use(protect);
 
 router.get('/available', getAvailableExams);
 router.post('/start', startExam);
