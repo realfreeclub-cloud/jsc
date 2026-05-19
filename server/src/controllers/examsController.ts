@@ -137,3 +137,39 @@ export const deleteQuestion = async (req: Request, res: Response) => {
     res.status(500).json({ status: 'error', message: error.message });
   }
 };
+
+// Import questions in bulk
+export const importQuestions = async (req: Request, res: Response) => {
+  try {
+    const examId = req.params.examId;
+    const questionsToImport = req.body.questions;
+
+    if (!questionsToImport || !Array.isArray(questionsToImport)) {
+      return res.status(400).json({ status: 'fail', message: 'Expected an array of questions' });
+    }
+
+    const exam = await Exam.findById(examId);
+    if (!exam) return res.status(404).json({ status: 'fail', message: 'Exam not found' });
+
+    let totalMarksAdded = 0;
+    const newQuestions = questionsToImport.map((q: any) => {
+      totalMarksAdded += q.marks || 1;
+      return {
+        exam: examId,
+        text: q.text,
+        options: q.options,
+        correctOptionIndex: q.correctOptionIndex,
+        marks: q.marks || 1
+      };
+    });
+
+    const createdQuestions = await Question.insertMany(newQuestions);
+
+    exam.totalMarks += totalMarksAdded;
+    await exam.save();
+
+    res.status(201).json({ status: 'success', data: { questions: createdQuestions } });
+  } catch (error: any) {
+    res.status(400).json({ status: 'fail', message: error.message });
+  }
+};

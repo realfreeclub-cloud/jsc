@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Loader2, ArrowLeft, Trash2, Edit2 } from 'lucide-react';
+import { Plus, Loader2, ArrowLeft, Trash2, Edit2, BookOpen, Search } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import AppDrawer from '../components/ui/AppDrawer';
+import { QuestionBankItem } from './QuestionBank';
 
 const NAVY = '#07152F';
 const GOLD = '#F4B400';
@@ -12,6 +13,9 @@ const ExamQuestions = () => {
   const { id: examId } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [importSearchTerm, setImportSearchTerm] = useState('');
+  const [selectedBankQuestions, setSelectedBankQuestions] = useState<QuestionBankItem[]>([]);
   const [editData, setEditData] = useState<{ _id: string; text: string; options: string[]; correctOptionIndex: number; marks: number } | undefined>(undefined);
   const queryClient = useQueryClient();
 
@@ -61,6 +65,34 @@ const ExamQuestions = () => {
       queryClient.invalidateQueries({ queryKey: ['exams'] });
     },
   });
+
+  const { data: qbData } = useQuery({
+    queryKey: ['questionBank'],
+    queryFn: () => api.get('/question-bank').then((res: { data: { questions: QuestionBankItem[] } }) => res.data),
+    enabled: isImportModalOpen
+  });
+
+  const questionBank = qbData?.data?.questions || [];
+  const filteredQuestionBank = questionBank.filter((q: QuestionBankItem) => 
+    q.text.toLowerCase().includes(importSearchTerm.toLowerCase()) || 
+    q.subject?.toLowerCase().includes(importSearchTerm.toLowerCase()) ||
+    q.topic?.toLowerCase().includes(importSearchTerm.toLowerCase())
+  );
+
+  const importMutation = useMutation({
+    mutationFn: (questions: QuestionBankItem[]) => api.post(`/exams/${examId}/questions/import`, { questions }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['examQuestions', examId] });
+      queryClient.invalidateQueries({ queryKey: ['exams'] });
+      setIsImportModalOpen(false);
+      setSelectedBankQuestions([]);
+    }
+  });
+
+  const handleImport = () => {
+    if (selectedBankQuestions.length === 0) return;
+    importMutation.mutate(selectedBankQuestions);
+  };
 
   const handleOpenEdit = (q: { _id: string; text: string; options: string[]; correctOptionIndex: number; marks: number }) => {
     setEditData(q);
@@ -125,6 +157,9 @@ const ExamQuestions = () => {
           <p className="jsc-page-subtitle">Exam: {exam?.title || 'Loading...'}</p>
         </div>
         <div>
+          <button onClick={() => setIsImportModalOpen(true)} className="btn-outline" style={{ padding: '9px 18px', fontSize: 13, marginRight: 12 }}>
+            <BookOpen size={15} style={{ display: 'inline', marginRight: 6 }} /> Import from Bank
+          </button>
           <button onClick={() => setIsModalOpen(true)} className="btn-gold" style={{ padding: '9px 18px', fontSize: 13 }}>
             <Plus size={15} /> Add Question
           </button>
@@ -210,6 +245,79 @@ const ExamQuestions = () => {
                 <input type="number" min="1" className="jsc-input" required value={marks} onChange={e => setMarks(Number(e.target.value))} style={{ width: 100 }} />
             </div>
          </form>
+      </AppDrawer>
+
+      <AppDrawer
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+        title="Import from Question Bank"
+        subtitle="Select questions to add to this exam."
+        maxWidth={800}
+        footer={
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, width: '100%' }}>
+            <span style={{ fontSize: 13, color: NAVY, fontWeight: 600 }}>{selectedBankQuestions.length} selected</span>
+            <div style={{ display: 'flex', gap: 12 }}>
+                <button type="button" onClick={() => setIsImportModalOpen(false)} style={{ padding: '10px 22px', borderRadius: 10, border: '1.5px solid #D0D8E8', background: '#fff', color: NAVY, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
+                <button type="button" onClick={handleImport} disabled={importMutation.isPending || selectedBankQuestions.length === 0} style={{ padding: '10px 24px', borderRadius: 10, border: 'none', background: importMutation.isPending || selectedBankQuestions.length === 0 ? '#D0D8E8' : `linear-gradient(135deg,${GOLD},#FFD24C)`, color: NAVY, fontSize: 14, fontWeight: 700, cursor: importMutation.isPending || selectedBankQuestions.length === 0 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
+                  {importMutation.isPending ? <Loader2 size={15} style={{ animation: 'spin 1s linear infinite' }} /> : null}
+                  Import Selected
+                </button>
+            </div>
+          </div>
+        }
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div style={{ position: 'relative' }}>
+            <Search size={15} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--color-navy-400)' }} />
+            <input type="text" placeholder="Search by question, subject or topic..." value={importSearchTerm} onChange={(e) => setImportSearchTerm(e.target.value)} className="jsc-search-bar" style={{ paddingLeft: 36, width: '100%' }} />
+          </div>
+          
+          <div style={{ maxHeight: '60vh', overflowY: 'auto', border: '1px solid #EEF1F8', borderRadius: 12 }}>
+            <table className="jsc-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr>
+                  <th style={{ width: 40, textAlign: 'center' }}>
+                      <input 
+                        type="checkbox" 
+                        checked={selectedBankQuestions.length === filteredQuestionBank.length && filteredQuestionBank.length > 0}
+                        onChange={(e) => {
+                            if (e.target.checked) setSelectedBankQuestions([...filteredQuestionBank]);
+                            else setSelectedBankQuestions([]);
+                        }}
+                      />
+                  </th>
+                  <th style={{ textAlign: 'left' }}>Question</th>
+                  <th style={{ textAlign: 'left' }}>Subject</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredQuestionBank.map((q: QuestionBankItem) => (
+                  <tr key={q._id}>
+                    <td style={{ textAlign: 'center' }}>
+                      <input 
+                        type="checkbox" 
+                        checked={selectedBankQuestions.some(sq => sq._id === q._id)}
+                        onChange={(e) => {
+                            if (e.target.checked) setSelectedBankQuestions([...selectedBankQuestions, q]);
+                            else setSelectedBankQuestions(selectedBankQuestions.filter(sq => sq._id !== q._id));
+                        }}
+                      />
+                    </td>
+                    <td>
+                      <p style={{ fontWeight: 600, color: NAVY, fontSize: 13, marginBottom: 4 }}>{q.text}</p>
+                    </td>
+                    <td><span style={{ fontSize: 11, background: '#EEF2FF', color: '#4F46E5', padding: '2px 8px', borderRadius: 12 }}>{q.subject}</span></td>
+                  </tr>
+                ))}
+                {filteredQuestionBank.length === 0 && (
+                    <tr>
+                        <td colSpan={3} style={{ textAlign: 'center', padding: 24, color: 'var(--color-navy-400)' }}>No questions found in bank</td>
+                    </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </AppDrawer>
     </div>
   );

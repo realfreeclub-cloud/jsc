@@ -16,6 +16,7 @@ const BlogEditor = React.lazy(() => import('./pages/blogs/BlogEditor'));
 const GalleryManager = React.lazy(() => import('./pages/gallery/GalleryManager'));
 const Exams = React.lazy(() => import('./pages/Exams'));
 const ExamQuestions = React.lazy(() => import('./pages/ExamQuestions'));
+const QuestionBank = React.lazy(() => import('./pages/QuestionBank'));
 
 const PageLoader = () => (
   <div className="flex items-center justify-center min-h-[60vh]">
@@ -154,6 +155,7 @@ function App() {
 
             <Route path="exams" element={<Exams />} />
             <Route path="exams/:id/questions" element={<ExamQuestions />} />
+            <Route path="question-bank" element={<QuestionBank />} />
 
             {/* Academics - Missing routes added back */}
             <Route path="demo-classes" element={

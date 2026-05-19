@@ -8,7 +8,8 @@ import {
   getExamQuestions,
   addQuestion,
   updateQuestion,
-  deleteQuestion
+  deleteQuestion,
+  importQuestions
 } from '../controllers/examsController';
 import { protect } from '../middleware/auth';
 
@@ -33,6 +34,10 @@ router
   .route('/:examId/questions')
   .get(getExamQuestions)
   .post(addQuestion);
+
+router
+  .route('/:examId/questions/import')
+  .post(importQuestions);
 
 router
   .route('/questions/:id')
