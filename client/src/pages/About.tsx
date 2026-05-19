@@ -45,7 +45,7 @@ const About = () => {
             <div className="relative">
               <div className="aspect-square rounded-3xl overflow-hidden shadow-2xl border-8 border-white">
                 <img 
-                  src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80" 
+                  src="/rai-sir.jpg" 
                   alt="Ravindra Nath Rai" 
                   className="w-full h-full object-cover" 
                 />

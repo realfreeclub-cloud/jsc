@@ -209,8 +209,8 @@ const Home = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 px-8">
           {[
             { icon: Users, label: "Selected Candidates", value: "900+" },
-            { icon: Trophy, label: "Top 10 Ranks", value: "50+" },
-            { icon: Shield, label: "Expert Faculty", value: "30+" },
+            { icon: Trophy, label: "Top 10 Ranks", value: "30+" },
+            { icon: Shield, label: "Expert Faculty", value: "8+" },
             { icon: Star, label: "Success Rate", value: "92%" }
           ].map((stat, i) => (
             <div key={i} className="text-center group">
@@ -232,7 +232,7 @@ const Home = () => {
               <div className="absolute -inset-4 bg-gold/20 rounded-4xl blur-2xl group-hover:bg-gold/30 transition-all duration-500"></div>
               <div className="relative aspect-square md:aspect-4/5 rounded-3xl overflow-hidden shadow-2xl border-2 border-gold/20">
                 <img 
-                  src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80" 
+                  src="/rai-sir.jpg" 
                   alt="Director Ravindra Nath Rai" 
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
                 />
