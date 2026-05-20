@@ -497,77 +497,159 @@ const CourseDetails = () => {
                 </div>
 
               ) : (
-                /* ══ PAID COURSE — Locked Preview + WhatsApp Enroll CTA ══ */
-                <div className="p-8 space-y-3">
-                  {syllabus.map((mod) => {
-                    const isExpanded = expandedModules.has(mod._id);
-                    return (
-                      <div key={mod._id} className="border border-slate-100 rounded-2xl overflow-hidden">
+                /* ══ PAID COURSE — Preview player + locked lessons with WhatsApp CTA ══ */
+                <div className="grid lg:grid-cols-5 divide-y lg:divide-y-0 lg:divide-x divide-slate-100">
+
+                  {/* LEFT: Lesson List */}
+                  <div className="lg:col-span-2 overflow-y-auto" style={{ maxHeight: '72vh' }}>
+                    {syllabus.map((mod) => (
+                      <div key={mod._id}>
+                        {/* Module Header */}
                         <button
                           onClick={() => toggleModule(mod._id)}
-                          className="w-full flex items-center justify-between px-6 py-4 bg-slate-50 hover:bg-slate-100 transition-colors text-left"
+                          className="w-full flex items-center justify-between px-5 py-3.5 bg-slate-50 hover:bg-slate-100 transition-colors text-left border-b border-slate-100"
                         >
-                          <div>
-                            <span className="font-bold text-slate-800 text-sm">{mod.title}</span>
-                            {mod.description && <p className="text-xs text-slate-400 mt-0.5">{mod.description}</p>}
+                          <div className="min-w-0">
+                            <p className="font-bold text-slate-800 text-sm leading-snug truncate">{mod.title}</p>
+                            <p className="text-[11px] text-slate-400 mt-0.5">
+                              {mod.lessons.filter(l => l.isPreview).length} free preview · {mod.lessons.filter(l => !l.isPreview).length} paid
+                            </p>
                           </div>
-                          <div className="flex items-center gap-3 shrink-0 ml-4">
-                            <span className="text-xs font-bold text-slate-400">{mod.lessons.length} lessons</span>
-                            {isExpanded ? <ChevronUp size={16} className="text-slate-400" /> : <ChevronDown size={16} className="text-slate-400" />}
-                          </div>
+                          {expandedModules.has(mod._id)
+                            ? <ChevronUp size={16} className="text-slate-400 shrink-0 ml-2" />
+                            : <ChevronDown size={16} className="text-slate-400 shrink-0 ml-2" />}
                         </button>
 
-                        {isExpanded && (
-                          <div className="divide-y divide-slate-50">
-                            {mod.lessons.map((lesson) => (
-                              <div key={lesson._id} className="flex items-center gap-4 px-6 py-3.5 opacity-70">
-                                <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
-                                  {lesson.isPreview
-                                    ? <Play size={12} className="text-emerald-500" />
-                                    : <Lock size={12} className="text-slate-400" />}
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-sm font-semibold text-slate-600 truncate">{lesson.title}</p>
-                                  {lesson.description && <p className="text-xs text-slate-400 truncate mt-0.5">{lesson.description}</p>}
-                                </div>
-                                {lesson.isPreview && (
-                                  <span className="text-[10px] bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full font-extrabold uppercase shrink-0">Free Preview</span>
+                        {/* Lesson Rows */}
+                        {expandedModules.has(mod._id) && mod.lessons.map((lesson) => {
+                          const isActive = activeLesson?._id === lesson._id;
+                          return (
+                            <button
+                              key={lesson._id}
+                              onClick={() => setActiveLesson(lesson)}
+                              className={`w-full flex items-start gap-3 px-5 py-3.5 border-b border-slate-50 text-left transition-all ${
+                                isActive
+                                  ? 'bg-gold/8 border-l-4 border-l-gold'
+                                  : 'hover:bg-slate-50 border-l-4 border-l-transparent'
+                              }`}
+                            >
+                              <div className={`mt-0.5 w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
+                                lesson.isPreview
+                                  ? isActive ? 'bg-gold text-primary' : 'bg-emerald-50 text-emerald-500'
+                                  : 'bg-slate-100 text-slate-400'
+                              }`}>
+                                {lesson.isPreview
+                                  ? <Play size={12} className={isActive ? '' : 'ml-0.5'} />
+                                  : <Lock size={12} />}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className={`text-xs font-semibold leading-snug ${
+                                  isActive ? 'text-primary' : lesson.isPreview ? 'text-slate-700' : 'text-slate-400'
+                                }`}>{lesson.title}</p>
+                                {lesson.description && (
+                                  <p className="text-[11px] text-slate-400 mt-0.5 line-clamp-1">{lesson.description}</p>
                                 )}
                               </div>
-                            ))}
-                          </div>
-                        )}
+                              {lesson.isPreview
+                                ? <span className="text-[9px] bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded font-extrabold uppercase shrink-0">Free</span>
+                                : <span className="text-[9px] bg-slate-100 text-slate-400 px-1.5 py-0.5 rounded font-bold shrink-0">Paid</span>}
+                            </button>
+                          );
+                        })}
                       </div>
-                    );
-                  })}
+                    ))}
+                  </div>
 
-                  {/* WhatsApp Enroll CTA */}
-                  <div className="mt-6 rounded-2xl overflow-hidden border border-primary/10">
-                    <div className="bg-primary px-8 py-6 text-white flex flex-col sm:flex-row items-center justify-between gap-5">
-                      <div>
-                        <p className="font-bold text-lg mb-1">🔒 Unlock Full Course Access</p>
-                        <p className="text-slate-300 text-sm leading-relaxed">
-                          Pay via WhatsApp · Admin verifies payment · Access activated within minutes
+                  {/* RIGHT: Player or Lock Screen */}
+                  <div className="lg:col-span-3 p-6 flex flex-col gap-5">
+                    {!activeLesson ? (
+                      /* Default: no lesson selected */
+                      <div className="flex flex-col items-center justify-center h-full py-20 text-center">
+                        <Play size={48} className="text-slate-200 mb-4" />
+                        <p className="font-bold text-slate-700 text-lg mb-1">Select a Lesson</p>
+                        <p className="text-sm text-slate-400 max-w-xs">
+                          Click a <span className="text-emerald-600 font-bold">Free Preview</span> lesson to watch it instantly, or a <span className="text-slate-500 font-bold">Paid</span> lesson to enroll.
                         </p>
-                        <div className="flex flex-wrap gap-3 mt-3">
-                          <span className="flex items-center gap-1.5 text-xs text-slate-300">
-                            <CheckCircle2 size={13} className="text-gold" /> All video lectures
-                          </span>
-                          <span className="flex items-center gap-1.5 text-xs text-slate-300">
-                            <CheckCircle2 size={13} className="text-gold" /> PDF notes downloads
-                          </span>
-                          <span className="flex items-center gap-1.5 text-xs text-slate-300">
-                            <CheckCircle2 size={13} className="text-gold" /> Lifetime / timed access
-                          </span>
+                      </div>
+
+                    ) : activeLesson.isPreview && activeLesson.videoUrl ? (
+                      /* Preview lesson — play directly */
+                      <>
+                        <div className="relative w-full rounded-2xl overflow-hidden bg-black shadow-xl" style={{ paddingTop: '56.25%' }}>
+                          <iframe
+                            key={activeLesson._id}
+                            src={`https://www.youtube.com/embed/${getYoutubeId(activeLesson.videoUrl)}?rel=0&modestbranding=1`}
+                            title={activeLesson.title}
+                            className="absolute inset-0 w-full h-full"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-[10px] bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full font-extrabold uppercase">Free Preview</span>
+                          </div>
+                          <h3 className="text-lg font-bold text-slate-800 mb-1">{activeLesson.title}</h3>
+                          {activeLesson.description && (
+                            <p className="text-sm text-slate-500 leading-relaxed">{activeLesson.description}</p>
+                          )}
+                        </div>
+                        {activeLesson.pdfUrl && (
+                          <a
+                            href={activeLesson.pdfUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2.5 px-5 py-3 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-700 rounded-xl text-sm font-bold transition-all self-start"
+                          >
+                            <FileText size={16} />
+                            Download Lecture Notes (PDF)
+                          </a>
+                        )}
+                        {/* Upsell to enroll */}
+                        <div className="mt-2 p-4 bg-primary/5 border border-primary/10 rounded-2xl flex flex-col sm:flex-row items-center gap-4">
+                          <div className="flex-1">
+                            <p className="font-bold text-primary text-sm">Enjoying this lesson?</p>
+                            <p className="text-xs text-slate-500 mt-0.5">Enroll to unlock all remaining paid lectures and PDF notes.</p>
+                          </div>
+                          <button
+                            onClick={() => openWhatsApp(course?.title || '')}
+                            className="shrink-0 flex items-center gap-2 px-5 py-2.5 bg-gold hover:bg-yellow-400 text-primary font-black rounded-xl text-xs transition-all shadow-md"
+                          >
+                            <MessageCircle size={14} /> Enroll via WhatsApp
+                          </button>
+                        </div>
+                      </>
+
+                    ) : (
+                      /* Locked / paid lesson selected — show enroll prompt */
+                      <div className="flex flex-col items-center justify-center h-full py-14 px-6 text-center">
+                        <div className="w-20 h-20 rounded-full bg-primary/8 border-2 border-primary/15 flex items-center justify-center mb-6 animate-bounce">
+                          <Lock size={32} className="text-primary/60" />
+                        </div>
+                        <h3 className="text-xl font-serif font-bold text-slate-800 mb-2">This Lesson is Locked</h3>
+                        <p className="text-sm text-slate-500 max-w-sm leading-relaxed mb-8">
+                          <strong>{activeLesson.title}</strong> is part of the paid curriculum. Complete enrollment after payment confirmation to unlock all lectures.
+                        </p>
+                        <div className="w-full max-w-sm bg-primary rounded-2xl p-6 text-white text-left">
+                          <p className="font-bold mb-1">How to Enroll</p>
+                          <ol className="text-sm text-slate-300 space-y-2 list-decimal list-inside mb-5">
+                            <li>Click "Enroll via WhatsApp" below</li>
+                            <li>Complete payment as guided by admin</li>
+                            <li>Admin activates your access instantly</li>
+                            <li>Log in to watch all lessons</li>
+                          </ol>
+                          <button
+                            onClick={() => openWhatsApp(course?.title || '')}
+                            className="w-full flex items-center justify-center gap-2.5 py-3.5 bg-gold hover:bg-yellow-400 text-primary font-black rounded-xl text-sm transition-all shadow-lg"
+                          >
+                            <MessageCircle size={16} /> Enroll via WhatsApp
+                          </button>
                         </div>
                       </div>
-                      <button
-                        onClick={() => openWhatsApp(course?.title || '')}
-                        className="shrink-0 flex items-center gap-2.5 px-8 py-4 bg-gold hover:bg-yellow-400 text-primary font-black rounded-2xl text-sm transition-all shadow-lg shadow-gold/30 hover:scale-105"
-                      >
-                        <MessageCircle size={18} />
-                        Enroll via WhatsApp
-                      </button>
+                    )}
+                  </div>
+                </div>
+
                     </div>
                   </div>
                 </div>
