@@ -15,8 +15,9 @@ export const deleteOne = factory.deleteOne(Lesson);
 export const getCourseSyllabus = async (req: Request, res: Response): Promise<any> => {
   try {
     const { courseId } = req.params;
-    const userId = (req as any).user._id;
-    const userRole = (req as any).user.role;
+    const reqUser = (req as any).user;
+    const userId = reqUser?._id;
+    const userRole = reqUser?.role;
 
     // Check if course exists
     const course = await Course.findById(courseId);
@@ -26,7 +27,11 @@ export const getCourseSyllabus = async (req: Request, res: Response): Promise<an
 
     // Verify access
     let hasAccess = false;
-    if (userRole === 'admin' || userRole === 'superadmin') {
+
+    if (!reqUser) {
+      // Guest visitor: check if course is Free
+      hasAccess = (course as any).accessType === 'Free';
+    } else if (userRole === 'admin' || userRole === 'superadmin') {
       hasAccess = true;
     } else {
       // Check active enrollment access
@@ -43,6 +48,11 @@ export const getCourseSyllabus = async (req: Request, res: Response): Promise<an
         } else if (access.expiryDate && new Date(access.expiryDate) > new Date()) {
           hasAccess = true;
         }
+      }
+
+      // Free courses are always accessible to logged-in users too
+      if (!hasAccess && (course as any).accessType === 'Free') {
+        hasAccess = true;
       }
     }
 

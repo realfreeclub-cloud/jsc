@@ -3,11 +3,31 @@ import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   PlayCircle, Clock, Globe, Users, MessageCircle, Smartphone, 
-  CheckCircle, ChevronRight, MapPin, Award, BookOpen, CreditCard, Info, Loader2
+  CheckCircle, ChevronRight, MapPin, Award, BookOpen, CreditCard, Info, Loader2,
+  Video, Lock, ChevronDown, ChevronUp
 } from 'lucide-react';
 import { openCourseInApp, openWhatsApp } from '../utils/appRedirect';
 import { type Course } from './Courses.tsx';
 import api from '../utils/api';
+
+interface SyllabusLesson {
+  _id: string;
+  title: string;
+  description?: string;
+  videoUrl?: string;
+  pdfUrl?: string;
+  isPreview?: boolean;
+  isLocked?: boolean;
+  order: number;
+}
+
+interface SyllabusModule {
+  _id: string;
+  title: string;
+  description?: string;
+  order: number;
+  lessons: SyllabusLesson[];
+}
 
 const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) => (
   <motion.div
@@ -22,7 +42,12 @@ const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode, delay?: nu
 const CourseDetails = () => {
   const { slug } = useParams();
   const [course, setCourse] = useState<Course | null>(null);
+  const [courseId, setCourseId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [syllabus, setSyllabus] = useState<SyllabusModule[]>([]);
+  const [syllabusLoading, setSyllabusLoading] = useState(false);
+  const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set());
+  const [hasAccess, setHasAccess] = useState(false);
 
   useEffect(() => {
     api.get('/courses')
@@ -50,6 +75,7 @@ const CourseDetails = () => {
             note: found.note || ''
           };
           setCourse(mapped);
+          setCourseId(found._id);
         } else {
           setCourse(null);
         }
@@ -62,6 +88,35 @@ const CourseDetails = () => {
         setLoading(false);
       });
   }, [slug]);
+
+  // Fetch syllabus once courseId is known
+  useEffect(() => {
+    if (!courseId) return;
+    setSyllabusLoading(true);
+    const token = localStorage.getItem('jsc_token');
+    const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
+    api.get(`/lessons/course/${courseId}/syllabus`, { headers })
+      .then(res => {
+        const modules: SyllabusModule[] = res.data?.data || [];
+        setSyllabus(modules);
+        setHasAccess(!!res.data?.hasAccess);
+        // Auto-expand first module
+        if (modules.length > 0) {
+          setExpandedModules(new Set([modules[0]._id]));
+        }
+      })
+      .catch(() => setSyllabus([]))
+      .finally(() => setSyllabusLoading(false));
+  }, [courseId]);
+
+  const toggleModule = (moduleId: string) => {
+    setExpandedModules(prev => {
+      const next = new Set(prev);
+      if (next.has(moduleId)) next.delete(moduleId);
+      else next.add(moduleId);
+      return next;
+    });
+  };
 
   if (loading) {
     return (
@@ -273,6 +328,116 @@ const CourseDetails = () => {
               </div>
             )}
           </section>
+
+          {/* Syllabus Section */}
+          {(syllabusLoading || syllabus.length > 0) && (
+            <section className="bg-white rounded-[2.5rem] p-10 shadow-sm border border-slate-100">
+              <div className="flex items-center gap-4 mb-8">
+                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                  <BookOpen size={28} />
+                </div>
+                <div>
+                  <h2 className="text-3xl font-serif font-bold text-primary">Course Syllabus</h2>
+                  <p className="text-slate-400 text-sm mt-1">
+                    {hasAccess ? 'Full access granted — all lessons are unlocked.' : 'Preview available lessons below.'}
+                  </p>
+                </div>
+              </div>
+
+              {syllabusLoading ? (
+                <div className="flex items-center gap-3 py-8 justify-center">
+                  <Loader2 className="animate-spin text-gold" size={28} />
+                  <span className="text-slate-400 font-medium">Loading syllabus...</span>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {syllabus.map((mod) => {
+                    const isExpanded = expandedModules.has(mod._id);
+                    const unlockedCount = mod.lessons.filter(l => !l.isLocked).length;
+                    return (
+                      <div key={mod._id} className="border border-slate-100 rounded-2xl overflow-hidden">
+                        {/* Module Header */}
+                        <button
+                          onClick={() => toggleModule(mod._id)}
+                          className="w-full flex items-center justify-between px-6 py-4 bg-slate-50 hover:bg-slate-100 transition-colors text-left"
+                        >
+                          <div>
+                            <span className="font-bold text-slate-800">{mod.title}</span>
+                            {mod.description && <p className="text-xs text-slate-400 mt-0.5">{mod.description}</p>}
+                          </div>
+                          <div className="flex items-center gap-3 shrink-0 ml-4">
+                            <span className="text-xs font-bold text-slate-400">
+                              {unlockedCount}/{mod.lessons.length} lessons
+                            </span>
+                            {isExpanded ? <ChevronUp size={18} className="text-slate-400" /> : <ChevronDown size={18} className="text-slate-400" />}
+                          </div>
+                        </button>
+
+                        {/* Lessons List */}
+                        {isExpanded && (
+                          <div className="divide-y divide-slate-50">
+                            {mod.lessons.map((lesson) => (
+                              <div
+                                key={lesson._id}
+                                className={`flex items-center gap-4 px-6 py-3.5 ${
+                                  lesson.isLocked ? 'opacity-60' : 'hover:bg-slate-50'
+                                }`}
+                              >
+                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                                  lesson.isLocked
+                                    ? 'bg-slate-100 text-slate-400'
+                                    : 'bg-gold/10 text-gold'
+                                }`}>
+                                  {lesson.isLocked ? <Lock size={14} /> : <Video size={14} />}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <p className={`text-sm font-semibold truncate ${
+                                    lesson.isLocked ? 'text-slate-400' : 'text-slate-700'
+                                  }`}>
+                                    {lesson.title}
+                                  </p>
+                                  {lesson.description && (
+                                    <p className="text-xs text-slate-400 truncate mt-0.5">{lesson.description}</p>
+                                  )}
+                                </div>
+                                <div className="flex items-center gap-2 shrink-0">
+                                  {lesson.isPreview && (
+                                    <span className="text-[10px] bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full font-extrabold uppercase tracking-wide">
+                                      Free Preview
+                                    </span>
+                                  )}
+                                  {lesson.isLocked && (
+                                    <span className="text-[10px] bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full font-bold">
+                                      Locked
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+
+                  {/* Enroll CTA for locked courses */}
+                  {!hasAccess && (
+                    <div className="mt-6 p-6 bg-primary/5 border border-primary/10 rounded-2xl text-center">
+                      <Lock size={28} className="text-gold mx-auto mb-3" />
+                      <p className="font-bold text-primary mb-1">Unlock Full Syllabus Access</p>
+                      <p className="text-sm text-slate-500 mb-4">Enroll now to watch all video lectures and download PDF notes.</p>
+                      <button
+                        onClick={() => openWhatsApp(course?.title || '')}
+                        className="px-6 py-3 bg-gold text-primary font-bold rounded-xl hover:bg-yellow-400 transition-all shadow-md"
+                      >
+                        Enroll via WhatsApp
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </section>
+          )}
 
         </div>
 

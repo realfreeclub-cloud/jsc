@@ -35,3 +35,23 @@ export const restrictTo = (...roles: string[]) => {
     next();
   };
 };
+
+export const optionalProtect = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    let token;
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+      token = req.headers.authorization.split(' ')[1];
+    }
+
+    if (token) {
+      const decoded: any = jwt.verify(token, process.env.JWT_SECRET || 'supersecretkey123');
+      const currentUser = await User.findById(decoded.id);
+      if (currentUser) {
+        (req as any).user = currentUser;
+      }
+    }
+  } catch (err) {
+    // Ignore verification errors for optional authentication
+  }
+  next();
+};
