@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { 
   PlayCircle, Clock, Globe, Users, MessageCircle, 
   CheckCircle, ChevronRight, MapPin, Award, BookOpen, CreditCard, Info, Loader2,
-  Lock, ChevronDown, ChevronUp, Play, FileText, CheckCircle2
+  Lock, ChevronDown, ChevronUp, Play, FileText
 } from 'lucide-react';
 import { openWhatsApp } from '../utils/appRedirect';
 import { type Course } from './Courses.tsx';
