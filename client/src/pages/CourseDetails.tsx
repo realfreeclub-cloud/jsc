@@ -6,7 +6,7 @@ import {
   CheckCircle, ChevronRight, MapPin, Award, BookOpen, CreditCard, Info, Loader2,
   Video, Lock, ChevronDown, ChevronUp, Play, FileText, CheckCircle2
 } from 'lucide-react';
-import { openCourseInApp, openWhatsApp } from '../utils/appRedirect';
+import { openWhatsApp } from '../utils/appRedirect';
 import { type Course } from './Courses.tsx';
 import api from '../utils/api';
 
@@ -130,6 +130,10 @@ const CourseDetails = () => {
     return (m && m[1].length === 11) ? m[1] : url;
   };
 
+  const scrollToSyllabus = () => {
+    document.getElementById('course-syllabus')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center pt-20">
@@ -212,14 +216,25 @@ const CourseDetails = () => {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4">
-                <button 
-                  onClick={() => openCourseInApp(course.slug)}
-                  className="flex items-center justify-center gap-3 px-10 py-5 rounded-2xl bg-linear-to-r from-gold to-yellow-500 text-primary font-bold hover:shadow-[0_0_30px_rgba(212,175,55,0.4)] transition-all transform hover:-translate-y-1 text-lg shadow-xl"
-                >
-                  <Smartphone size={24} /> Enroll via App
-                </button>
-                
-                <button 
+                {hasAccess ? (
+                  /* FREE COURSE — scroll down to video classroom */
+                  <button
+                    onClick={scrollToSyllabus}
+                    className="flex items-center justify-center gap-3 px-10 py-5 rounded-2xl bg-linear-to-r from-gold to-yellow-500 text-primary font-bold hover:shadow-[0_0_30px_rgba(212,175,55,0.4)] transition-all transform hover:-translate-y-1 text-lg shadow-xl"
+                  >
+                    <PlayCircle size={24} /> Watch Free Lessons ↓
+                  </button>
+                ) : (
+                  /* PAID COURSE — WhatsApp enrollment */
+                  <button
+                    onClick={() => openWhatsApp(course.title)}
+                    className="flex items-center justify-center gap-3 px-10 py-5 rounded-2xl bg-linear-to-r from-gold to-yellow-500 text-primary font-bold hover:shadow-[0_0_30px_rgba(212,175,55,0.4)] transition-all transform hover:-translate-y-1 text-lg shadow-xl"
+                  >
+                    <MessageCircle size={24} /> Enroll via WhatsApp
+                  </button>
+                )}
+
+                <button
                   onClick={() => openWhatsApp(course.title)}
                   className="flex items-center justify-center gap-3 px-10 py-5 rounded-2xl bg-white/10 text-white border border-white/20 font-bold hover:bg-white/20 transition-all text-lg backdrop-blur-sm"
                 >
@@ -343,7 +358,7 @@ const CourseDetails = () => {
 
           {/* ─── Syllabus / Video Classroom Section ─── */}
           {(syllabusLoading || syllabus.length > 0) && (
-            <section className="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
+            <section id="course-syllabus" className="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
               {/* Section Header */}
               <div className="flex items-center gap-4 px-10 pt-10 pb-6 border-b border-slate-100">
                 <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
@@ -566,34 +581,53 @@ const CourseDetails = () => {
         <div className="lg:col-span-4 space-y-8">
           
           {/* Enrollment Card */}
-          <div className="bg-primary rounded-[2.5rem] p-8 shadow-2xl text-white">
-            <h3 className="text-2xl font-serif font-bold mb-6">Start Enrollment</h3>
-            <div className="space-y-4 mb-8">
-              <div className="flex items-center gap-3 text-slate-300">
-                <CheckCircle size={18} className="text-gold" />
-                <span>Instant Course Access</span>
+            <div className="bg-primary rounded-[2.5rem] p-8 shadow-2xl text-white">
+              <h3 className="text-2xl font-serif font-bold mb-2">
+                {hasAccess ? '🎓 Free Course' : 'Start Enrollment'}
+              </h3>
+              <p className="text-slate-400 text-sm mb-6">
+                {hasAccess
+                  ? 'This course is completely free. Watch all lessons directly below.'
+                  : 'Send your payment via WhatsApp. Admin activates access after confirmation.'}
+              </p>
+              <div className="space-y-3 mb-8">
+                <div className="flex items-center gap-3 text-slate-300">
+                  <CheckCircle size={18} className="text-gold" />
+                  <span>{hasAccess ? 'All video lessons unlocked' : 'Instant activation after payment'}</span>
+                </div>
+                <div className="flex items-center gap-3 text-slate-300">
+                  <CheckCircle size={18} className="text-gold" />
+                  <span>Downloadable PDF Notes</span>
+                </div>
+                <div className="flex items-center gap-3 text-slate-300">
+                  <CheckCircle size={18} className="text-gold" />
+                  <span>{hasAccess ? 'No login required' : 'Lifetime / timed access options'}</span>
+                </div>
               </div>
-              <div className="flex items-center gap-3 text-slate-300">
-                <CheckCircle size={18} className="text-gold" />
-                <span>Downloadable PDF Notes</span>
-              </div>
-              <div className="flex items-center gap-3 text-slate-300">
-                <CheckCircle size={18} className="text-gold" />
-                <span>Live Doubt Support</span>
-              </div>
-            </div>
 
-            <button 
-              onClick={() => openCourseInApp(course.slug)}
-              className="w-full py-5 rounded-2xl bg-white text-primary font-bold hover:bg-gold transition-all shadow-lg flex items-center justify-center gap-3 mb-4 group"
-            >
-              <Smartphone size={22} className="group-hover:scale-110 transition-transform" /> 
-              Open in Mobile App
-            </button>
-            <p className="text-[11px] text-center text-slate-400 px-4">
-              Our mobile app provides the most secure and features-rich learning experience.
-            </p>
-          </div>
+              {hasAccess ? (
+                <button
+                  onClick={scrollToSyllabus}
+                  className="w-full py-5 rounded-2xl bg-gold text-primary font-bold hover:bg-yellow-400 transition-all shadow-lg flex items-center justify-center gap-3 group"
+                >
+                  <PlayCircle size={22} className="group-hover:scale-110 transition-transform" />
+                  Watch Lessons Now ↓
+                </button>
+              ) : (
+                <button
+                  onClick={() => openWhatsApp(course.title)}
+                  className="w-full py-5 rounded-2xl bg-white text-primary font-bold hover:bg-gold transition-all shadow-lg flex items-center justify-center gap-3 group"
+                >
+                  <MessageCircle size={22} className="group-hover:scale-110 transition-transform" />
+                  Enroll via WhatsApp
+                </button>
+              )}
+              <p className="text-[11px] text-center text-slate-400 px-4 mt-3">
+                {hasAccess
+                  ? 'Free and open access — no account needed.'
+                  : 'Pay on WhatsApp → Admin confirms → You get access.'}
+              </p>
+            </div>
 
           {/* States Covered */}
           {course.states && course.states.length > 0 && (
