@@ -645,8 +645,9 @@ const CourseDetails = () => {
                             <MessageCircle size={16} /> Enroll via WhatsApp
                           </button>
                         </div>
-                      </div>
                     )}
+                  </div>
+                </div>
               )}
             </section>
           )}

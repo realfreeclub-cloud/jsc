@@ -10,7 +10,6 @@ import {
   EyeOff, 
   Plus, 
   FileImage, 
-  Link as LinkIcon, 
   ExternalLink,
   Copy,
   Check,
@@ -32,7 +31,6 @@ interface ApiListResponse {
   data: GalleryItem[];
 }
 
-const NAVY = '#07152F';
 
 export default function GalleryManager() {
   const queryClient = useQueryClient();
