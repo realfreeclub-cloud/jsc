@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Search, Loader2, Edit2, Trash2, Video, Calendar, Users, Eye, EyeOff } from 'lucide-react';
+import { Plus, Search, Loader2, Edit2, Trash2, Video, Calendar, Users, Eye } from 'lucide-react';
 import api from '../utils/api';
 import AppDrawer from '../components/ui/AppDrawer';
 import GenericForm, { type Field } from '../components/ui/GenericForm';

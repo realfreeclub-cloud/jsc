@@ -199,7 +199,7 @@ const ExamQuestions = () => {
                                     Q{idx + 1}. {q.text}
                                 </h4>
                             </div>
-                            <div style={{ display: 'flex', gap: 8, shrink: 0 }}>
+                            <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
                                 <span style={{ background: '#EEF2FF', color: '#4F46E5', padding: '2px 8px', borderRadius: 4, fontSize: 12, fontWeight: 600, height: 'fit-content' }}>{q.marks} Marks</span>
                                 <button onClick={() => handleOpenEdit(q)} className="jsc-action-btn edit" style={{ opacity: 1, padding: 4 }}><Edit2 size={15} /></button>
                                 <button onClick={() => { if(window.confirm('Delete question?')) deleteMutation.mutate(q._id) }} className="jsc-action-btn delete" style={{ opacity: 1, padding: 4 }}><Trash2 size={15} /></button>
@@ -229,7 +229,7 @@ const ExamQuestions = () => {
 
                         {q.explanation && (
                           <div style={{ borderTop: '1px dashed #E5E7EB', paddingTop: 10, marginTop: 10, fontSize: 12.5, color: '#4B5563', display: 'flex', gap: 6 }}>
-                            <Info size={14} style={{ color: GOLD, marginTop: 2, shrink: 0 }} />
+                            <Info size={14} style={{ color: GOLD, marginTop: 2, flexShrink: 0 }} />
                             <div>
                               <strong>Explanation:</strong> {q.explanation}
                             </div>
