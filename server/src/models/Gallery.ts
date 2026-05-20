@@ -4,6 +4,7 @@ const gallerySchema = new mongoose.Schema({
   title: { type: String },
   imageUrl: { type: String, required: false },
   category: { type: String, default: 'General' },
+  isPrivate: { type: Boolean, default: false },
   order: { type: Number, default: 0 }
 }, { timestamps: true });
 

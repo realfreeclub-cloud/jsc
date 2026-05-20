@@ -1,11 +1,11 @@
 import express from 'express';
 import * as controller from '../controllers/galleryController';
-import { protect, restrictTo } from '../middleware/auth';
+import { protect, restrictTo, optionalProtect } from '../middleware/auth';
 
 const router = express.Router();
 
-router.get('/', controller.getAll);
-router.get('/:id', controller.getOne);
+router.get('/', optionalProtect, controller.getAll);
+router.get('/:id', optionalProtect, controller.getOne);
 
 // Protected Admin Routes
 router.use(protect);

@@ -25,7 +25,7 @@ const StudentExamAttempt = lazy(() => import('./pages/student/ExamAttempt'));
 const StudentExamResult = lazy(() => import('./pages/student/ExamResult'));
 const DemoClasses = () => <div className="pt-24 min-h-screen text-center text-2xl font-serif">Demo Classes Page</div>;
 const StudyMaterial = lazy(() => import('./pages/StudyMaterial'));
-const Gallery = () => <div className="pt-24 min-h-screen text-center text-2xl font-serif">Gallery Page</div>;
+const Gallery = lazy(() => import('./pages/Gallery'));
 const Contact = lazy(() => import('./pages/Contact'));
 const Events = () => <div className="pt-24 min-h-screen text-center text-2xl font-serif">Events Page</div>;
 const Notifications = lazy(() => import('./pages/Notifications'));
