@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
-  PlayCircle, Clock, Globe, Users, MessageCircle, Smartphone, 
+  PlayCircle, Clock, Globe, Users, MessageCircle, 
   CheckCircle, ChevronRight, MapPin, Award, BookOpen, CreditCard, Info, Loader2,
-  Video, Lock, ChevronDown, ChevronUp, Play, FileText, CheckCircle2
+  Lock, ChevronDown, ChevronUp, Play, FileText, CheckCircle2
 } from 'lucide-react';
 import { openWhatsApp } from '../utils/appRedirect';
 import { type Course } from './Courses.tsx';
