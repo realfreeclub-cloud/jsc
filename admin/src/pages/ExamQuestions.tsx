@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Loader2, ArrowLeft, Trash2, Edit2, BookOpen, Search } from 'lucide-react';
+import { Plus, Loader2, ArrowLeft, Trash2, Edit2, BookOpen, Search, Image as ImageIcon, Info } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import AppDrawer from '../components/ui/AppDrawer';
@@ -16,7 +16,7 @@ const ExamQuestions = () => {
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [importSearchTerm, setImportSearchTerm] = useState('');
   const [selectedBankQuestions, setSelectedBankQuestions] = useState<QuestionBankItem[]>([]);
-  const [editData, setEditData] = useState<{ _id: string; text: string; options: string[]; correctOptionIndex: number; marks: number } | undefined>(undefined);
+  const [editData, setEditData] = useState<{ _id: string; text: string; options: string[]; correctOptionIndex: number; marks: number; explanation?: string; imageUrl?: string; difficultyLevel?: string } | undefined>(undefined);
   const queryClient = useQueryClient();
 
   // Form State
@@ -24,6 +24,9 @@ const ExamQuestions = () => {
   const [options, setOptions] = useState<string[]>(['', '', '', '']);
   const [correctOptionIndex, setCorrectOptionIndex] = useState<number>(0);
   const [marks, setMarks] = useState<number>(1);
+  const [explanation, setExplanation] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
+  const [difficultyLevel, setDifficultyLevel] = useState('medium');
 
   // Fetch Exam Details (for title)
   const { data: examData } = useQuery({
@@ -34,14 +37,14 @@ const ExamQuestions = () => {
   // Fetch Questions
   const { data: questionsData, isLoading } = useQuery({
     queryKey: ['examQuestions', examId],
-    queryFn: () => api.get(`/exams/${examId}/questions`).then((res: { data: { questions: { _id: string; text: string; options: string[]; correctOptionIndex: number; marks: number }[] } }) => res.data),
+    queryFn: () => api.get(`/exams/${examId}/questions`).then((res: { data: { questions: { _id: string; text: string; options: string[]; correctOptionIndex: number; marks: number; explanation?: string; imageUrl?: string; difficultyLevel?: string }[] } }) => res.data),
   });
 
   const exam = examData?.exam;
-  const questions = (questionsData?.questions || []) as { _id: string; text: string; options: string[]; correctOptionIndex: number; marks: number }[];
+  const questions = (questionsData?.questions || []) as { _id: string; text: string; options: string[]; correctOptionIndex: number; marks: number; explanation?: string; imageUrl?: string; difficultyLevel?: string }[];
 
   const createMutation = useMutation({
-    mutationFn: (newData: { text: string; options: string[]; correctOptionIndex: number; marks: number }) => api.post(`/exams/${examId}/questions`, newData),
+    mutationFn: (newData: { text: string; options: string[]; correctOptionIndex: number; marks: number; explanation?: string; imageUrl?: string; difficultyLevel?: string }) => api.post(`/exams/${examId}/questions`, newData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['examQuestions', examId] });
       queryClient.invalidateQueries({ queryKey: ['exams'] }); // For updated total marks
@@ -50,7 +53,7 @@ const ExamQuestions = () => {
   });
 
   const updateMutation = useMutation({
-    mutationFn: (updateData: { _id: string; text: string; options: string[]; correctOptionIndex: number; marks: number }) => api.patch(`/exams/questions/${updateData._id}`, updateData),
+    mutationFn: (updateData: { _id: string; text: string; options: string[]; correctOptionIndex: number; marks: number; explanation?: string; imageUrl?: string; difficultyLevel?: string }) => api.patch(`/exams/questions/${updateData._id}`, updateData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['examQuestions', examId] });
       queryClient.invalidateQueries({ queryKey: ['exams'] });
@@ -94,12 +97,15 @@ const ExamQuestions = () => {
     importMutation.mutate(selectedBankQuestions);
   };
 
-  const handleOpenEdit = (q: { _id: string; text: string; options: string[]; correctOptionIndex: number; marks: number }) => {
+  const handleOpenEdit = (q: { _id: string; text: string; options: string[]; correctOptionIndex: number; marks: number; explanation?: string; imageUrl?: string; difficultyLevel?: string }) => {
     setEditData(q);
     setText(q.text);
     setOptions(q.options.length ? q.options : ['', '', '', '']);
     setCorrectOptionIndex(q.correctOptionIndex);
     setMarks(q.marks);
+    setExplanation(q.explanation || '');
+    setImageUrl(q.imageUrl || '');
+    setDifficultyLevel(q.difficultyLevel || 'medium');
     setIsModalOpen(true);
   };
 
@@ -110,6 +116,9 @@ const ExamQuestions = () => {
     setOptions(['', '', '', '']);
     setCorrectOptionIndex(0);
     setMarks(1);
+    setExplanation('');
+    setImageUrl('');
+    setDifficultyLevel('medium');
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -118,7 +127,7 @@ const ExamQuestions = () => {
       alert("All options must be filled.");
       return;
     }
-    const payload = { text, options, correctOptionIndex, marks };
+    const payload = { text, options, correctOptionIndex, marks, explanation, imageUrl, difficultyLevel };
     
     try {
       if (editData) {
@@ -175,20 +184,35 @@ const ExamQuestions = () => {
                 <p style={{ fontSize: 13.5, color: 'var(--color-navy-400)', marginBottom: 24 }}>Add some MCQs to this exam.</p>
              </div>
         ) : (
-             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                {questions.map((q: { _id: string; text: string; options: string[]; correctOptionIndex: number; marks: number }, idx: number) => (
+             <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+                {questions.map((q, idx: number) => (
                     <div key={q._id} style={{ border: '1px solid #EEF1F8', borderRadius: 12, padding: 16, background: '#F9FAFB' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                            <h4 style={{ fontSize: 15, fontWeight: 600, color: NAVY, marginBottom: 12 }}>
-                                Q{idx + 1}. {q.text}
-                            </h4>
-                            <div style={{ display: 'flex', gap: 8 }}>
-                                <span style={{ background: '#EEF2FF', color: '#4F46E5', padding: '2px 8px', borderRadius: 4, fontSize: 12, fontWeight: 600 }}>{q.marks} Marks</span>
+                            <div style={{ flex: 1, marginRight: 16 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                                  <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', padding: '2px 6px', borderRadius: 4, background: q.difficultyLevel === 'easy' ? '#D1FAE5' : q.difficultyLevel === 'hard' ? '#FEE2E2' : '#FEF3C7', color: q.difficultyLevel === 'easy' ? '#065F46' : q.difficultyLevel === 'hard' ? '#991B1B' : '#92400E' }}>
+                                    {q.difficultyLevel || 'medium'}
+                                  </span>
+                                  {q.imageUrl && <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, background: '#E0F2FE', color: '#0369A1', padding: '2px 6px', borderRadius: 4 }}><ImageIcon size={12} /> Graphic Attached</span>}
+                                </div>
+                                <h4 style={{ fontSize: 15, fontWeight: 600, color: NAVY, marginBottom: 12 }}>
+                                    Q{idx + 1}. {q.text}
+                                </h4>
+                            </div>
+                            <div style={{ display: 'flex', gap: 8, shrink: 0 }}>
+                                <span style={{ background: '#EEF2FF', color: '#4F46E5', padding: '2px 8px', borderRadius: 4, fontSize: 12, fontWeight: 600, height: 'fit-content' }}>{q.marks} Marks</span>
                                 <button onClick={() => handleOpenEdit(q)} className="jsc-action-btn edit" style={{ opacity: 1, padding: 4 }}><Edit2 size={15} /></button>
                                 <button onClick={() => { if(window.confirm('Delete question?')) deleteMutation.mutate(q._id) }} className="jsc-action-btn delete" style={{ opacity: 1, padding: 4 }}><Trash2 size={15} /></button>
                             </div>
                         </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+
+                        {q.imageUrl && (
+                          <div style={{ margin: '8px 0 16px 0', border: '1px solid #E5E7EB', borderRadius: 8, overflow: 'hidden', maxWidth: 300, background: '#fff' }}>
+                            <img src={q.imageUrl} alt="Diagram" style={{ width: '100%', height: 'auto', display: 'block' }} />
+                          </div>
+                        )}
+
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: q.explanation ? 12 : 0 }}>
                             {q.options.map((opt: string, optIdx: number) => (
                                 <div key={optIdx} style={{ 
                                     padding: '8px 12px', 
@@ -202,13 +226,22 @@ const ExamQuestions = () => {
                                 </div>
                             ))}
                         </div>
+
+                        {q.explanation && (
+                          <div style={{ borderTop: '1px dashed #E5E7EB', paddingTop: 10, marginTop: 10, fontSize: 12.5, color: '#4B5563', display: 'flex', gap: 6 }}>
+                            <Info size={14} style={{ color: GOLD, marginTop: 2, shrink: 0 }} />
+                            <div>
+                              <strong>Explanation:</strong> {q.explanation}
+                            </div>
+                          </div>
+                        )}
                     </div>
                 ))}
              </div>
         )}
       </div>
 
-      <AppDrawer isOpen={isModalOpen} onClose={handleClose} title={editData ? `Edit Question` : `Add Question`} subtitle="Add MCQ options and mark the correct one." footer={drawerFooter} maxWidth={600}>
+      <AppDrawer isOpen={isModalOpen} onClose={handleClose} title={editData ? `Edit Question` : `Add Question`} subtitle="Add MCQ options and mark the correct one." footer={drawerFooter} maxWidth={620}>
          <form id="question-form" onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             <div>
                 <label className="jsc-form-label">Question Text <span className="required">*</span></label>
@@ -240,9 +273,29 @@ const ExamQuestions = () => {
                 <span className="jsc-form-label" style={{ margin: 0 }}>Correct Option is marked by radio button above.</span>
             </div>
 
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                    <label className="jsc-form-label">Marks <span className="required">*</span></label>
+                    <input type="number" min="1" className="jsc-input" required value={marks} onChange={e => setMarks(Number(e.target.value))} />
+                </div>
+                <div>
+                    <label className="jsc-form-label">Difficulty Level</label>
+                    <select className="jsc-input" value={difficultyLevel} onChange={e => setDifficultyLevel(e.target.value)}>
+                        <option value="easy">Easy</option>
+                        <option value="medium">Medium</option>
+                        <option value="hard">Hard</option>
+                    </select>
+                </div>
+            </div>
+
             <div>
-                <label className="jsc-form-label">Marks for this question <span className="required">*</span></label>
-                <input type="number" min="1" className="jsc-input" required value={marks} onChange={e => setMarks(Number(e.target.value))} style={{ width: 100 }} />
+                <label className="jsc-form-label">Question Graphic/Image URL (Optional)</label>
+                <input type="text" className="jsc-input" value={imageUrl} onChange={e => setImageUrl(e.target.value)} placeholder="https://judicialstudycentre.in/uploads/diagram.jpeg" />
+            </div>
+
+            <div>
+                <label className="jsc-form-label">Solution Explanation (Optional)</label>
+                <textarea className="jsc-textarea" value={explanation} onChange={e => setExplanation(e.target.value)} rows={3} placeholder="Provide details, section citations, and logic for the correct answer..." />
             </div>
          </form>
       </AppDrawer>

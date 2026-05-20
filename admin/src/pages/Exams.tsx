@@ -44,6 +44,10 @@ const Exams = () => {
     { name: 'course', label: 'Course', type: 'select', options: courseOptions, required: true },
     { name: 'durationMinutes', label: 'Duration (Minutes)', type: 'number', required: true },
     { name: 'passingMarks', label: 'Passing Marks', type: 'number', required: true },
+    { name: 'negativeMarking', label: 'Negative Marks (Deducted per incorrect MCQ)', type: 'number' },
+    { name: 'attemptsAllowed', label: 'Allowed Attempts count (0 or 99 for unlimited)', type: 'number' },
+    { name: 'shuffleQuestions', label: 'Shuffle Questions order dynamically', type: 'checkbox' },
+    { name: 'shuffleOptions', label: 'Shuffle Options order dynamically', type: 'checkbox' },
     { name: 'isActive', label: 'Is Active', type: 'checkbox' }
   ];
 

@@ -15,6 +15,9 @@ export interface QuestionBankItem {
   options: string[];
   correctOptionIndex: number;
   marks: number;
+  explanation?: string;
+  difficultyLevel?: 'easy' | 'medium' | 'hard';
+  imageUrl?: string;
 }
 
 const QuestionBank = () => {
@@ -82,7 +85,10 @@ const QuestionBank = () => {
             row['Option 4']
           ].filter(Boolean) as string[],
           correctOptionIndex: parseInt(row['Correct Option (1-4)'] as string) - 1,
-          marks: parseInt(row['Marks'] as string) || 1
+          marks: parseInt(row['Marks'] as string) || 1,
+          explanation: (row['Explanation'] as string) || '',
+          difficultyLevel: ((row['Difficulty'] as string) || 'medium').toLowerCase() as 'easy' | 'medium' | 'hard',
+          imageUrl: (row['Image URL'] as string) || ''
         })).filter((q: QuestionBankItem) => q.text && q.options.length >= 2);
 
         if (parsedQuestions.length === 0) {
@@ -117,7 +123,10 @@ const QuestionBank = () => {
         "Option 3": "Retribution",
         "Option 4": "Prevention",
         "Correct Option (1-4)": 1,
-        "Marks": 1
+        "Marks": 1,
+        "Difficulty": "medium",
+        "Explanation": "The IPC aims to deter people from committing crimes by prescribing punishments.",
+        "Image URL": ""
       }
     ];
     const ws = XLSX.utils.json_to_sheet(templateData);

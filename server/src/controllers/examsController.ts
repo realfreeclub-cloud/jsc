@@ -159,7 +159,10 @@ export const importQuestions = async (req: Request, res: Response) => {
         text: q.text,
         options: q.options,
         correctOptionIndex: q.correctOptionIndex,
-        marks: q.marks || 1
+        marks: q.marks || 1,
+        explanation: q.explanation || '',
+        imageUrl: q.imageUrl || '',
+        difficultyLevel: q.difficultyLevel || 'medium'
       };
     });
 

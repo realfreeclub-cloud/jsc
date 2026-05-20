@@ -6,6 +6,7 @@ const demoClassSchema = new mongoose.Schema({
   phone: { type: String, required: false },
   courseInterest: { type: String },
   scheduleDate: { type: Date },
+  demoSession: { type: mongoose.Schema.Types.ObjectId, ref: 'DemoSession' },
   status: { type: String, enum: ['pending', 'scheduled', 'completed', 'cancelled'], default: 'pending' },
   notes: { type: String },
   isActive: { type: Boolean, default: true }

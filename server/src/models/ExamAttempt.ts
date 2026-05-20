@@ -10,13 +10,19 @@ const examAttemptSchema = new mongoose.Schema({
   exam: { type: mongoose.Schema.Types.ObjectId, ref: 'Exam', required: true },
   answers: [answerSchema],
   score: { type: Number, default: 0 },
+  correctAnswers: { type: Number, default: 0 },
+  incorrectAnswers: { type: Number, default: 0 },
+  skippedAnswers: { type: Number, default: 0 },
+  timeSpentSeconds: { type: Number, default: 0 },
+  isPassed: { type: Boolean, default: false },
+  antiCheatViolations: { type: Number, default: 0 },
   status: { type: String, enum: ['in-progress', 'completed'], default: 'in-progress' },
   startedAt: { type: Date, default: Date.now },
   submittedAt: { type: Date }
 }, { timestamps: true });
 
 examAttemptSchema.pre(/^find/, function (this: any) {
-  this.populate('exam', 'title totalMarks durationMinutes');
+  this.populate('exam', 'title totalMarks durationMinutes passingMarks negativeMarking attemptsAllowed shuffleQuestions shuffleOptions');
 });
 
 export default mongoose.model('ExamAttempt', examAttemptSchema);

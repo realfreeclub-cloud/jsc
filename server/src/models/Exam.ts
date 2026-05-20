@@ -7,6 +7,10 @@ const examSchema = new mongoose.Schema({
   durationMinutes: { type: Number, required: true, default: 60 },
   totalMarks: { type: Number, required: true, default: 0 },
   passingMarks: { type: Number, required: true, default: 0 },
+  negativeMarking: { type: Number, default: 0 },
+  attemptsAllowed: { type: Number, default: 1 }, // 0 or large number for unlimited attempts
+  shuffleQuestions: { type: Boolean, default: false },
+  shuffleOptions: { type: Boolean, default: false },
   isActive: { type: Boolean, default: true }
 }, { timestamps: true });
 

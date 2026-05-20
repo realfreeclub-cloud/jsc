@@ -64,6 +64,20 @@ export const startExam = async (req: Request, res: Response) => {
     let attempt = await ExamAttempt.findOne({ student: student._id, exam: examId, status: 'in-progress' });
     
     if (!attempt) {
+        // Verify attempts limit
+        const completedAttemptsCount = await ExamAttempt.countDocuments({
+            student: student._id,
+            exam: examId,
+            status: 'completed'
+        });
+
+        if (exam.attemptsAllowed > 0 && completedAttemptsCount >= exam.attemptsAllowed) {
+            return res.status(400).json({ 
+                status: 'fail', 
+                message: `You have reached the maximum number of attempts allowed for this exam (${exam.attemptsAllowed}).` 
+            });
+        }
+
         attempt = await ExamAttempt.create({
             student: student._id,
             exam: examId,
@@ -82,8 +96,19 @@ export const getQuestionsForAttempt = async (req: Request, res: Response) => {
         const attempt = await ExamAttempt.findById(req.params.attemptId);
         if(!attempt) return res.status(404).json({ status: 'fail', message: 'Attempt not found' });
         
+        const exam = await Exam.findById(attempt.exam);
+        if(!exam) return res.status(404).json({ status: 'fail', message: 'Exam details not found' });
+
         // Fetch questions but exclude correctOptionIndex
-        const questions = await Question.find({ exam: attempt.exam }).select('-correctOptionIndex');
+        let questions = await Question.find({ exam: attempt.exam }).select('-correctOptionIndex').lean();
+        
+        if (exam.shuffleQuestions) {
+            // Fisher-Yates Shuffle
+            for (let i = questions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [questions[i], questions[j]] = [questions[j], questions[i]];
+            }
+        }
         
         res.status(200).json({ status: 'success', data: { questions, attempt } });
     } catch(error: any) {
@@ -94,7 +119,7 @@ export const getQuestionsForAttempt = async (req: Request, res: Response) => {
 export const submitExam = async (req: Request, res: Response) => {
   try {
     const { attemptId } = req.params;
-    const { answers } = req.body; // Array of { questionId, selectedOptionIndex }
+    const { answers, antiCheatViolations, timeSpentSeconds } = req.body; // Array of { questionId, selectedOptionIndex }
 
     const attempt = await ExamAttempt.findById(attemptId);
     if (!attempt) return res.status(404).json({ status: 'fail', message: 'Attempt not found' });
@@ -103,16 +128,28 @@ export const submitExam = async (req: Request, res: Response) => {
         return res.status(400).json({ status: 'fail', message: 'Attempt already completed' });
     }
 
+    const exam = await Exam.findById(attempt.exam);
+    if (!exam) return res.status(404).json({ status: 'fail', message: 'Exam details not found' });
+
     const questions = await Question.find({ exam: attempt.exam });
     let score = 0;
+    let correctCount = 0;
+    let incorrectCount = 0;
+    let skippedCount = 0;
     const processedAnswers = [];
 
     for (const q of questions) {
         const studentAnswer = answers.find((a: any) => a.questionId === q._id.toString());
         const selectedIndex = studentAnswer ? studentAnswer.selectedOptionIndex : -1;
         
-        if (selectedIndex === q.correctOptionIndex) {
+        if (selectedIndex === -1) {
+            skippedCount++;
+        } else if (selectedIndex === q.correctOptionIndex) {
             score += q.marks;
+            correctCount++;
+        } else {
+            score -= (exam.negativeMarking || 0);
+            incorrectCount++;
         }
 
         processedAnswers.push({
@@ -122,7 +159,13 @@ export const submitExam = async (req: Request, res: Response) => {
     }
 
     attempt.answers = processedAnswers as any;
-    attempt.score = score;
+    attempt.score = Math.max(0, score); // Clamp score to 0 as minimum
+    attempt.correctAnswers = correctCount;
+    attempt.incorrectAnswers = incorrectCount;
+    attempt.skippedAnswers = skippedCount;
+    attempt.timeSpentSeconds = Number(timeSpentSeconds) || 0;
+    attempt.antiCheatViolations = Number(antiCheatViolations) || 0;
+    attempt.isPassed = attempt.score >= exam.passingMarks;
     attempt.status = 'completed';
     attempt.submittedAt = new Date();
     

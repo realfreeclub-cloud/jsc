@@ -37,6 +37,7 @@ import enrollmentRoutes from './routes/enrollmentRoutes';
 import moduleRoutes from './routes/moduleRoutes';
 import lessonRoutes from './routes/lessonRoutes';
 import lessonProgressRoutes from './routes/lessonProgressRoutes';
+import demoSessionRoutes from './routes/demoSessionRoutes';
 
 import path from 'path';
 import uploadRoutes from './routes/uploadRoutes';
@@ -93,6 +94,7 @@ app.use('/api/v1/enrollments', enrollmentRoutes);
 app.use('/api/v1/modules', moduleRoutes);
 app.use('/api/v1/lessons', lessonRoutes);
 app.use('/api/v1/lesson-progress', lessonProgressRoutes);
+app.use('/api/v1/demosessions', demoSessionRoutes);
 
 // Handle undefined routes
 app.use((req, res, next) => {
