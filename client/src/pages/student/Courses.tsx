@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, Info, BookOpen, ArrowRight, Star, Clock, CheckCircle, AlertCircle, HelpCircle } from 'lucide-react';
+import { Search, Info, BookOpen, ArrowRight, Clock, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import api from '../../utils/api';
 import { openWhatsApp } from '../../utils/appRedirect';

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, BookOpen, Video, FileText, CheckCircle, Lock, Play, Sparkles, Check, Info } from 'lucide-react';
 import api from '../../utils/api';
 import { openWhatsApp } from '../../utils/appRedirect';
@@ -45,7 +45,6 @@ const getYoutubeId = (url?: string) => {
 
 const SyllabusViewer = () => {
   const { courseId } = useParams<{ courseId: string }>();
-  const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
   const [course, setCourse] = useState<CourseDetails | null>(null);
