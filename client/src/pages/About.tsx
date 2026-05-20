@@ -48,6 +48,9 @@ const About = () => {
                   src="/rai-sir.jpg" 
                   alt="Ravindra Nath Rai" 
                   className="w-full h-full object-cover" 
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = 'https://ui-avatars.com/api/?name=Ravindra+Nath+Rai&background=07152F&color=F4B400&size=512';
+                  }}
                 />
               </div>
               <div className="absolute -bottom-6 -right-6 bg-gold p-8 rounded-2xl shadow-xl hidden md:block">

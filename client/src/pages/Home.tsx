@@ -235,6 +235,9 @@ const Home = () => {
                   src="/rai-sir.jpg" 
                   alt="Director Ravindra Nath Rai" 
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = 'https://ui-avatars.com/api/?name=Ravindra+Nath+Rai&background=07152F&color=F4B400&size=512';
+                  }}
                 />
               </div>
               <div className="absolute bottom-6 left-6 right-6 p-6 bg-white/90 backdrop-blur-md rounded-2xl border border-white/50 shadow-lg">
