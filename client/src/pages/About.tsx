@@ -45,7 +45,7 @@ const About = () => {
             <div className="relative">
               <div className="aspect-square rounded-3xl overflow-hidden shadow-2xl border-8 border-white">
                 <img 
-                  src="/rai-sir.jpg" 
+                  src="https://judicialstudycentre.in/uploads/file-1779306352088-77466141.jpeg" 
                   alt="Ravindra Nath Rai" 
                   className="w-full h-full object-cover" 
                   onError={(e) => {

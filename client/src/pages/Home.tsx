@@ -232,7 +232,7 @@ const Home = () => {
               <div className="absolute -inset-4 bg-gold/20 rounded-4xl blur-2xl group-hover:bg-gold/30 transition-all duration-500"></div>
               <div className="relative aspect-square md:aspect-4/5 rounded-3xl overflow-hidden shadow-2xl border-2 border-gold/20">
                 <img 
-                  src="/rai-sir.jpg" 
+                  src="https://judicialstudycentre.in/uploads/file-1779306352088-77466141.jpeg" 
                   alt="Director Ravindra Nath Rai" 
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
                   onError={(e) => {
