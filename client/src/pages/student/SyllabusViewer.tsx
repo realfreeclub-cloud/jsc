@@ -145,7 +145,7 @@ const SyllabusViewer = () => {
   };
 
   // Handle continuous video play position updates
-  const handleProgressUpdate = async (currentTime: number, duration: number, percent: number) => {
+  const handleProgressUpdate = async (currentTime: number, _duration: number, percent: number) => {
     if (!courseId || !activeLesson || !hasAccess) return;
 
     // Reset progress tracking ref if lesson changed
