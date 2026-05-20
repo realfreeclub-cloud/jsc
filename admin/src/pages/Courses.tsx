@@ -783,6 +783,7 @@ const Courses = () => {
         title={`📚 Syllabus Structure: ${selectedCourseForSyllabus?.title || ''}`}
         subtitle="Manage sections (modules) and video lessons with notes."
         maxWidth={1100}
+        footer={null}
       >
         <div style={{ display: 'flex', gap: 28, height: 'calc(100vh - 200px)', minHeight: 500 }}>
           {/* Left Column: Modules */}

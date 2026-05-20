@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../utils/api';
 import { Table, type Column } from '../components/ui/Table';
 import { Loader2, AlertCircle, CheckCircle, XCircle, Clock, Calendar, Check, X, ShieldAlert } from 'lucide-react';
-import AppDrawer from '../components/ui/AppDrawer';
 
 interface Enrollment {
   _id: string;
@@ -28,7 +27,6 @@ const GOLD = '#F4B400';
 
 const Enrollments = () => {
   const queryClient = useQueryClient();
-  const [searchTerm, setSearchTerm] = useState('');
   
   // Activation Modal State
   const [isActivationModalOpen, setIsActivationModalOpen] = useState(false);
@@ -38,7 +36,7 @@ const Enrollments = () => {
 
   // Fetch Enrollments
   const { data, isLoading, error } = useQuery({
-    queryKey: ['admin-enrollments', searchTerm],
+    queryKey: ['admin-enrollments'],
     queryFn: () => api.get('/enrollments').then((res) => res.data),
   });
 
