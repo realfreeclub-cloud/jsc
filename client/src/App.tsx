@@ -18,6 +18,7 @@ const BlogDetails = lazy(() => import('./pages/BlogDetails'));
 const StudentDashboard = lazy(() => import('./pages/student/Dashboard'));
 const StudentMaterials = lazy(() => import('./pages/student/Materials'));
 const StudentCourses = lazy(() => import('./pages/student/Courses'));
+const StudentSyllabusViewer = lazy(() => import('./pages/student/SyllabusViewer'));
 const StudentNotifications = lazy(() => import('./pages/student/Notifications'));
 const StudentExamsList = lazy(() => import('./pages/student/ExamsList'));
 const StudentExamAttempt = lazy(() => import('./pages/student/ExamAttempt'));
@@ -83,6 +84,7 @@ function App() {
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<StudentDashboard />} />
           <Route path="courses" element={<StudentCourses />} />
+          <Route path="courses/:courseId" element={<StudentSyllabusViewer />} />
           <Route path="materials" element={<StudentMaterials />} />
           <Route path="notifications" element={<StudentNotifications />} />
           <Route path="exams" element={<StudentExamsList />} />

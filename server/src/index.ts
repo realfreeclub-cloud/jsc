@@ -33,6 +33,10 @@ import dashboardRoutes from './routes/dashboardRoutes';
 import examsRoutes from './routes/examsRoutes';
 import studentExamsRoutes from './routes/studentExamsRoutes';
 import questionBankRoutes from './routes/questionBankRoutes';
+import enrollmentRoutes from './routes/enrollmentRoutes';
+import moduleRoutes from './routes/moduleRoutes';
+import lessonRoutes from './routes/lessonRoutes';
+import lessonProgressRoutes from './routes/lessonProgressRoutes';
 
 import path from 'path';
 import uploadRoutes from './routes/uploadRoutes';
@@ -84,6 +88,10 @@ app.use('/api/v1/dashboard', dashboardRoutes);
 app.use('/api/v1/exams', examsRoutes);
 app.use('/api/v1/student-exams', studentExamsRoutes);
 app.use('/api/v1/question-bank', questionBankRoutes);
+app.use('/api/v1/enrollments', enrollmentRoutes);
+app.use('/api/v1/modules', moduleRoutes);
+app.use('/api/v1/lessons', lessonRoutes);
+app.use('/api/v1/lesson-progress', lessonProgressRoutes);
 
 // Handle undefined routes
 app.use((req, res, next) => {

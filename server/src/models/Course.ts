@@ -7,6 +7,8 @@ const courseSchema = new mongoose.Schema({
   category: { type: mongoose.Schema.Types.ObjectId, ref: 'CourseCategory', required: false },
   faculty: { type: String, default: 'Expert Faculty' },
   mode: { type: String, enum: ['Online', 'Offline', 'Hybrid'], required: false },
+  accessType: { type: String, enum: ['Free', 'Paid'], default: 'Paid' },
+  deliveryType: { type: String, enum: ['Online', 'Offline'], default: 'Online' },
   imageUrl: { type: String },
   demoVideoUrl: { type: String },
   duration: { type: String },

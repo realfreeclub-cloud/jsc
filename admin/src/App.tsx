@@ -7,6 +7,7 @@ import ScrollToTop from './components/utils/ScrollToTop';
 
 const Dashboard = React.lazy(() => import('./pages/Dashboard'));
 const Courses = React.lazy(() => import('./pages/Courses'));
+const Enrollments = React.lazy(() => import('./pages/Enrollments'));
 const GenericModule = React.lazy(() => import('./components/ui/GenericModule'));
 const Login = React.lazy(() => import('./pages/Login'));
 
@@ -37,6 +38,7 @@ function App() {
           <Route path="/" element={<AdminLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="courses" element={<Courses />} />
+            <Route path="enrollments" element={<Enrollments />} />
              <Route path="study-material" element={
                <GenericModule 
                  title="Study Material" 

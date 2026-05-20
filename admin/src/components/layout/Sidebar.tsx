@@ -42,6 +42,7 @@ const navigation = [
     group: 'Academics',
     items: [
       { name: 'Courses', path: '/courses', icon: BookOpen },
+      { name: 'Enrollments', path: '/enrollments', icon: GraduationCap },
       { name: 'Study Material', path: '/study-material', icon: Download },
       { name: 'Demo Classes', path: '/demo-classes', icon: MonitorPlay },
       { name: 'Course Leads', path: '/leads', icon: Users },
