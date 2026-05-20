@@ -42,6 +42,7 @@ import path from 'path';
 import uploadRoutes from './routes/uploadRoutes';
 
 const app = express();
+app.set('trust proxy', 1);
 
 // Security Middleware
 app.use(helmet({

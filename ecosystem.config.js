@@ -2,8 +2,7 @@ module.exports = {
   apps: [
     {
       name: 'judicial-server',
-      script: 'npm',
-      args: 'run start',
+      script: 'dist/index.js',
       cwd: './server',
       env: {
         NODE_ENV: 'production',
@@ -14,8 +13,8 @@ module.exports = {
     },
     {
       name: 'judicial-client',
-      script: 'npm',
-      args: 'run preview -- --port 3000 --host',
+      script: 'node_modules/vite/bin/vite.js',
+      args: 'preview --port 3000 --host',
       cwd: './client',
       env: {
         NODE_ENV: 'production',
@@ -23,8 +22,8 @@ module.exports = {
     },
     {
       name: 'judicial-admin',
-      script: 'npm',
-      args: 'run preview -- --port 3001 --host',
+      script: 'node_modules/vite/bin/vite.js',
+      args: 'preview --port 3001 --host',
       cwd: './admin',
       env: {
         NODE_ENV: 'production',
