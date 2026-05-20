@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { 
   PlayCircle, Clock, Globe, Users, MessageCircle, Smartphone, 
   CheckCircle, ChevronRight, MapPin, Award, BookOpen, CreditCard, Info, Loader2,
-  Video, Lock, ChevronDown, ChevronUp
+  Video, Lock, ChevronDown, ChevronUp, Play, FileText, CheckCircle2
 } from 'lucide-react';
 import { openCourseInApp, openWhatsApp } from '../utils/appRedirect';
 import { type Course } from './Courses.tsx';
@@ -48,6 +48,7 @@ const CourseDetails = () => {
   const [syllabusLoading, setSyllabusLoading] = useState(false);
   const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set());
   const [hasAccess, setHasAccess] = useState(false);
+  const [activeLesson, setActiveLesson] = useState<SyllabusLesson | null>(null);
 
   useEffect(() => {
     api.get('/courses')
@@ -99,10 +100,15 @@ const CourseDetails = () => {
       .then(res => {
         const modules: SyllabusModule[] = res.data?.data || [];
         setSyllabus(modules);
-        setHasAccess(!!res.data?.hasAccess);
-        // Auto-expand first module
-        if (modules.length > 0) {
-          setExpandedModules(new Set([modules[0]._id]));
+        const access = !!res.data?.hasAccess;
+        setHasAccess(access);
+        // Auto-expand all modules; auto-select first unlocked lesson
+        setExpandedModules(new Set(modules.map((m: SyllabusModule) => m._id)));
+        if (access) {
+          for (const mod of modules) {
+            const first = mod.lessons.find((l: SyllabusLesson) => !l.isLocked);
+            if (first) { setActiveLesson(first); break; }
+          }
         }
       })
       .catch(() => setSyllabus([]))
@@ -116,6 +122,12 @@ const CourseDetails = () => {
       else next.add(moduleId);
       return next;
     });
+  };
+
+  const getYoutubeId = (url?: string): string => {
+    if (!url) return '';
+    const m = url.match(/(?:youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*)/);
+    return (m && m[1].length === 11) ? m[1] : url;
   };
 
   if (loading) {
@@ -329,89 +341,183 @@ const CourseDetails = () => {
             )}
           </section>
 
-          {/* Syllabus Section */}
+          {/* ─── Syllabus / Video Classroom Section ─── */}
           {(syllabusLoading || syllabus.length > 0) && (
-            <section className="bg-white rounded-[2.5rem] p-10 shadow-sm border border-slate-100">
-              <div className="flex items-center gap-4 mb-8">
+            <section className="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
+              {/* Section Header */}
+              <div className="flex items-center gap-4 px-10 pt-10 pb-6 border-b border-slate-100">
                 <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
-                  <BookOpen size={28} />
+                  <BookOpen size={26} />
                 </div>
                 <div>
-                  <h2 className="text-3xl font-serif font-bold text-primary">Course Syllabus</h2>
-                  <p className="text-slate-400 text-sm mt-1">
-                    {hasAccess ? 'Full access granted — all lessons are unlocked.' : 'Preview available lessons below.'}
+                  <h2 className="text-2xl font-serif font-bold text-primary">Course Syllabus</h2>
+                  <p className="text-slate-400 text-sm mt-0.5">
+                    {hasAccess
+                      ? `${syllabus.reduce((a, m) => a + m.lessons.length, 0)} lessons · Free & open access`
+                      : 'Enroll via WhatsApp after payment confirmation to unlock all lessons'}
                   </p>
                 </div>
               </div>
 
               {syllabusLoading ? (
-                <div className="flex items-center gap-3 py-8 justify-center">
+                <div className="flex items-center gap-3 py-16 justify-center">
                   <Loader2 className="animate-spin text-gold" size={28} />
                   <span className="text-slate-400 font-medium">Loading syllabus...</span>
                 </div>
+              ) : hasAccess ? (
+                /* ══ FREE COURSE — Full Video Classroom ══ */
+                <div className="grid lg:grid-cols-5 divide-y lg:divide-y-0 lg:divide-x divide-slate-100">
+
+                  {/* LEFT: Lesson List */}
+                  <div className="lg:col-span-2 overflow-y-auto" style={{ maxHeight: '72vh' }}>
+                    {syllabus.map((mod) => (
+                      <div key={mod._id}>
+                        {/* Module Header */}
+                        <button
+                          onClick={() => toggleModule(mod._id)}
+                          className="w-full flex items-center justify-between px-5 py-3.5 bg-slate-50 hover:bg-slate-100 transition-colors text-left border-b border-slate-100"
+                        >
+                          <div className="min-w-0">
+                            <p className="font-bold text-slate-800 text-sm leading-snug truncate">{mod.title}</p>
+                            <p className="text-[11px] text-slate-400 mt-0.5">{mod.lessons.length} lessons</p>
+                          </div>
+                          {expandedModules.has(mod._id)
+                            ? <ChevronUp size={16} className="text-slate-400 shrink-0 ml-2" />
+                            : <ChevronDown size={16} className="text-slate-400 shrink-0 ml-2" />}
+                        </button>
+
+                        {/* Lesson Rows */}
+                        {expandedModules.has(mod._id) && mod.lessons.map((lesson) => {
+                          const isActive = activeLesson?._id === lesson._id;
+                          return (
+                            <button
+                              key={lesson._id}
+                              onClick={() => setActiveLesson(lesson)}
+                              className={`w-full flex items-start gap-3 px-5 py-3.5 border-b border-slate-50 text-left transition-all ${
+                                isActive
+                                  ? 'bg-gold/8 border-l-4 border-l-gold'
+                                  : 'hover:bg-slate-50 border-l-4 border-l-transparent'
+                              }`}
+                            >
+                              <div className={`mt-0.5 w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
+                                isActive ? 'bg-gold text-primary' : 'bg-slate-100 text-slate-400'
+                              }`}>
+                                <Play size={12} className={isActive ? '' : 'ml-0.5'} />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className={`text-xs font-semibold leading-snug ${
+                                  isActive ? 'text-primary' : 'text-slate-700'
+                                }`}>{lesson.title}</p>
+                                {lesson.description && (
+                                  <p className="text-[11px] text-slate-400 mt-0.5 line-clamp-1">{lesson.description}</p>
+                                )}
+                                <div className="flex gap-1.5 mt-1.5">
+                                  {lesson.videoUrl && (
+                                    <span className="text-[9px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded font-bold">VIDEO</span>
+                                  )}
+                                  {lesson.pdfUrl && (
+                                    <span className="text-[9px] bg-amber-50 text-amber-600 px-1.5 py-0.5 rounded font-bold">PDF</span>
+                                  )}
+                                </div>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* RIGHT: Video Player */}
+                  <div className="lg:col-span-3 p-6 flex flex-col gap-5">
+                    {activeLesson ? (
+                      <>
+                        {/* YouTube Embed */}
+                        {activeLesson.videoUrl ? (
+                          <div className="relative w-full rounded-2xl overflow-hidden bg-black shadow-xl" style={{ paddingTop: '56.25%' }}>
+                            <iframe
+                              key={activeLesson._id}
+                              src={`https://www.youtube.com/embed/${getYoutubeId(activeLesson.videoUrl)}?rel=0&modestbranding=1`}
+                              title={activeLesson.title}
+                              className="absolute inset-0 w-full h-full"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              allowFullScreen
+                            />
+                          </div>
+                        ) : (
+                          <div className="aspect-video rounded-2xl bg-slate-50 border border-dashed border-slate-200 flex flex-col items-center justify-center">
+                            <Play size={40} className="text-slate-300 mb-3" />
+                            <p className="text-sm text-slate-400 font-medium">No video available for this lesson</p>
+                          </div>
+                        )}
+
+                        {/* Lesson Meta */}
+                        <div>
+                          <h3 className="text-lg font-bold text-slate-800 mb-1">{activeLesson.title}</h3>
+                          {activeLesson.description && (
+                            <p className="text-sm text-slate-500 leading-relaxed">{activeLesson.description}</p>
+                          )}
+                        </div>
+
+                        {/* PDF Download */}
+                        {activeLesson.pdfUrl && (
+                          <a
+                            href={activeLesson.pdfUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2.5 px-5 py-3 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-700 rounded-xl text-sm font-bold transition-all self-start"
+                          >
+                            <FileText size={16} />
+                            Download Lecture Notes (PDF)
+                          </a>
+                        )}
+                      </>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center h-full py-20 text-center">
+                        <Play size={48} className="text-slate-200 mb-4" />
+                        <p className="font-bold text-slate-700 text-lg mb-1">Select a Lesson</p>
+                        <p className="text-sm text-slate-400">Click any lesson on the left to start watching.</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
               ) : (
-                <div className="space-y-3">
+                /* ══ PAID COURSE — Locked Preview + WhatsApp Enroll CTA ══ */
+                <div className="p-8 space-y-3">
                   {syllabus.map((mod) => {
                     const isExpanded = expandedModules.has(mod._id);
-                    const unlockedCount = mod.lessons.filter(l => !l.isLocked).length;
                     return (
                       <div key={mod._id} className="border border-slate-100 rounded-2xl overflow-hidden">
-                        {/* Module Header */}
                         <button
                           onClick={() => toggleModule(mod._id)}
                           className="w-full flex items-center justify-between px-6 py-4 bg-slate-50 hover:bg-slate-100 transition-colors text-left"
                         >
                           <div>
-                            <span className="font-bold text-slate-800">{mod.title}</span>
+                            <span className="font-bold text-slate-800 text-sm">{mod.title}</span>
                             {mod.description && <p className="text-xs text-slate-400 mt-0.5">{mod.description}</p>}
                           </div>
                           <div className="flex items-center gap-3 shrink-0 ml-4">
-                            <span className="text-xs font-bold text-slate-400">
-                              {unlockedCount}/{mod.lessons.length} lessons
-                            </span>
-                            {isExpanded ? <ChevronUp size={18} className="text-slate-400" /> : <ChevronDown size={18} className="text-slate-400" />}
+                            <span className="text-xs font-bold text-slate-400">{mod.lessons.length} lessons</span>
+                            {isExpanded ? <ChevronUp size={16} className="text-slate-400" /> : <ChevronDown size={16} className="text-slate-400" />}
                           </div>
                         </button>
 
-                        {/* Lessons List */}
                         {isExpanded && (
                           <div className="divide-y divide-slate-50">
                             {mod.lessons.map((lesson) => (
-                              <div
-                                key={lesson._id}
-                                className={`flex items-center gap-4 px-6 py-3.5 ${
-                                  lesson.isLocked ? 'opacity-60' : 'hover:bg-slate-50'
-                                }`}
-                              >
-                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-                                  lesson.isLocked
-                                    ? 'bg-slate-100 text-slate-400'
-                                    : 'bg-gold/10 text-gold'
-                                }`}>
-                                  {lesson.isLocked ? <Lock size={14} /> : <Video size={14} />}
+                              <div key={lesson._id} className="flex items-center gap-4 px-6 py-3.5 opacity-70">
+                                <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                                  {lesson.isPreview
+                                    ? <Play size={12} className="text-emerald-500" />
+                                    : <Lock size={12} className="text-slate-400" />}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                  <p className={`text-sm font-semibold truncate ${
-                                    lesson.isLocked ? 'text-slate-400' : 'text-slate-700'
-                                  }`}>
-                                    {lesson.title}
-                                  </p>
-                                  {lesson.description && (
-                                    <p className="text-xs text-slate-400 truncate mt-0.5">{lesson.description}</p>
-                                  )}
+                                  <p className="text-sm font-semibold text-slate-600 truncate">{lesson.title}</p>
+                                  {lesson.description && <p className="text-xs text-slate-400 truncate mt-0.5">{lesson.description}</p>}
                                 </div>
-                                <div className="flex items-center gap-2 shrink-0">
-                                  {lesson.isPreview && (
-                                    <span className="text-[10px] bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full font-extrabold uppercase tracking-wide">
-                                      Free Preview
-                                    </span>
-                                  )}
-                                  {lesson.isLocked && (
-                                    <span className="text-[10px] bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full font-bold">
-                                      Locked
-                                    </span>
-                                  )}
-                                </div>
+                                {lesson.isPreview && (
+                                  <span className="text-[10px] bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full font-extrabold uppercase shrink-0">Free Preview</span>
+                                )}
                               </div>
                             ))}
                           </div>
@@ -420,20 +526,35 @@ const CourseDetails = () => {
                     );
                   })}
 
-                  {/* Enroll CTA for locked courses */}
-                  {!hasAccess && (
-                    <div className="mt-6 p-6 bg-primary/5 border border-primary/10 rounded-2xl text-center">
-                      <Lock size={28} className="text-gold mx-auto mb-3" />
-                      <p className="font-bold text-primary mb-1">Unlock Full Syllabus Access</p>
-                      <p className="text-sm text-slate-500 mb-4">Enroll now to watch all video lectures and download PDF notes.</p>
+                  {/* WhatsApp Enroll CTA */}
+                  <div className="mt-6 rounded-2xl overflow-hidden border border-primary/10">
+                    <div className="bg-primary px-8 py-6 text-white flex flex-col sm:flex-row items-center justify-between gap-5">
+                      <div>
+                        <p className="font-bold text-lg mb-1">🔒 Unlock Full Course Access</p>
+                        <p className="text-slate-300 text-sm leading-relaxed">
+                          Pay via WhatsApp · Admin verifies payment · Access activated within minutes
+                        </p>
+                        <div className="flex flex-wrap gap-3 mt-3">
+                          <span className="flex items-center gap-1.5 text-xs text-slate-300">
+                            <CheckCircle2 size={13} className="text-gold" /> All video lectures
+                          </span>
+                          <span className="flex items-center gap-1.5 text-xs text-slate-300">
+                            <CheckCircle2 size={13} className="text-gold" /> PDF notes downloads
+                          </span>
+                          <span className="flex items-center gap-1.5 text-xs text-slate-300">
+                            <CheckCircle2 size={13} className="text-gold" /> Lifetime / timed access
+                          </span>
+                        </div>
+                      </div>
                       <button
                         onClick={() => openWhatsApp(course?.title || '')}
-                        className="px-6 py-3 bg-gold text-primary font-bold rounded-xl hover:bg-yellow-400 transition-all shadow-md"
+                        className="shrink-0 flex items-center gap-2.5 px-8 py-4 bg-gold hover:bg-yellow-400 text-primary font-black rounded-2xl text-sm transition-all shadow-lg shadow-gold/30 hover:scale-105"
                       >
+                        <MessageCircle size={18} />
                         Enroll via WhatsApp
                       </button>
                     </div>
-                  )}
+                  </div>
                 </div>
               )}
             </section>
