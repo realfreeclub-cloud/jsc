@@ -104,7 +104,7 @@ const About = () => {
                 
                 <div className="prose prose-slate prose-lg max-w-none text-slate-600 space-y-6">
                   <p className="text-xl font-medium text-primary italic border-l-4 border-gold pl-6 py-2 bg-slate-50 rounded-r-xl">
-                    “प्रयरगररज वह ऐवतहरविक एवंप्रेरणरदरयी भूवि हैजहराँज्ञरन िरधनर बनतर है, िंघर्षव्यक्तित्व गढ़तर है, और वनरंतर पररश्रि िरधरण ववद्यरवथषयो ंको अिरधररण िफलतर तक पहाँचरतर है।”
+                    “प्रयागराज वह ऐतिहासिक एवं प्रेरणादायी भूमि है जहाँ ज्ञान साधना बनता है, संघर्ष व्यक्तित्व गढ़ता है, और निरंतर परिश्रम साधारण विद्यार्थियों को असाधारण सफलता तक पहुँचाता है।”
                   </p>
                   <p>
                     Established in 2001 in Prayagraj, <strong>Judicial Study Centre</strong> was founded with a vision to provide sincere, disciplined, and result-oriented guidance to aspiring judicial officers and legal professionals. Situated in the historic and intellectual city of Prayagraj—the sacred land of the Triveni Sangam, where the holy rivers Ganga, Yamuna, and the invisible Saraswati converge—the institute draws inspiration from a legacy deeply rooted in knowledge, spirituality, perseverance, and transformation.
@@ -161,7 +161,7 @@ const About = () => {
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <FadeIn>
             <div className="text-center mb-20">
-              <h2 className="text-4xl font-serif font-bold mb-4 italic">“आ नो भद्राः क्रतवो यन्तु ववश्वताः”</h2>
+              <h2 className="text-4xl font-serif font-bold mb-4 italic">“आ नो भद्राः क्रतवो यन्तु विश्वतः”</h2>
               <p className="text-gold text-xl font-medium">“Let noble thoughts and inspiring ideas come to us from all directions.”</p>
             </div>
           </FadeIn>
