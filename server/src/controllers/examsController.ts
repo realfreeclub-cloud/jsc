@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import Exam from '../models/Exam';
 import Question from '../models/Question';
+import QuestionBank from '../models/QuestionBank';
 
 // Get all exams
 export const getExams = async (req: Request, res: Response) => {
@@ -156,13 +157,32 @@ export const importQuestions = async (req: Request, res: Response) => {
       totalMarksAdded += q.marks || 1;
       return {
         exam: examId,
+        section: q.section || '',
+        subject: q.subject,
+        topic: q.topic,
+        chapter: q.chapter,
         text: q.text,
+        textHindi: q.textHindi,
         options: q.options,
+        optionsHindi: q.optionsHindi,
         correctOptionIndex: q.correctOptionIndex,
+        correctOptionIndices: q.correctOptionIndices,
         marks: q.marks || 1,
-        explanation: q.explanation || '',
-        imageUrl: q.imageUrl || '',
-        difficultyLevel: q.difficultyLevel || 'medium'
+        negativeMarks: q.negativeMarks || 0,
+        explanation: q.explanation,
+        explanationImage: q.explanationImage,
+        explanationVideoUrl: q.explanationVideoUrl,
+        difficultyLevel: q.difficultyLevel || 'medium',
+        imageUrl: q.imageUrl,
+        questionType: q.questionType || 'single-correct',
+        estimatedSolveTime: q.estimatedSolveTime,
+        tags: q.tags,
+        faculty: q.faculty,
+        course: q.course,
+        paragraphText: q.paragraphText,
+        matchPairs: q.matchPairs,
+        assertion: q.assertion,
+        reason: q.reason
       };
     });
 
@@ -174,5 +194,81 @@ export const importQuestions = async (req: Request, res: Response) => {
     res.status(201).json({ status: 'success', data: { questions: createdQuestions } });
   } catch (error: any) {
     res.status(400).json({ status: 'fail', message: error.message });
+  }
+};
+
+// Auto-generate random questions from question bank
+export const autoGenerateExamQuestions = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const examId = req.params.examId;
+    const { subject, topic, difficultyLevel, count, section } = req.body;
+
+    const exam = await Exam.findById(examId);
+    if (!exam) return res.status(404).json({ status: 'fail', message: 'Exam not found' });
+
+    const matchStage: any = { status: 'active' };
+    if (subject) matchStage.subject = subject;
+    if (topic) matchStage.topic = topic;
+    if (difficultyLevel) matchStage.difficultyLevel = difficultyLevel;
+
+    // Use aggregate with sample to fetch random questions
+    const sampleQuestions = await QuestionBank.aggregate([
+      { $match: matchStage },
+      { $sample: { size: Number(count) || 10 } }
+    ]);
+
+    if (sampleQuestions.length === 0) {
+      return res.status(400).json({ 
+        status: 'fail', 
+        message: 'No questions matching these filters were found in the Question Bank.' 
+      });
+    }
+
+    let totalMarksAdded = 0;
+    const newQuestions = sampleQuestions.map((q: any) => {
+      totalMarksAdded += q.marks || 1;
+      return {
+        exam: examId,
+        section: section || '',
+        subject: q.subject,
+        topic: q.topic,
+        chapter: q.chapter,
+        text: q.text,
+        textHindi: q.textHindi,
+        options: q.options,
+        optionsHindi: q.optionsHindi,
+        correctOptionIndex: q.correctOptionIndex,
+        correctOptionIndices: q.correctOptionIndices,
+        marks: q.marks || 1,
+        negativeMarks: q.negativeMarks || 0,
+        explanation: q.explanation,
+        explanationImage: q.explanationImage,
+        explanationVideoUrl: q.explanationVideoUrl,
+        difficultyLevel: q.difficultyLevel,
+        imageUrl: q.imageUrl,
+        questionType: q.questionType,
+        estimatedSolveTime: q.estimatedSolveTime,
+        tags: q.tags,
+        faculty: q.faculty,
+        course: q.course,
+        paragraphText: q.paragraphText,
+        matchPairs: q.matchPairs,
+        assertion: q.assertion,
+        reason: q.reason
+      };
+    });
+
+    const createdQuestions = await Question.insertMany(newQuestions);
+
+    exam.totalMarks += totalMarksAdded;
+    await exam.save();
+
+    return res.status(201).json({
+      status: 'success',
+      count: createdQuestions.length,
+      data: { questions: createdQuestions }
+    });
+  } catch (error: any) {
+    return res.status(400).json({ status: 'fail', message: error.message });
   }
 };

@@ -9,13 +9,14 @@ import {
   addQuestion,
   updateQuestion,
   deleteQuestion,
-  importQuestions
+  importQuestions,
+  autoGenerateExamQuestions
 } from '../controllers/examsController';
 import { protect } from '../middleware/auth';
 
 const router = express.Router();
 
-// All routes here should be protected (Admin only typically, assuming protect middleware handles it or there is another layer. Let's assume protect is enough for admin dashboard for now as per other routes)
+// All routes here should be protected
 router.use(protect);
 
 router
@@ -38,6 +39,10 @@ router
 router
   .route('/:examId/questions/import')
   .post(importQuestions);
+
+router
+  .route('/:examId/auto-generate')
+  .post(autoGenerateExamQuestions);
 
 router
   .route('/questions/:id')

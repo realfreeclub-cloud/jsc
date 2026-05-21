@@ -2,7 +2,9 @@ import mongoose from 'mongoose';
 
 const answerSchema = new mongoose.Schema({
   question: { type: mongoose.Schema.Types.ObjectId, ref: 'Question', required: true },
-  selectedOptionIndex: { type: Number, required: true } // -1 if not answered
+  selectedOptionIndex: { type: Number, required: true }, // -1 if not answered (for single correct)
+  selectedOptionIndices: [{ type: Number }], // for multiple correct choice
+  textAnswer: { type: String } // for typed / text answers
 }, { _id: false });
 
 const examAttemptSchema = new mongoose.Schema({

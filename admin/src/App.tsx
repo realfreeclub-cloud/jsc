@@ -19,6 +19,7 @@ const Exams = React.lazy(() => import('./pages/Exams'));
 const ExamQuestions = React.lazy(() => import('./pages/ExamQuestions'));
 const QuestionBank = React.lazy(() => import('./pages/QuestionBank'));
 const DemoSessions = React.lazy(() => import('./pages/DemoSessions'));
+const TestEnrollments = React.lazy(() => import('./pages/TestEnrollments'));
 
 const PageLoader = () => (
   <div className="flex items-center justify-center min-h-[60vh]">
@@ -160,6 +161,7 @@ function App() {
             <Route path="exams/:id/questions" element={<ExamQuestions />} />
             <Route path="question-bank" element={<QuestionBank />} />
             <Route path="demo-sessions" element={<DemoSessions />} />
+            <Route path="test-enrollments" element={<TestEnrollments />} />
 
             {/* Academics - Missing routes added back */}
             <Route path="demo-classes" element={

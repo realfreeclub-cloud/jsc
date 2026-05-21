@@ -49,6 +49,7 @@ const navigation = [
       { name: 'Course Leads', path: '/leads', icon: Users },
       { name: 'Question Bank', path: '/question-bank', icon: FileText },
       { name: 'Test Series', path: '/exams', icon: FileText },
+      { name: 'Test Approvals', path: '/test-enrollments', icon: GraduationCap },
     ],
   },
   {

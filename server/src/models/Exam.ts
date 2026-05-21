@@ -11,7 +11,23 @@ const examSchema = new mongoose.Schema({
   attemptsAllowed: { type: Number, default: 1 }, // 0 or large number for unlimited attempts
   shuffleQuestions: { type: Boolean, default: false },
   shuffleOptions: { type: Boolean, default: false },
-  isActive: { type: Boolean, default: true }
+  isActive: { type: Boolean, default: true },
+  
+  // Access and Pricing configurations
+  accessType: { type: String, enum: ['free', 'paid'], default: 'free' },
+  pricing: { type: Number, default: 0 },
+  discountedPrice: { type: Number, default: 0 },
+  whatsappEnrollmentMessage: { type: String },
+  whatsappNumber: { type: String },
+  accessDuration: { type: Number }, // in days
+  expiryDate: { type: Date }, // fixed expiry date
+  
+  // Section-wise test structure
+  sections: [{
+    name: { type: String, required: true },
+    description: { type: String },
+    marksPerQuestion: { type: Number }
+  }]
 }, { timestamps: true });
 
 // Auto-populate course name when querying exams
