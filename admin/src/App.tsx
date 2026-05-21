@@ -77,6 +77,7 @@ function App() {
               <GenericModule 
                 title="Course Lead" 
                 endpoint="democlasses" 
+                extraParams={{ leadType: 'lead' }}
                 fields={[
                   { name: 'name', label: 'Student Name', type: 'text'},
                   { name: 'phone', label: 'Phone', type: 'text'},
@@ -168,6 +169,7 @@ function App() {
               <GenericModule 
                 title="Demo Classes" 
                 endpoint="democlasses" 
+                extraParams={{ leadType: 'demo' }}
                 fields={[
                   { name: 'name', label: 'Student Name', type: 'text'},
                   { name: 'phone', label: 'Phone', type: 'text'},

@@ -9,6 +9,7 @@ interface GenericModuleProps {
   title: string;
   endpoint: string;
   fields: Field[];
+  extraParams?: Record<string, string>;
 }
 
 const NAVY = '#07152F';
@@ -16,16 +17,20 @@ const GOLD = '#F4B400';
 
 let formCounter = 0;
 
-const GenericModule = ({ title, endpoint, fields }: GenericModuleProps) => {
+const GenericModule = ({ title, endpoint, fields, extraParams }: GenericModuleProps) => {
   const [formId] = useState(() => `gf-${++formCounter}`);
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editData, setEditData] = useState<Record<string, unknown> | undefined>(undefined);
   const queryClient = useQueryClient();
 
+  const extraQueryString = extraParams 
+    ? '&' + new URLSearchParams(extraParams).toString() 
+    : '';
+
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: [endpoint, searchTerm],
-    queryFn: () => api.get(`/${endpoint}?search=${searchTerm}`).then(res => res.data),
+    queryKey: [endpoint, searchTerm, extraParams],
+    queryFn: () => api.get(`/${endpoint}?search=${searchTerm}${extraQueryString}`).then(res => res.data),
   });
 
   const results = (data?.data || []) as Record<string, unknown>[];
@@ -59,7 +64,8 @@ const GenericModule = ({ title, endpoint, fields }: GenericModuleProps) => {
       if (editData) {
         await updateMutation.mutateAsync({ ...formData, _id: editData._id });
       } else {
-        await createMutation.mutateAsync(formData);
+        const payload = extraParams ? { ...extraParams, ...formData } : formData;
+        await createMutation.mutateAsync(payload);
       }
     } catch (err: unknown) {
       console.error('Save failed:', err);
