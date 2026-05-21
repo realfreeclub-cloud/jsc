@@ -1188,8 +1188,12 @@ const ExamQuestions = () => {
               style={{ background: '#fff' }}
             >
               <option value="single-correct">Single Correct MCQ</option>
-              <option value="multiple-correct">Multiple Correct MCQ</option>
-              <option value="true-false">True / False</option>
+              {questionType && questionType !== 'single-correct' && (
+                <option value={questionType}>
+                  {questionType === 'multiple-correct' && 'Multiple Correct MCQ'}
+                  {questionType === 'true-false' && 'True / False'}
+                </option>
+              )}
             </select>
           </div>
 

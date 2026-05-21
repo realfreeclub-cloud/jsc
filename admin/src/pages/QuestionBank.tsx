@@ -448,7 +448,7 @@ const QuestionBank = () => {
         "Chapter": "General Exceptions",
         "Question": "Which section of IPC covers insanity?",
         "Question Hindi": "IPC की कौन सी धारा पागलपन को कवर करती है?",
-        "Question Type": "single-correct", // single-correct, multiple-correct, true-false, match-following, assertion-reason, paragraph
+        "Question Type": "single-correct", // single-correct
         "Option 1": "Section 82",
         "Option 1 Hindi": "धारा 82",
         "Option 2": "Section 84",
@@ -463,29 +463,6 @@ const QuestionBank = () => {
         "Negative Marks": 0.25,
         "Difficulty": "medium", // easy, medium, hard
         "Explanation": "Section 84 IPC deals with acts of a person of unsound mind.",
-        "Image URL": ""
-      },
-      {
-        "Subject": "Constitutional Law",
-        "Topic": "Fundamental Rights",
-        "Chapter": "Article 19",
-        "Question": "Which of the following are fundamental freedoms?",
-        "Question Hindi": "निम्नलिखित में से कौन सी मौलिक स्वतंत्रताएं हैं?",
-        "Question Type": "multiple-correct",
-        "Option 1": "Speech and Expression",
-        "Option 1 Hindi": "भाषण और अभिव्यक्ति",
-        "Option 2": "Peaceful Assembly",
-        "Option 2 Hindi": "शांतिपूर्ण सभा",
-        "Option 3": "Form Associations",
-        "Option 3 Hindi": "संघ बनाना",
-        "Option 4": "Acquire property anywhere",
-        "Option 4 Hindi": "कहीं भी संपत्ति अर्जित करना",
-        "Correct Option (1-4)": "",
-        "Correct Option Indices (comma separated for multi)": "0,1,2", // 0-based indices
-        "Marks": 2.0,
-        "Negative Marks": 0.5,
-        "Difficulty": "hard",
-        "Explanation": "Article 19 guarantees speech, assembly, association, movement, residence, and profession.",
         "Image URL": ""
       }
     ];
@@ -572,7 +549,8 @@ const QuestionBank = () => {
             </select>
           </div>
 
-          {/* Type Filter */}
+          {/* Type Filter (Hidden for now - only single-correct allowed) */}
+          {/*
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <label style={{ fontSize: 12.5, fontWeight: 600, color: NAVY }}>Question Type</label>
             <select
@@ -589,6 +567,7 @@ const QuestionBank = () => {
               <option value="paragraph">Paragraph Comprehension</option>
             </select>
           </div>
+          */}
 
           {/* Clear Filters */}
           {(selectedSubject || selectedDifficulty || selectedType) && (
@@ -931,11 +910,15 @@ const QuestionBank = () => {
                   style={{ padding: '8px 12px', borderRadius: 6, border: '1px solid #D2D6DC', fontSize: 13, background: '#fff' }}
                 >
                   <option value="single-correct">Single Correct MCQ</option>
-                  <option value="multiple-correct">Multiple Correct MCQ</option>
-                  <option value="true-false">True / False</option>
-                  <option value="match-following">Match the Following</option>
-                  <option value="assertion-reason">Assertion / Reason</option>
-                  <option value="paragraph">Paragraph Comprehension</option>
+                  {formData.questionType && formData.questionType !== 'single-correct' && (
+                    <option value={formData.questionType}>
+                      {formData.questionType === 'multiple-correct' && 'Multiple Correct MCQ'}
+                      {formData.questionType === 'true-false' && 'True / False'}
+                      {formData.questionType === 'match-following' && 'Match the Following'}
+                      {formData.questionType === 'assertion-reason' && 'Assertion / Reason'}
+                      {formData.questionType === 'paragraph' && 'Paragraph Comprehension'}
+                    </option>
+                  )}
                 </select>
               </div>
 
