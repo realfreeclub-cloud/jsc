@@ -23,6 +23,7 @@ const Navbar = () => {
             <Link to="/demo" className="hover:text-gold transition-colors">Demo Classes</Link>
             <Link to="/test-series" className="hover:text-gold transition-colors">Test Series</Link>
             <Link to="/study-material" className="hover:text-gold transition-colors">Study Material</Link>
+            <Link to="/gallery" className="hover:text-gold transition-colors">Gallery</Link>
             <Link to="/faculty" className="hover:text-gold transition-colors">Faculty</Link>
             <Link to="/about" className="hover:text-gold transition-colors">About Us</Link>
             <Link to="/blogs" className="hover:text-gold transition-colors">Blog</Link>
@@ -66,6 +67,7 @@ const Navbar = () => {
             <Link to="/demo" className="hover:text-gold transition-colors border-b border-white/5 pb-2" onClick={closeMenu}>Demo Classes</Link>
             <Link to="/test-series" className="hover:text-gold transition-colors border-b border-white/5 pb-2" onClick={closeMenu}>Test Series</Link>
             <Link to="/study-material" className="hover:text-gold transition-colors border-b border-white/5 pb-2" onClick={closeMenu}>Study Material</Link>
+            <Link to="/gallery" className="hover:text-gold transition-colors border-b border-white/5 pb-2" onClick={closeMenu}>Gallery</Link>
             <Link to="/faculty" className="hover:text-gold transition-colors border-b border-white/5 pb-2" onClick={closeMenu}>Faculty</Link>
             <Link to="/about" className="hover:text-gold transition-colors border-b border-white/5 pb-2" onClick={closeMenu}>About Us</Link>
             <Link to="/blogs" className="hover:text-gold transition-colors border-b border-white/5 pb-2" onClick={closeMenu}>Blog</Link>
