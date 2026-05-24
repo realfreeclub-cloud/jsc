@@ -333,3 +333,15 @@ export const autoGenerateExamQuestions = async (req: Request, res: Response): Pr
     return res.status(400).json({ status: 'fail', message: error.message });
   }
 };
+
+// Get public exams (active metadata only)
+export const getPublicExams = async (req: Request, res: Response) => {
+  try {
+    const exams = await Exam.find({ isActive: true })
+      .select('title description durationMinutes totalMarks accessType pricing discountedPrice course paperSet')
+      .sort({ createdAt: -1 });
+    res.status(200).json({ status: 'success', results: exams.length, data: { exams } });
+  } catch (error: any) {
+    res.status(500).json({ status: 'error', message: error.message });
+  }
+};

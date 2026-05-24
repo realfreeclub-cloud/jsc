@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Users, Trophy, PlayCircle, Calendar, Download, MessageCircle, Star, Shield, BookMarked, Video } from 'lucide-react';
+import { ArrowRight, Users, Trophy, PlayCircle, Calendar, Download, MessageCircle, Star, Shield, BookMarked, Video, FileText } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import api from '../utils/api';
 
@@ -38,12 +38,17 @@ const Home = () => {
   const [data, setData] = useState<HomeData | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [testSeries, setTestSeries] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchHomeData = async () => {
       try {
         const response = await api.get('/home');
         setData(response.data.data);
+        
+        // Fetch public test series/exams
+        const examsResponse = await api.get('/exams/public');
+        setTestSeries((examsResponse.data.data.exams || []).slice(0, 3));
       } catch (error) {
         console.error('Error fetching home data:', error);
       } finally {
@@ -311,6 +316,81 @@ const Home = () => {
               </div>
             </FadeIn>
           ))}
+        </div>
+      </section>
+
+      {/* Test Series Section */}
+      <section className="py-24 bg-white border-t border-gray-100">
+        <div className="max-w-7xl mx-auto px-6">
+          <FadeIn>
+            <div className="text-center mb-16">
+              <h2 className="text-4xl font-serif font-bold text-primary mb-4">Premium MCQ Test Series</h2>
+              <div className="w-24 h-1 bg-gold mx-auto rounded-full mb-6"></div>
+              <p className="text-slate-600 max-w-2xl mx-auto text-lg">
+                Practice topic-wise and full-length mock exams designed to match the exact patterns of judicial service exams.
+              </p>
+            </div>
+          </FadeIn>
+
+          <div className="grid md:grid-cols-3 gap-8 mb-12">
+            {testSeries.length === 0 ? (
+              <div className="col-span-full text-center py-10 text-slate-500 text-sm">
+                No test series available at the moment.
+              </div>
+            ) : (
+              testSeries.map((exam, i) => {
+                const isPaid = exam.accessType === 'paid';
+                return (
+                  <FadeIn delay={i * 0.1} key={exam._id}>
+                    <div className="group bg-slate-50 rounded-3xl p-8 border border-gray-100 hover:bg-white hover:shadow-2xl transition-all relative overflow-hidden h-full flex flex-col justify-between">
+                      <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-gold/10 to-transparent rounded-bl-full pointer-events-none" />
+                      <div>
+                        <div className="flex items-center justify-between mb-6">
+                          <div className="w-10 h-10 bg-primary/5 text-primary rounded-xl flex items-center justify-center">
+                            <FileText size={20} />
+                          </div>
+                          <span className={`text-[9px] uppercase font-black tracking-wider px-2.5 py-1 rounded-full border ${
+                            isPaid ? 'bg-amber-50 text-amber-800 border-amber-200' : 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                          }`}>
+                            {isPaid ? 'Paid' : 'Free'}
+                          </span>
+                        </div>
+                        <span className="text-[10px] font-bold text-gold uppercase tracking-wider block mb-2">{exam.course?.title || 'Standalone Test'}</span>
+                        <h3 className="text-xl font-bold text-primary mb-3 line-clamp-1 group-hover:text-gold transition-colors">{exam.title}</h3>
+                        <p className="text-slate-600 text-sm line-clamp-2 mb-6 leading-relaxed">{exam.description || 'Practice online test series with instant analysis and key solution details.'}</p>
+                        
+                        <div className="grid grid-cols-2 gap-3 mb-6 text-xs text-slate-600">
+                          <div className="bg-white p-2.5 rounded-xl border border-slate-100">
+                            <span className="text-[9px] text-slate-400 block font-bold uppercase tracking-wider mb-0.5">Duration</span>
+                            <span className="font-bold text-slate-700">{exam.durationMinutes} Mins</span>
+                          </div>
+                          <div className="bg-white p-2.5 rounded-xl border border-slate-100">
+                            <span className="text-[9px] text-slate-400 block font-bold uppercase tracking-wider mb-0.5">Total Marks</span>
+                            <span className="font-bold text-slate-700">{exam.totalMarks} Marks</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="border-t border-slate-100 pt-4 flex items-center justify-between">
+                        <span className="text-sm font-extrabold text-slate-800">
+                          {isPaid ? `₹${exam.discountedPrice || 499}` : 'Free Access'}
+                        </span>
+                        <Link to="/test-series" className="inline-flex items-center text-primary font-bold group-hover:text-gold transition-colors text-sm">
+                          Attempt Now <ArrowRight size={16} className="ml-2 group-hover:translate-x-2 transition-transform" />
+                        </Link>
+                      </div>
+                    </div>
+                  </FadeIn>
+                );
+              })
+            )}
+          </div>
+
+          <div className="text-center">
+            <Link to="/test-series" className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-primary text-white font-bold hover:bg-primary-light transition-all shadow-lg hover:-translate-y-1">
+              View All Test Series <ArrowRight size={18} />
+            </Link>
+          </div>
         </div>
       </section>
 

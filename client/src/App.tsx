@@ -25,6 +25,7 @@ const StudentExamAttempt = lazy(() => import('./pages/student/ExamAttempt'));
 const StudentExamResult = lazy(() => import('./pages/student/ExamResult'));
 const DemoClasses = lazy(() => import('./pages/DemoClasses'));
 const StudyMaterial = lazy(() => import('./pages/StudyMaterial'));
+const TestSeries = lazy(() => import('./pages/TestSeries'));
 const Gallery = lazy(() => import('./pages/Gallery'));
 const Contact = lazy(() => import('./pages/Contact'));
 const Events = () => <div className="pt-24 min-h-screen text-center text-2xl font-serif">Events Page</div>;
@@ -61,6 +62,7 @@ function App() {
           <Route path="/courses" element={<Courses />} />
           <Route path="/courses/:slug" element={<CourseDetails />} />
           <Route path="/demo" element={<DemoClasses />} />
+          <Route path="/test-series" element={<TestSeries />} />
           <Route path="/study-material" element={<StudyMaterial />} />
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/blogs" element={<Blog />} />

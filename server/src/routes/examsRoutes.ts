@@ -10,13 +10,17 @@ import {
   updateQuestion,
   deleteQuestion,
   importQuestions,
-  autoGenerateExamQuestions
+  autoGenerateExamQuestions,
+  getPublicExams
 } from '../controllers/examsController';
 import { protect } from '../middleware/auth';
 
 const router = express.Router();
 
-// All routes here should be protected
+// Public route - accessible without login
+router.get('/public', getPublicExams);
+
+// All routes below here should be protected
 router.use(protect);
 
 router
