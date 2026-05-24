@@ -29,8 +29,15 @@ const Exams = () => {
     queryFn: () => api.get('/courses').then(res => res.data),
   });
 
-  const exams = (examsData?.data?.exams || []) as { _id: string; title: string; course: { _id: string; title: string }; durationMinutes: number; totalMarks: number; isActive: boolean }[];
+  // Fetch Paper Sets for Select Dropdown
+  const { data: paperSetsData } = useQuery({
+    queryKey: ['paperSets'],
+    queryFn: () => api.get('/paper-sets').then(res => res.data),
+  });
+
+  const exams = (examsData?.data?.exams || []) as { _id: string; title: string; course?: { _id: string; title: string }; paperSet?: { _id: string; title: string }; durationMinutes: number; totalMarks: number; isActive: boolean }[];
   const courses = (coursesData?.data?.courses || []) as { _id: string; title: string }[];
+  const paperSets = (paperSetsData?.data?.paperSets || []) as { _id: string; title: string }[];
   const filteredExams = exams.filter((e) => e.title.toLowerCase().includes(searchTerm.toLowerCase()));
 
   const courseOptions = courses.map(c => ({
@@ -38,10 +45,24 @@ const Exams = () => {
     value: c._id
   }));
 
+  const paperSetOptions = paperSets.map(ps => ({
+    label: ps.title,
+    value: ps._id
+  }));
+
   const fields: Field[] = [
     { name: 'title', label: 'Exam Title', type: 'text', required: true },
     { name: 'description', label: 'Description', type: 'textarea' },
-    { name: 'course', label: 'Course', type: 'select', options: courseOptions, required: true },
+    { name: 'course', label: 'Course', type: 'select', options: courseOptions, required: false },
+    { name: 'paperSet', label: 'Paper Set (To Sync Questions)', type: 'select', options: paperSetOptions, required: false },
+    { name: 'accessType', label: 'Access Type', type: 'select', options: [
+      { label: 'Free (Instant access)', value: 'free' },
+      { label: 'Paid (Requires approval)', value: 'paid' }
+    ], required: true },
+    { name: 'pricing', label: 'Regular Price (₹)', type: 'number' },
+    { name: 'discountedPrice', label: 'Discounted Price (₹)', type: 'number' },
+    { name: 'whatsappNumber', label: 'WhatsApp Number for Enrollment (e.g. 919450614241)', type: 'text' },
+    { name: 'whatsappEnrollmentMessage', label: 'WhatsApp Enrollment Message', type: 'textarea' },
     { name: 'durationMinutes', label: 'Duration (Minutes)', type: 'number', required: true },
     { name: 'passingMarks', label: 'Passing Marks', type: 'number', required: true },
     { name: 'negativeMarking', label: 'Negative Marks (Deducted per incorrect MCQ)', type: 'number' },
@@ -77,12 +98,23 @@ const Exams = () => {
 
   const handleSave = async (formData: Record<string, unknown>) => {
     try {
+      const courseVal = typeof formData.course === 'object' && formData.course !== null 
+        ? (formData.course as { _id: string })._id 
+        : formData.course;
+      const paperSetVal = typeof formData.paperSet === 'object' && formData.paperSet !== null 
+        ? (formData.paperSet as { _id: string })._id 
+        : formData.paperSet;
+      
+      const payload = { 
+        ...formData, 
+        course: courseVal || null,
+        paperSet: paperSetVal || null
+      };
+
       if (editData) {
-        // extract string if object populated
-        const payload = { ...formData, course: typeof formData.course === 'object' && formData.course !== null ? (formData.course as { _id: string })._id : formData.course };
         await updateMutation.mutateAsync({ ...payload, _id: editData._id as string });
       } else {
-        await createMutation.mutateAsync(formData);
+        await createMutation.mutateAsync(payload);
       }
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } }; message: string };
@@ -90,10 +122,11 @@ const Exams = () => {
     }
   };
 
-  const handleEdit = (row: { _id: string; title: string; course?: { _id: string; title: string } | string; durationMinutes: number; totalMarks: number; isActive: boolean }) => {
+  const handleEdit = (row: { _id: string; title: string; course?: { _id: string; title: string } | string; paperSet?: { _id: string; title: string } | string; durationMinutes: number; totalMarks: number; isActive: boolean }) => {
     setEditData({
         ...row,
-        course: typeof row.course === 'object' && row.course !== null ? row.course._id : row.course
+        course: typeof row.course === 'object' && row.course !== null ? row.course._id : row.course,
+        paperSet: typeof row.paperSet === 'object' && row.paperSet !== null ? row.paperSet._id : row.paperSet
     });
     setIsModalOpen(true);
   };
@@ -195,13 +228,13 @@ const Exams = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredExams.map((row: { _id: string; title: string; course: { _id: string; title: string }; durationMinutes: number; totalMarks: number; isActive: boolean }) => (
+                {filteredExams.map((row: { _id: string; title: string; course?: { _id: string; title: string }; paperSet?: { _id: string; title: string }; durationMinutes: number; totalMarks: number; isActive: boolean }) => (
                   <tr key={row._id} className="group">
                     <td>
                       <p style={{ fontWeight: 600, color: NAVY, fontSize: 13.5 }}>{row.title}</p>
                       <p style={{ fontSize: 11.5, color: 'var(--color-navy-300)' }}>{row._id}</p>
                     </td>
-                    <td><span style={{ fontSize: 13 }}>{row.course?.title || 'Unknown'}</span></td>
+                    <td><span style={{ fontSize: 13 }}>{row.course?.title || 'Standalone (No Course)'}</span></td>
                     <td style={{ textAlign: 'center' }}>{row.durationMinutes} min</td>
                     <td style={{ textAlign: 'center' }}>{row.totalMarks}</td>
                     <td style={{ textAlign: 'center' }}>

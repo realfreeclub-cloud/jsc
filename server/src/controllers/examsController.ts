@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import Exam from '../models/Exam';
 import Question from '../models/Question';
 import QuestionBank from '../models/QuestionBank';
+import PaperSet from '../models/PaperSet';
 
 // Get all exams
 export const getExams = async (req: Request, res: Response) => {
@@ -24,10 +25,63 @@ export const getExam = async (req: Request, res: Response) => {
   }
 };
 
+const syncPaperSetQuestions = async (examId: string, paperSetId: string): Promise<number> => {
+  const paperSet = await PaperSet.findById(paperSetId).populate('questions');
+  if (!paperSet) return 0;
+
+  // Delete existing questions of the exam
+  await Question.deleteMany({ exam: examId });
+
+  // Clone paper set questions into Question collection
+  const newQuestions = (paperSet.questions || []).map((q: any) => ({
+    exam: examId,
+    section: '',
+    subject: q.subject,
+    topic: q.topic,
+    chapter: q.chapter,
+    text: q.text,
+    textHindi: q.textHindi,
+    options: q.options,
+    optionsHindi: q.optionsHindi,
+    correctOptionIndex: q.correctOptionIndex,
+    correctOptionIndices: q.correctOptionIndices,
+    marks: q.marks || 1,
+    negativeMarks: q.negativeMarks || 0,
+    explanation: q.explanation,
+    explanationImage: q.explanationImage,
+    explanationVideoUrl: q.explanationVideoUrl,
+    difficultyLevel: q.difficultyLevel || 'medium',
+    imageUrl: q.imageUrl,
+    questionType: q.questionType || 'single-correct',
+    estimatedSolveTime: q.estimatedSolveTime,
+    tags: q.tags,
+    faculty: q.faculty,
+    course: q.course,
+    paragraphText: q.paragraphText,
+    matchPairs: q.matchPairs,
+    assertion: q.assertion,
+    reason: q.reason
+  }));
+
+  if (newQuestions.length > 0) {
+    await Question.insertMany(newQuestions);
+  }
+
+  const totalMarks = newQuestions.reduce((sum, q) => sum + q.marks, 0);
+  return totalMarks;
+};
+
 // Create exam
 export const createExam = async (req: Request, res: Response) => {
   try {
     const newExam = await Exam.create(req.body);
+    
+    if (req.body.paperSet) {
+      const totalMarks = await syncPaperSetQuestions(newExam._id.toString(), req.body.paperSet);
+      newExam.totalMarks = totalMarks;
+      await newExam.save();
+    }
+
     res.status(201).json({ status: 'success', data: { exam: newExam } });
   } catch (error: any) {
     res.status(400).json({ status: 'fail', message: error.message });
@@ -42,6 +96,13 @@ export const updateExam = async (req: Request, res: Response) => {
       runValidators: true
     });
     if (!exam) return res.status(404).json({ status: 'fail', message: 'Exam not found' });
+    
+    if (req.body.paperSet) {
+      const totalMarks = await syncPaperSetQuestions(exam._id.toString(), req.body.paperSet);
+      exam.totalMarks = totalMarks;
+      await exam.save();
+    }
+
     res.status(200).json({ status: 'success', data: { exam } });
   } catch (error: any) {
     res.status(400).json({ status: 'fail', message: error.message });

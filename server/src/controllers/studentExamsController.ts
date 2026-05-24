@@ -20,7 +20,16 @@ export const getAvailableExams = async (req: Request, res: Response): Promise<an
 
     let query: any = { isActive: true };
     if (course) {
-      query.course = course._id;
+      query.$or = [
+        { course: course._id },
+        { course: { $exists: false } },
+        { course: null }
+      ];
+    } else {
+      query.$or = [
+        { course: { $exists: false } },
+        { course: null }
+      ];
     }
 
     const exams = await Exam.find(query).sort({ createdAt: -1 });

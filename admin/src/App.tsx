@@ -18,6 +18,7 @@ const GalleryManager = React.lazy(() => import('./pages/gallery/GalleryManager')
 const Exams = React.lazy(() => import('./pages/Exams'));
 const ExamQuestions = React.lazy(() => import('./pages/ExamQuestions'));
 const QuestionBank = React.lazy(() => import('./pages/QuestionBank'));
+const PaperSets = React.lazy(() => import('./pages/PaperSets'));
 const DemoSessions = React.lazy(() => import('./pages/DemoSessions'));
 const TestEnrollments = React.lazy(() => import('./pages/TestEnrollments'));
 
@@ -161,6 +162,7 @@ function App() {
             <Route path="exams" element={<Exams />} />
             <Route path="exams/:id/questions" element={<ExamQuestions />} />
             <Route path="question-bank" element={<QuestionBank />} />
+            <Route path="paper-sets" element={<PaperSets />} />
             <Route path="demo-sessions" element={<DemoSessions />} />
             <Route path="test-enrollments" element={<TestEnrollments />} />
 
