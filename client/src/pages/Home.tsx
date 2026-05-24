@@ -559,8 +559,8 @@ const Home = () => {
                 <h3 className="text-3xl font-bold mb-4">Download Our App</h3>
                 <p className="text-slate-300 mb-8 max-w-md text-lg">Study anytime, anywhere. Get access to live classes, recorded lectures, and mock tests on your mobile.</p>
                 <div className="flex gap-4">
-                  <button className="px-6 py-3 bg-white text-primary font-bold rounded-lg hover:bg-gray-100 transition-colors">App Store</button>
-                  <button className="px-6 py-3 bg-white text-primary font-bold rounded-lg hover:bg-gray-100 transition-colors">Google Play</button>
+                  <button className="px-6 py-3 bg-white text-primary font-bold rounded-lg hover:bg-gray-100 transition-colors opacity-50 cursor-not-allowed">App Store</button>
+                  <a href="https://bit.ly/judicialSC" target="_blank" rel="noopener noreferrer" className="px-6 py-3 bg-white text-primary font-bold rounded-lg hover:bg-gray-100 transition-colors inline-block text-center">Google Play</a>
                 </div>
               </div>
             </div>

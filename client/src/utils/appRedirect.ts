@@ -9,7 +9,7 @@ export const WA_CONFIG = {
 
 export const openCourseInApp = (courseSlug: string) => {
   const deepLink = `judicialstudy://course/${courseSlug}`;
-  const playStoreLink = "https://play.google.com/store/apps/details?id=com.judicialstudycentre.app";
+  const playStoreLink = "https://bit.ly/judicialSC";
   
   // Create a hidden iframe or use location
   // Modern browsers handle deep linking better with timeout fallbacks
