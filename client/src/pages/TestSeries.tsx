@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FileText, Clock, Award, ShoppingCart, ArrowRight, ShieldCheck, Lock, Unlock, Search } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
+import SEO from '../components/seo/SEO';
 
 interface PublicExam {
   _id: string;
@@ -70,6 +71,11 @@ const TestSeries = () => {
 
   return (
     <div className="pt-28 pb-20 bg-slate-50 min-h-screen">
+      <SEO 
+        title="MCQ Test Series & Mock Exams | PCS-J & APO Practice Tests"
+        description="Crack judicial exams with our topic-wise online mock tests and complete test series matching the latest UP, Bihar, and MP PCS-J patterns."
+        canonicalUrl="/test-series"
+      />
       <div className="max-w-7xl mx-auto px-6">
         
         {/* Banner Section */}

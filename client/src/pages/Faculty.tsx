@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Award, BookOpen } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import api from '../utils/api';
+import SEO from '../components/seo/SEO';
 
 const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) => (
   <motion.div
@@ -24,6 +25,11 @@ const Faculty = () => {
 
   return (
     <div className="pt-28 pb-20 bg-slate-50 min-h-screen">
+      <SEO 
+        title="Our Expert Legal Faculty | Judicial Study Centre"
+        description="Learn from retired judges, senior advocates, and legal scholars who form the core faculty of Judicial Study Centre Prayagraj."
+        canonicalUrl="/faculty"
+      />
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-serif font-bold text-primary mb-4">Our Faculty</h1>

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { Image as ImageIcon, X, ZoomIn, Calendar } from 'lucide-react';
 import api from '../utils/api';
+import SEO from '../components/seo/SEO';
 
 interface GalleryItem {
   _id: string;
@@ -41,6 +42,11 @@ const Gallery = () => {
 
   return (
     <div className="pt-28 pb-20 bg-slate-50 min-h-screen">
+      <SEO 
+        title="Media Gallery & Campus Highlights | Judicial Study Centre"
+        description="Browse photo highlights, campus events, classroom sessions, student selections, and ceremony moments at Judicial Study Centre Prayagraj."
+        canonicalUrl="/gallery"
+      />
       <div className="max-w-7xl mx-auto px-6">
         {/* Page Title & Header */}
         <div className="text-center mb-12">

@@ -65,6 +65,7 @@ const Notifications = () => {
       <SEO 
         title="Notifications & Updates | Judicial Study Centre"
         description="Stay updated with the latest news, announcements, and alerts from Judicial Study Centre."
+        canonicalUrl="/notifications"
       />
       
       <div className="pt-32 pb-20 bg-slate-50 min-h-screen">

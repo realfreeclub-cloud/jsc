@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /student/
 Disallow: /admin/
-Sitemap: https://www.judicialstudycentre.com/sitemap.xml
+Sitemap: https://judicialstudycentre.in/sitemap.xml

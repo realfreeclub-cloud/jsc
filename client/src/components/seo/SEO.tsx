@@ -11,11 +11,11 @@ interface SEOProps {
 }
 
 const SEO = ({ title, description, canonicalUrl, ogImage, keywords, schemaMarkup }: SEOProps) => {
-  const siteUrl = "https://www.judicialstudycentre.com"; // Change to production domain
+  const siteUrl = "https://judicialstudycentre.in"; // Change to production domain
   const fullCanonicalUrl = canonicalUrl ? `${siteUrl}${canonicalUrl}` : siteUrl;
   const imageUrl = ogImage || `${siteUrl}/default-og-image.jpg`;
 
-  const defaultKeywords = "PCS J Coaching, APO Coaching, Judiciary Coaching Prayagraj, Judicial Coaching Institute, Law Entrance Coaching";
+  const defaultKeywords = "PCS J Coaching, APO Coaching, Judiciary Coaching Prayagraj, Judicial Study Centre, Judicial Study Centre Prayagraj, Judicial Coaching Institute, Law Entrance Coaching, Ravindra Nath Rai, Rai Sir Law Classes";
   
   return (
     <Helmet>

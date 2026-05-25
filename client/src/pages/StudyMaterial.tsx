@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Download, Lock, Search, AlertCircle, ArrowRight } from 'lucide-react';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
+import SEO from '../components/seo/SEO';
 
 interface Material {
   _id: string;
@@ -112,6 +113,11 @@ const StudyMaterial = () => {
 
   return (
     <div className="bg-slate-50 min-h-screen pt-28 pb-20">
+      <SEO 
+        title="Free Judiciary Study Material & PDF Notes | Judicial Study Centre"
+        description="Boost your exam prep with revision notes on IPC, CPC, Constitutional Law, monthly current affairs, and landmark judgments compiled by Judicial Study Centre Prayagraj."
+        canonicalUrl="/study-material"
+      />
       {/* Premium Hero Header */}
       <div className="bg-primary text-white py-16 px-6 relative overflow-hidden mb-12">
         <div className="absolute top-0 right-0 w-1/3 h-full bg-linear-to-l from-gold/5 to-transparent"></div>

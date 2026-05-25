@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, Phone, Mail, Clock, Send, MessageCircle, Camera, Video, Loader2 } from 'lucide-react';
 import api from '../utils/api';
+import SEO from '../components/seo/SEO';
 
 const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) => (
   <motion.div
@@ -84,8 +85,36 @@ const Contact = () => {
     { icon: Send, link: "https://t.me/judicialstudycentre", name: "Telegram" }
   ];
 
+  const schemaMarkup = {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    "name": "Contact Judicial Study Centre",
+    "description": "Contact details of Judicial Study Centre in Prayagraj for admissions, course details, and general inquiries.",
+    "url": "https://judicialstudycentre.in/contact",
+    "mainEntity": {
+      "@type": "EducationalOrganization",
+      "name": "Judicial Study Centre",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "84/140, Allenganj, Infront of Indian Bank",
+        "addressLocality": "Prayagraj",
+        "addressRegion": "Uttar Pradesh",
+        "postalCode": "211002",
+        "addressCountry": "IN"
+      },
+      "telephone": "+91 9450614241",
+      "email": "contact.judicialstudycentre@gmail.com"
+    }
+  };
+
   return (
     <div className="bg-slate-50 min-h-screen">
+      <SEO 
+        title="Contact Us | Admissions & Inquiry"
+        description="Get in touch with Judicial Study Centre Prayagraj. Visit our branch in Allenganj, call +91-9450614241, or email us for admissions and queries."
+        canonicalUrl="/contact"
+        schemaMarkup={schemaMarkup}
+      />
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden bg-primary flex items-center">
         <div className="absolute inset-0 z-0 opacity-20">

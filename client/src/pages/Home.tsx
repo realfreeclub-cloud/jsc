@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Users, Trophy, PlayCircle, Calendar, Download, MessageCircle, Star, Shield, BookMarked, Video, FileText } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import api from '../utils/api';
+import SEO from '../components/seo/SEO';
 
 
 const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) => (
@@ -95,8 +96,92 @@ const Home = () => {
   const activeSlide = slides[currentSlide] as Record<string, unknown>;
   const isPureBannerActive = activeSlide && !(activeSlide.title && (activeSlide.title as string).trim() !== "");
 
+  const schemaMarkup = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "EducationalOrganization",
+        "@id": "https://judicialstudycentre.in/#organization",
+        "name": "Judicial Study Centre",
+        "alternateName": "JSC Prayagraj",
+        "url": "https://judicialstudycentre.in",
+        "logo": {
+          "@type": "ImageObject",
+          "@id": "https://judicialstudycentre.in/#logo",
+          "url": "https://judicialstudycentre.in/logo.png",
+          "caption": "Judicial Study Centre Logo"
+        },
+        "image": "https://judicialstudycentre.in/logo.png",
+        "description": "Judicial Study Centre is India's premier institution for Judicial Services preparation in Prayagraj (Allahabad). Offering expert coaching for PCS-J, APO, and HJS exams under founder Director Ravindra Nath Rai.",
+        "telephone": "+91 9450614241",
+        "email": "contact.judicialstudycentre@gmail.com",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "84/140, Allenganj, Infront of Indian Bank",
+          "addressLocality": "Prayagraj",
+          "addressRegion": "Uttar Pradesh",
+          "postalCode": "211002",
+          "addressCountry": "IN"
+        },
+        "founder": {
+          "@type": "Person",
+          "name": "Ravindra Nath Rai",
+          "jobTitle": "Founder & Director"
+        },
+        "foundingDate": "2001",
+        "sameAs": [
+          "https://www.facebook.com/p/Judicial-Study-Centre-Allahabad100063525922398/",
+          "https://www.instagram.com/judicial_study_centre",
+          "https://www.youtube.com/c/JudicialStudyCentre",
+          "https://t.me/judicialstudycentre"
+        ]
+      },
+      {
+        "@type": "LocalBusiness",
+        "@id": "https://judicialstudycentre.in/#localbusiness",
+        "name": "Judicial Study Centre Prayagraj",
+        "image": "https://judicialstudycentre.in/logo.png",
+        "url": "https://judicialstudycentre.in",
+        "telephone": "+91 9450614241",
+        "priceRange": "$$",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "84/140, Allenganj, Infront of Indian Bank",
+          "addressLocality": "Prayagraj",
+          "addressRegion": "Uttar Pradesh",
+          "postalCode": "211002",
+          "addressCountry": "IN"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": "25.4673",
+          "longitude": "81.8559"
+        },
+        "openingHoursSpecification": {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday"
+          ],
+          "opens": "09:00",
+          "closes": "19:00"
+        }
+      }
+    ]
+  };
+
   return (
     <div className="bg-slate-50">
+      <SEO 
+        title="Judicial Study Centre | Best PCS-J & APO Coaching in Prayagraj"
+        description="Judicial Study Centre (JSC) in Prayagraj (Allahabad) is India's leading institute for PCS-J, APO, and HJS exam preparation. Join expert law classes under Director Ravindra Nath Rai."
+        canonicalUrl=""
+        schemaMarkup={schemaMarkup}
+      />
       {/* Dynamic Hero Slider */}
       <section className="relative overflow-hidden bg-primary w-full select-none">
         {slides.length > 1 && (

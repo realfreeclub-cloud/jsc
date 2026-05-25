@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { Target, Eye, Shield, Award, Users, BookOpen, Scale, Quote } from 'lucide-react';
+import SEO from '../components/seo/SEO';
 
 const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) => (
   <motion.div
@@ -15,6 +16,11 @@ const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode, delay?: nu
 const About = () => {
   return (
     <div className="bg-slate-50 min-h-screen">
+      <SEO 
+        title="About Us | Legacy of Legal Selections"
+        description="Learn about Judicial Study Centre's mission, history since 2001, director Ravindra Nath Rai, and our legacy of 900+ selections in judicial services."
+        canonicalUrl="/about"
+      />
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden bg-primary flex items-center">
         <div className="absolute inset-0 z-0">

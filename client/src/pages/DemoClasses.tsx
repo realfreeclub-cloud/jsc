@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import api from '../utils/api';
 import CustomVideoPlayer from '../components/ui/CustomVideoPlayer';
+import SEO from '../components/seo/SEO';
 
 interface DemoSession {
   _id: string;
@@ -99,6 +100,11 @@ const DemoClasses = () => {
 
   return (
     <div className="min-h-screen bg-slate-50">
+      <SEO 
+        title="Free Demo Classes & Legal Video Lectures | JSC Prayagraj"
+        description="Watch free demo lectures and masterclasses to experience the quality of teaching for PCS-J, APO, and law entrance exams at Judicial Study Centre."
+        canonicalUrl="/demo"
+      />
       {/* Hero Banner */}
       <section className="bg-[#07152F] text-white py-20 px-6 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 20% 50%, #F4B400 0%, transparent 60%), radial-gradient(circle at 80% 20%, #1E3A5F 0%, transparent 60%)' }} />

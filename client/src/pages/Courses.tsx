@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Clock, Users, MessageCircle, Smartphone, Shield, BookOpen } from 'lucide-react';
 import { openCourseInApp, openWhatsApp } from '../utils/appRedirect';
 import api from '../utils/api';
+import SEO from '../components/seo/SEO';
 
 export interface Course {
   slug: string;
@@ -91,6 +92,11 @@ const Courses = () => {
 
   return (
     <div className="pt-28 pb-20 bg-slate-50 min-h-screen">
+      <SEO 
+        title="Premium Judiciary Coaching Courses | PCS-J, APO batches"
+        description="Explore premium online and offline judiciary coaching programs including PCS-J Foundation, APO batches, and Higher Judicial Services (HJS) preparation at Judicial Study Centre."
+        canonicalUrl="/courses"
+      />
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-serif font-bold text-primary mb-4">Our Premium Courses</h1>

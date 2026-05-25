@@ -9,6 +9,7 @@ import {
 import { openWhatsApp } from '../utils/appRedirect';
 import { type Course } from './Courses.tsx';
 import api from '../utils/api';
+import SEO from '../components/seo/SEO';
 
 interface SyllabusLesson {
   _id: string;
@@ -154,8 +155,27 @@ const CourseDetails = () => {
     );
   }
 
+  const schemaMarkup = {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    "name": course.title,
+    "description": course.about || course.subtitle || "Judiciary preparation program.",
+    "provider": {
+      "@type": "EducationalOrganization",
+      "name": "Judicial Study Centre",
+      "sameAs": "https://judicialstudycentre.in"
+    }
+  };
+
   return (
     <div className="bg-slate-50 min-h-screen">
+      <SEO 
+        title={`${course.title} Coaching Batch`}
+        description={course.about ? course.about.substring(0, 155) : `Enroll in ${course.title} coaching. Detailed syllabus, test series, and notes at Judicial Study Centre Prayagraj.`}
+        canonicalUrl={`/courses/${slug}`}
+        ogImage={course.thumbnail}
+        schemaMarkup={schemaMarkup}
+      />
       {/* Hero Header */}
       <div className="bg-primary text-white pt-32 pb-20 md:pt-40 md:pb-28 relative overflow-hidden">
         {/* Background Accents */}

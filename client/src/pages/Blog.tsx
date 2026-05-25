@@ -40,7 +40,7 @@ const Blog = () => {
       <SEO 
         title="Judiciary Preparation Blog & Legal Updates"
         description="Read expert articles on PCS J preparation, APO exam strategies, legal updates, and interviews from top judicial faculty."
-        canonicalUrl="/blog"
+        canonicalUrl="/blogs"
       />
       <div className="pt-28 pb-20 bg-slate-50 min-h-screen">
         <div className="max-w-7xl mx-auto px-6">
