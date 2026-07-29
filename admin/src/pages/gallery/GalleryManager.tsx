@@ -51,7 +51,7 @@ export default function GalleryManager() {
   // Fetch gallery data
   const { data, isLoading } = useQuery<ApiListResponse>({
     queryKey: ['gallery'],
-    queryFn: () => api.get<ApiListResponse>('/gallerys').then((res) => res.data),
+    queryFn: () => api.get<ApiListResponse>('/gallerys?limit=1000').then((res) => res.data),
   });
 
   const images: GalleryItem[] = data?.data || [];
@@ -139,6 +139,10 @@ export default function GalleryManager() {
       setTitle('');
       setSelectedFile(null);
       setPreviewUrl(null);
+      if (categoryType === 'new' && newCategory.trim()) {
+        setSelectedCategory(newCategory.trim());
+      }
+      setCategoryType('existing');
       setNewCategory('');
       setIsPrivate(false);
       alert('Image uploaded and added to gallery successfully!');

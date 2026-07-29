@@ -31,7 +31,7 @@ const Gallery = () => {
   // Fetch only public gallery images (the backend handles filtering out isPrivate automatically!)
   const { data, isLoading, error } = useQuery({
     queryKey: ['public-gallery'],
-    queryFn: () => api.get('/gallerys').then((res) => res.data),
+    queryFn: () => api.get('/gallerys?limit=1000').then((res) => res.data),
   });
 
   const images: GalleryItem[] = data?.data || [];
