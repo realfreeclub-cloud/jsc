@@ -127,8 +127,41 @@ const CourseDetails = () => {
 
   const getYoutubeId = (url?: string): string => {
     if (!url) return '';
-    const m = url.match(/(?:youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*)/);
-    return (m && m[1].length === 11) ? m[1] : url;
+    const trimmed = url.trim();
+    
+    // Check if it's already a simple 11-character video ID
+    if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) {
+      return trimmed;
+    }
+    
+    // Match common YouTube URL formats and extract the 11-character ID
+    const regExp = /(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:embed\/|v\/|watch\?v=|live\/|shorts\/|u\/\w\/))([a-zA-Z0-9_-]{11})/i;
+    const match = trimmed.match(regExp);
+    if (match && match[1]) {
+      return match[1];
+    }
+    
+    // Fallback parser for URL query parameters or pathname
+    try {
+      const urlWithProtocol = trimmed.startsWith('http') ? trimmed : `https://${trimmed}`;
+      const parsedUrl = new URL(urlWithProtocol);
+      if (parsedUrl.hostname.includes('youtube') || parsedUrl.hostname.includes('youtu.be')) {
+        const v = parsedUrl.searchParams.get('v');
+        if (v && /^[a-zA-Z0-9_-]{11}$/.test(v)) {
+          return v;
+        }
+        const pathParts = parsedUrl.pathname.split('/');
+        for (const part of pathParts) {
+          if (/^[a-zA-Z0-9_-]{11}$/.test(part)) {
+            return part;
+          }
+        }
+      }
+    } catch (e) {
+      // Ignore URL parsing errors
+    }
+    
+    return trimmed;
   };
 
   const scrollToSyllabus = () => {
