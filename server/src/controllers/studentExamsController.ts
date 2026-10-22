@@ -5,6 +5,7 @@ import ExamAttempt from '../models/ExamAttempt';
 import Student from '../models/Student';
 import Course from '../models/Course';
 import TestEnrollment from '../models/TestEnrollment';
+import { getTestSeriesWhatsAppUrl } from '../utils/whatsappHelper';
 
 export const getAvailableExams = async (req: Request, res: Response): Promise<any> => {
   try {
@@ -115,10 +116,7 @@ export const startExam = async (req: Request, res: Response): Promise<any> => {
         (enrollment.isLifetime || !enrollment.expiryDate || new Date(enrollment.expiryDate) > new Date());
       
       if (!hasAccess) {
-        const whatsappNumber = exam.whatsappNumber || '919450614241';
-        const defaultMsg = `Hi Judicial Study Centre, I want to enroll in the "${exam.title}" test series. My registered email is ${studentEmail}.`;
-        const customMsg = exam.whatsappEnrollmentMessage ? exam.whatsappEnrollmentMessage.replace('[email]', studentEmail).replace('[phone]', student.phone || '') : defaultMsg;
-        const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(customMsg)}`;
+        const whatsappUrl = getTestSeriesWhatsAppUrl(exam, user);
         
         return res.status(403).json({ 
           status: 'fail', 

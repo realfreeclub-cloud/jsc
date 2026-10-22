@@ -3,12 +3,14 @@ import TestEnrollment from '../models/TestEnrollment';
 import Exam from '../models/Exam';
 import User from '../models/User';
 import APIFeatures from '../utils/apiFeatures';
+import { getTestSeriesWhatsAppUrl } from '../utils/whatsappHelper';
 
 // POST /api/v1/test-enrollments/enroll
 export const requestEnrollment = async (req: Request, res: Response): Promise<any> => {
   try {
     const { examId } = req.body;
-    const userId = (req as any).user._id;
+    const user = (req as any).user;
+    const userId = user._id;
 
     if (!examId) {
       return res.status(400).json({ status: 'fail', message: 'Exam ID is required.' });
@@ -28,10 +30,7 @@ export const requestEnrollment = async (req: Request, res: Response): Promise<an
           message: 'You are already enrolled in this test series with active access.'
         });
       } else if (existingEnrollment.status === 'pending') {
-        const whatsappNumber = exam.whatsappNumber || '919450614241';
-        const defaultMsg = `Hi Judicial Study Centre, I want to enroll in the "${exam.title}" test series. My registered email is ${(req as any).user.email}.`;
-        const customMsg = exam.whatsappEnrollmentMessage ? exam.whatsappEnrollmentMessage.replace('[email]', (req as any).user.email).replace('[phone]', (req as any).user.phone || '') : defaultMsg;
-        const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(customMsg)}`;
+        const whatsappUrl = getTestSeriesWhatsAppUrl(exam, user);
         return res.status(200).json({
           status: 'success',
           message: 'Your enrollment request is pending admin manual activation.',
@@ -64,10 +63,7 @@ export const requestEnrollment = async (req: Request, res: Response): Promise<an
         status: 'pending'
       });
 
-      const whatsappNumber = exam.whatsappNumber || '919450614241';
-      const defaultMsg = `Hi Judicial Study Centre, I want to enroll in the "${exam.title}" test series. My registered email is ${(req as any).user.email}.`;
-      const customMsg = exam.whatsappEnrollmentMessage ? exam.whatsappEnrollmentMessage.replace('[email]', (req as any).user.email).replace('[phone]', (req as any).user.phone || '') : defaultMsg;
-      const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(customMsg)}`;
+      const whatsappUrl = getTestSeriesWhatsAppUrl(exam, user);
 
       return res.status(201).json({
         status: 'success',

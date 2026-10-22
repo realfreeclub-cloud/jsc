@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 const WhatsAppSettings = () => {
   const [config, setConfig] = useState({
-    number: '919876543210',
+    number: '919450614241',
     defaultMessage: 'Hello Judicial Study Centre, I want to know more about your courses and admission process.',
     courseTemplate: 'Hello Judicial Study Centre, I want details about [COURSE_NAME].',
   });
@@ -44,7 +44,7 @@ const WhatsAppSettings = () => {
                       value={config.number}
                       onChange={(e) => setConfig({...config, number: e.target.value})}
                       className="flex-1 min-w-0 block w-full px-5 py-4 rounded-none rounded-r-2xl bg-gray-50 dark:bg-slate-900 border-none focus:ring-2 focus:ring-blue-500 outline-none dark:text-white transition-all" 
-                      placeholder="919876543210" 
+                      placeholder="919450614241" 
                     />
                   </div>
                   <div className="mt-3 flex items-center gap-2 text-xs text-gray-500 dark:text-gray-500">

@@ -49,7 +49,9 @@ const ExamQuestions = () => {
   const [pricing, setPricing] = useState(0);
   const [discountedPrice, setDiscountedPrice] = useState(0);
   const [whatsappNumber, setWhatsappNumber] = useState('919450614241');
-  const [whatsappEnrollmentMessage, setWhatsappEnrollmentMessage] = useState('');
+  const [whatsappEnrollmentMessage, setWhatsappEnrollmentMessage] = useState(
+    'Hello Sir, I want to purchase this Test Series:\n\n• Student Name: [name]\n• Test Series: [title]\n• Price: [price]\n• Email: [email]\n\nSir, I want to purchase this. Please share the payment details to activate my access.'
+  );
   const [expiryType, setExpiryType] = useState<'lifetime' | 'duration' | 'fixed'>('lifetime');
   const [accessDuration, setAccessDuration] = useState(30);
   const [expiryDate, setExpiryDate] = useState('');
@@ -103,7 +105,10 @@ const ExamQuestions = () => {
       setPricing(exam.pricing || 0);
       setDiscountedPrice(exam.discountedPrice || 0);
       setWhatsappNumber(exam.whatsappNumber || '919450614241');
-      setWhatsappEnrollmentMessage(exam.whatsappEnrollmentMessage || '');
+      setWhatsappEnrollmentMessage(
+        exam.whatsappEnrollmentMessage ||
+        'Hello Sir, I want to purchase this Test Series:\n\n• Student Name: [name]\n• Test Series: [title]\n• Price: [price]\n• Email: [email]\n\nSir, I want to purchase this. Please share the payment details to activate my access.'
+      );
       
       if (exam.expiryDate) {
         setExpiryType('fixed');

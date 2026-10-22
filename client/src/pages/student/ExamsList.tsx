@@ -57,10 +57,13 @@ const ExamsList = () => {
   const handleUnlock = async (examId: string) => {
     try {
       const response = await api.post('/test-enrollments/enroll', { examId });
-      if (response.data.whatsappUrl) {
-        window.open(response.data.whatsappUrl, '_blank');
+      const whatsappUrl = response.data?.whatsappUrl;
+      if (whatsappUrl) {
+        const opened = window.open(whatsappUrl, '_blank');
+        if (!opened) {
+          window.location.href = whatsappUrl;
+        }
       }
-      alert(response.data.message || 'Unlock request registered. Redirecting to WhatsApp for payment...');
       queryClient.invalidateQueries({ queryKey: ['studentExams'] });
     } catch (err: any) {
       alert(err.response?.data?.message || 'Failed to request unlock');

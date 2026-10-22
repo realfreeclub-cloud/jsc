@@ -18,8 +18,11 @@ const examSchema = new mongoose.Schema({
   accessType: { type: String, enum: ['free', 'paid'], default: 'free' },
   pricing: { type: Number, default: 0 },
   discountedPrice: { type: Number, default: 0 },
-  whatsappEnrollmentMessage: { type: String },
-  whatsappNumber: { type: String },
+  whatsappEnrollmentMessage: { 
+    type: String, 
+    default: 'Hello Sir, I want to purchase this Test Series:\n\n• Student Name: [name]\n• Test Series: [title]\n• Price: [price]\n• Email: [email]\n\nSir, I want to purchase this. Please share the payment details to activate my access.' 
+  },
+  whatsappNumber: { type: String, default: '919450614241' },
   accessDuration: { type: Number }, // in days
   expiryDate: { type: Date }, // fixed expiry date
   

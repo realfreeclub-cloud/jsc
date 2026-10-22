@@ -84,6 +84,21 @@ const sanitizeExamData = (body: Record<string, any>) => {
   if (data.passingMarks === '' || data.passingMarks === null || data.passingMarks === undefined) data.passingMarks = 0;
   if (data.course === '' || data.course === undefined) data.course = null;
   if (data.paperSet === '' || data.paperSet === undefined) data.paperSet = null;
+
+  // Sanitize WhatsApp number to +91 94506 14241
+  if (!data.whatsappNumber || String(data.whatsappNumber).trim() === '') {
+    data.whatsappNumber = '919450614241';
+  } else {
+    let cleanNum = String(data.whatsappNumber).replace(/[^0-9]/g, '');
+    if (!cleanNum.startsWith('91') && cleanNum.length === 10) {
+      cleanNum = `91${cleanNum}`;
+    }
+    data.whatsappNumber = cleanNum.length >= 10 ? cleanNum : '919450614241';
+  }
+
+  if (!data.whatsappEnrollmentMessage || String(data.whatsappEnrollmentMessage).trim() === '') {
+    data.whatsappEnrollmentMessage = 'Hello Sir, I want to purchase this Test Series:\n\n• Student Name: [name]\n• Test Series: [title]\n• Price: [price]\n• Email: [email]\n\nSir, I want to purchase this. Please share the payment details to activate my access.';
+  }
   return data;
 };
 

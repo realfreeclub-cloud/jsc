@@ -198,6 +198,8 @@ const Exams = () => {
                 passingMarks: 0,
                 pricing: 0,
                 discountedPrice: 0,
+                whatsappNumber: '919450614241',
+                whatsappEnrollmentMessage: 'Hello Sir, I want to purchase this Test Series:\n\n• Student Name: [name]\n• Test Series: [title]\n• Price: [price]\n• Email: [email]\n\nSir, I want to purchase this. Please share the payment details to activate my access.',
                 negativeMarking: 0,
                 attemptsAllowed: 1,
                 shuffleQuestions: false,
