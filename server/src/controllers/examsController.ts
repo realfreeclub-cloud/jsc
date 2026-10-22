@@ -32,8 +32,9 @@ const syncPaperSetQuestions = async (examId: string, paperSetId: string): Promis
   // Delete existing questions of the exam
   await Question.deleteMany({ exam: examId });
 
-  // Clone paper set questions into Question collection
-  const newQuestions = (paperSet.questions || []).map((q: any) => ({
+  // Clone paper set questions into Question collection (filter out any null/undefined questions)
+  const validQuestions = (paperSet.questions || []).filter((q: any) => q && q.text);
+  const newQuestions = validQuestions.map((q: any) => ({
     exam: examId,
     section: '',
     subject: q.subject,
@@ -41,10 +42,10 @@ const syncPaperSetQuestions = async (examId: string, paperSetId: string): Promis
     chapter: q.chapter,
     text: q.text,
     textHindi: q.textHindi,
-    options: q.options,
-    optionsHindi: q.optionsHindi,
-    correctOptionIndex: q.correctOptionIndex,
-    correctOptionIndices: q.correctOptionIndices,
+    options: q.options || [],
+    optionsHindi: q.optionsHindi || [],
+    correctOptionIndex: typeof q.correctOptionIndex === 'number' ? q.correctOptionIndex : 0,
+    correctOptionIndices: q.correctOptionIndices || [],
     marks: q.marks || 1,
     negativeMarks: q.negativeMarks || 0,
     explanation: q.explanation,
@@ -67,17 +68,33 @@ const syncPaperSetQuestions = async (examId: string, paperSetId: string): Promis
     await Question.insertMany(newQuestions);
   }
 
-  const totalMarks = newQuestions.reduce((sum, q) => sum + q.marks, 0);
+  const totalMarks = newQuestions.reduce((sum, q) => sum + (q.marks || 1), 0);
   return totalMarks;
+};
+
+const sanitizeExamData = (body: Record<string, any>) => {
+  const data = { ...body };
+  if (!data.accessType || data.accessType === '') data.accessType = 'free';
+  if (data.pricing === '' || data.pricing === null || data.pricing === undefined) data.pricing = 0;
+  if (data.discountedPrice === '' || data.discountedPrice === null || data.discountedPrice === undefined) data.discountedPrice = 0;
+  if (data.negativeMarks === '' || data.negativeMarks === null || data.negativeMarks === undefined) data.negativeMarks = 0;
+  if (data.negativeMarking === '' || data.negativeMarking === null || data.negativeMarking === undefined) data.negativeMarking = 0;
+  if (data.attemptsAllowed === '' || data.attemptsAllowed === null || data.attemptsAllowed === undefined) data.attemptsAllowed = 1;
+  if (data.durationMinutes === '' || data.durationMinutes === null || data.durationMinutes === undefined) data.durationMinutes = 60;
+  if (data.passingMarks === '' || data.passingMarks === null || data.passingMarks === undefined) data.passingMarks = 0;
+  if (data.course === '' || data.course === undefined) data.course = null;
+  if (data.paperSet === '' || data.paperSet === undefined) data.paperSet = null;
+  return data;
 };
 
 // Create exam
 export const createExam = async (req: Request, res: Response) => {
   try {
-    const newExam = await Exam.create(req.body);
+    const payload = sanitizeExamData(req.body);
+    const newExam = await Exam.create(payload);
     
-    if (req.body.paperSet) {
-      const totalMarks = await syncPaperSetQuestions(newExam._id.toString(), req.body.paperSet);
+    if (payload.paperSet) {
+      const totalMarks = await syncPaperSetQuestions(newExam._id.toString(), payload.paperSet);
       newExam.totalMarks = totalMarks;
       await newExam.save();
     }
@@ -91,14 +108,15 @@ export const createExam = async (req: Request, res: Response) => {
 // Update exam
 export const updateExam = async (req: Request, res: Response) => {
   try {
-    const exam = await Exam.findByIdAndUpdate(req.params.id, req.body, {
+    const payload = sanitizeExamData(req.body);
+    const exam = await Exam.findByIdAndUpdate(req.params.id, payload, {
       new: true,
       runValidators: true
     });
     if (!exam) return res.status(404).json({ status: 'fail', message: 'Exam not found' });
     
-    if (req.body.paperSet) {
-      const totalMarks = await syncPaperSetQuestions(exam._id.toString(), req.body.paperSet);
+    if (payload.paperSet) {
+      const totalMarks = await syncPaperSetQuestions(exam._id.toString(), payload.paperSet);
       exam.totalMarks = totalMarks;
       await exam.save();
     }

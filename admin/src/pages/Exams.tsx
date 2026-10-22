@@ -105,13 +105,20 @@ const Exams = () => {
         ? (formData.paperSet as { _id: string })._id 
         : formData.paperSet;
       
-      const payload = { 
+      const payload: Record<string, unknown> = { 
         ...formData, 
+        accessType: formData.accessType || 'free',
+        durationMinutes: Number(formData.durationMinutes) || 60,
+        passingMarks: Number(formData.passingMarks) || 0,
+        pricing: Number(formData.pricing) || 0,
+        discountedPrice: Number(formData.discountedPrice) || 0,
+        negativeMarking: Number(formData.negativeMarking) || 0,
+        attemptsAllowed: formData.attemptsAllowed === '' || formData.attemptsAllowed === null || formData.attemptsAllowed === undefined ? 1 : Number(formData.attemptsAllowed),
         course: courseVal || null,
         paperSet: paperSetVal || null
       };
 
-      if (editData) {
+      if (editData && editData._id) {
         await updateMutation.mutateAsync({ ...payload, _id: editData._id as string });
       } else {
         await createMutation.mutateAsync(payload);
@@ -168,7 +175,7 @@ const Exams = () => {
         }}
       >
         {isSaving ? <Loader2 size={15} style={{ animation: 'spin 1s linear infinite' }} /> : null}
-        {editData ? `Update Exam` : `Create Exam`}
+        {editData && editData._id ? `Update Exam` : `Create Exam`}
       </button>
     </div>
   );
@@ -182,7 +189,23 @@ const Exams = () => {
         </div>
         <div>
           <button
-            onClick={() => { setEditData(undefined); setIsModalOpen(true); }}
+            onClick={() => { 
+              setEditData({
+                title: '',
+                description: '',
+                accessType: 'free',
+                durationMinutes: 60,
+                passingMarks: 0,
+                pricing: 0,
+                discountedPrice: 0,
+                negativeMarking: 0,
+                attemptsAllowed: 1,
+                shuffleQuestions: false,
+                shuffleOptions: false,
+                isActive: true
+              }); 
+              setIsModalOpen(true); 
+            }}
             className="btn-gold" style={{ padding: '9px 18px', fontSize: 13 }}
           >
             <Plus size={15} /> Add New Exam

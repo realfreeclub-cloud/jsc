@@ -8,47 +8,51 @@ import TestEnrollment from '../models/TestEnrollment';
 
 export const getAvailableExams = async (req: Request, res: Response): Promise<any> => {
   try {
-    // @ts-ignore
-    const studentEmail = req.user.email;
-    const student = await Student.findOne({ email: studentEmail });
+    const user = (req as any).user;
+    const studentEmail = user.email;
+    let student = await Student.findOne({ 
+      email: { $regex: new RegExp(`^${studentEmail}$`, 'i') } 
+    });
     
-    if (!student) {
-      return res.status(404).json({ status: 'fail', message: 'Student profile not found' });
+    // Auto-create matching Student profile if not existing
+    if (!student && studentEmail) {
+      try {
+        student = await Student.create({
+          name: user.name || 'Student',
+          email: studentEmail,
+          phone: user.phone || `999${Math.floor(1000000 + Math.random() * 9000000)}`,
+          course: 'Not Enrolled',
+          status: 'active',
+          isActive: true
+        });
+      } catch (createErr) {
+        student = await Student.findOne({ email: studentEmail });
+      }
     }
 
-    const course = await Course.findOne({ title: student.course });
-
-    let query: any = { isActive: true };
-    if (course) {
-      query.$or = [
-        { course: course._id },
-        { course: { $exists: false } },
-        { course: null }
-      ];
-    } else {
-      query.$or = [
-        { course: { $exists: false } },
-        { course: null }
-      ];
-    }
-
-    const exams = await Exam.find(query).sort({ createdAt: -1 });
+    // Fetch all active exams so students can attempt free ones or unlock paid ones
+    const exams = await Exam.find({ isActive: true }).sort({ createdAt: -1 });
 
     // Find previous attempts
-    const attempts = await ExamAttempt.find({ student: student._id });
+    const studentId = student?._id;
+    const attempts = studentId ? await ExamAttempt.find({ student: studentId }) : [];
     
     // Find active/pending test series enrollments
-    const userId = (req as any).user._id;
+    const userId = user._id;
     const testEnrollments = await TestEnrollment.find({ user: userId });
 
     // Map exams to include attempt info and enrollment/access status
     const examsWithAttempts = exams.map(exam => {
-        const examAttempts = attempts.filter(a => a.exam._id.toString() === exam._id.toString());
+        const examIdStr = exam._id.toString();
+        const examAttempts = attempts.filter(a => {
+            if (!a.exam) return false;
+            const aExamId = (a.exam as any)._id ? (a.exam as any)._id.toString() : a.exam.toString();
+            return aExamId === examIdStr;
+        });
         
         // Find if student has registered/paid for this exam
         const enrollment = testEnrollments.find(
-          e => e.exam.toString() === exam._id.toString() || 
-               (e.exam as any)._id?.toString() === exam._id.toString()
+          e => e.exam && (e.exam.toString() === examIdStr || (e.exam as any)._id?.toString() === examIdStr)
         );
 
         const hasActiveAccess = exam.accessType === 'free' || 
@@ -58,14 +62,14 @@ export const getAvailableExams = async (req: Request, res: Response): Promise<an
         return {
             ...exam.toObject(),
             attemptsCount: examAttempts.length,
-            bestScore: examAttempts.length > 0 ? Math.max(...examAttempts.map(a => a.score)) : null,
+            bestScore: examAttempts.length > 0 ? Math.max(...examAttempts.map(a => typeof a.score === 'number' ? a.score : 0)) : null,
             lastAttemptStatus: examAttempts.length > 0 ? examAttempts[examAttempts.length - 1].status : null,
             lastAttemptId: examAttempts.length > 0 ? examAttempts[examAttempts.length - 1]._id : null,
             accessStatus: enrollment ? enrollment.status : 'unsubscribed',
             isLocked: exam.accessType === 'paid' && !hasActiveAccess,
             enrollmentExpiryDate: enrollment?.expiryDate || null,
             isLifetimeAccess: enrollment?.isLifetime || false
-        }
+        };
     });
 
     res.status(200).json({ status: 'success', data: { exams: examsWithAttempts } });
@@ -77,10 +81,27 @@ export const getAvailableExams = async (req: Request, res: Response): Promise<an
 export const startExam = async (req: Request, res: Response): Promise<any> => {
   try {
     const { examId } = req.body;
-    const userId = (req as any).user._id;
-    // @ts-ignore
-    const studentEmail = req.user.email;
-    const student = await Student.findOne({ email: studentEmail });
+    const user = (req as any).user;
+    const userId = user._id;
+    const studentEmail = user.email;
+    let student = await Student.findOne({ 
+      email: { $regex: new RegExp(`^${studentEmail}$`, 'i') } 
+    });
+
+    if (!student && studentEmail) {
+      try {
+        student = await Student.create({
+          name: user.name || 'Student',
+          email: studentEmail,
+          phone: user.phone || `999${Math.floor(1000000 + Math.random() * 9000000)}`,
+          course: 'Not Enrolled',
+          status: 'active',
+          isActive: true
+        });
+      } catch (createErr) {
+        student = await Student.findOne({ email: studentEmail });
+      }
+    }
 
     if (!student) return res.status(404).json({ status: 'fail', message: 'Student profile not found' });
 
